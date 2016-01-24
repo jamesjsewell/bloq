@@ -1,0 +1,58 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+body {
+	font-family: Helvetica, Arial, sans-serif; 
+	font-size: 0;
+}
+
+h1 {
+	font-size: 38px;
+	text-align: center;
+}
+
+.block {
+	display: inline-block;
+	border: 2px solid #ddd;
+}
+
+.gridRow {
+	height: 75px;
+	opacity: 1;
+	transition: .75s all ease;
+}
+
+
+#grid,#playerRow {
+	margin: auto;
+	outline: 2px solid #ddd;
+}
+
+#gameContainer {
+	display: block;
+	max-width: 300px;
+	margin: auto;
+	text-align: center;
+	position: relative;
+}
+
+#grid {
+	height: 450px;
+	display: table-cell;
+	vertical-align: bottom;
+	position: relative;
+}
+
+#playerRow {
+	margin-top: 40px;
+}
+
+#score {
+	font-size: 34px;
+	margin: 40px auto;
+	max-width: 75px;
+	opacity: 1;
+	transition: .5s all ease;
+}
