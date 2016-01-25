@@ -37,6 +37,21 @@ var addGridRow = function() {
 	sendRowDown(row)
 }
 
+var advanceLevel = function() {
+	state.score = 0
+	state.maxScore += 1
+	setTimeout(function() {
+		scoreEl.style.opacity = 0
+		gameContainerEl.style.opacity = 0
+		setTimeout(function(){
+			scoreEl.innerHTML = state.score + ' / ' + state.maxScore
+			scoreEl.style.opacity = 1
+			initLevel()
+			gameContainerEl.style.opacity = 1
+		},500)
+	},500)
+}
+
 var arraysEqual = function(a1,a2) {
     return JSON.stringify(a1)==JSON.stringify(a2);
 }
@@ -53,17 +68,16 @@ var evaluateMatch = function() {
 	var playerColors = playerRowEl.childNodes.map(function(block) {
 		return block.style.backgroundColor
 	})
-	var match = false
+	var matched = []
 	gridEl.childNodes.forEach(function(row){
 		var rowColors = row.childNodes.map(function(block){
 			return block.style.backgroundColor
 		})
 		if (arraysEqual(playerColors,rowColors)) {
-			match = true
-			handleMatch(row)
+			matched.push(row)
 		}
 	})
-	return match
+	return matched
 }
 
 var handleLoss = function() {
@@ -83,21 +97,18 @@ var handleLoss = function() {
 	},750)
 }
 
-var handleMatch = function(row){
-	row.style.opacity = 0
-	gridEl.removeChild(row)
-	gridEl.childNodes.forEach(sendRowDown)
-	// setTimeout(
-	// 	function(){
-	// 		
-			
-	// 		)
-	// 	},500)
-	updateScore()
+var handleMatched = function(matched){
+	matched.forEach(function(row){
+		gridEl.removeChild(row)
+		gridEl.childNodes.forEach(sendRowDown)
+		updateScore()
+	})
+	
 }
 
 var initLevel = function() {
 	state.rowBlocks += 1
+	gameContainerEl
 	gridEl.clearChildren()
 	addGridRow(state.rowBlocks)
 	// add player row
@@ -113,14 +124,16 @@ var initLevel = function() {
 	playerRowEl.addEventListener('click',function(e) 
 		{
 			changeColors(e)
-			var match = evaluateMatch() // returns true if at least one match was found
-			if (!match && (gridEl.childNodes.length === state.maxRows)) {
+			var matched = evaluateMatch() // returns true if at least one match was found
+			if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
 				handleLoss()
 				return
 			}
+			handleMatched(matched)
 			addGridRow()
 		})
 }
+
 var makeRow = function() {
 	var rowEl = document.createElement('div')
 	var i = 0
@@ -157,16 +170,7 @@ var updateScore = function() {
 	state.score += 1
 	scoreEl.innerHTML = state.score + ' / ' + state.maxScore
 	if (state.score === state.maxScore) {
-		state.score = 0
-		state.maxScore += 1
-		setTimeout(function() {
-			scoreEl.style.opacity = 0
-			setTimeout(function(){
-				scoreEl.innerHTML = state.score + ' / ' + state.maxScore
-				scoreEl.style.opacity = 1
-				initLevel()
-			},500)
-		},500)
+		advanceLevel()
 	}
 }
 

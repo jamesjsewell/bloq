@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+* {
+	transition: .5s opacity ease;
+}
+
 body {
 	font-family: Helvetica, Arial, sans-serif; 
 	font-size: 0;
@@ -38,7 +42,6 @@ h1 {
 
 #gameContainer {
 	display: block;
-	width: 300px;
 	margin: auto;
 	text-align: center;
 	position: relative;
@@ -67,6 +70,7 @@ h1 {
 #playerRow {
 	margin-top: 40px;
 	height: 75px;
+	opacity: 1;
 }
 
 #score {
