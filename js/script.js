@@ -71,8 +71,9 @@ var changeColors = function(block) {
 }
 
 var moveHandler = function(e){
+	window.ev = e
 	if (e.target.className.contains('block')) changeColors(e.target)
-	if (e.target.id === "inverse") invertColors()
+	if (e.target.id === "invert") invertColors()
 	// if (e.target.id === "reverse") reverseColors()		
 	var matched = evaluateMove() // returns true if at least one match was found
 	console.log(matched)
@@ -228,7 +229,7 @@ var i = 0
 
 // set up power ups
 
-document.querySelector('#invert').addEventListener('click',invertColors)
-document.querySelector('#reverse').addEventListener('click',reverseColors)
+document.querySelector('#invert').addEventListener('click',moveHandler)
+document.querySelector('#reverse').addEventListener('click',moveHandler)
 
 initLevel()
