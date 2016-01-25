@@ -141,9 +141,21 @@ var initLevel = function() {
 	
 	// add player row
 	if (state.rowBlocks > 4) {
+		// replace player row with bigger one
 		playerRowEl.removeEventListener('click')
 		gameContainerEl.removeChild(playerRowEl)
+
 	}
+	if (state.rowBlocks === 5) {
+		// invert enters the arena
+		powerUpContainerEl.querySelector('#invert').style.opacity = 1
+		powerUpContainerEl.querySelector('#invert').style.visibility = "visible"	
+	}
+	if (state.rowBlocks === 6) {
+		powerUpContainerEl.querySelector('#reverse').style.opacity = 1
+		powerUpContainerEl.querySelector('#reverse').style.visibility = "visible"	
+	}
+
 	playerRowEl = makeRow()
 	playerRowEl.id = "playerRow"
 	gameContainerEl.appendChild(playerRowEl)
@@ -236,9 +248,5 @@ var gameContainerEl = document.querySelector('#gameContainer')
 
 var playerRowEl
 var i = 0 
-
-// set up power ups
-
 powerUpContainerEl.addEventListener('click',moveHandler)
-
 initLevel()

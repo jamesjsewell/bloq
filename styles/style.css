@@ -4,10 +4,6 @@
     box-sizing: border-box;
 }
 
-div#powerUpContainer {
-    position: absolute;
-}
-
 * {
 	transition: .5s opacity ease;
 }
@@ -78,6 +74,11 @@ h1 {
 	opacity: 1;
 }
 
+#invert,#reverse {
+	opacity: 0;
+	visibility: hidden;
+}
+
 #loseMessage {
 	font-size: 48px;
 	color: #888;
@@ -97,6 +98,7 @@ h1 {
     left: -45px;
     bottom: 0;
     cursor: pointer;
+    position: absolute;
 }
 
 #score {
