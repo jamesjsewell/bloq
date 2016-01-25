@@ -20,6 +20,13 @@ Node.prototype.clearChildren = function(){
 NodeList.prototype.forEach = Array.prototype.forEach
 NodeList.prototype.map = Array.prototype.map
 NodeList.prototype.indexOf = Array.prototype.indexOf	
+NodeList.prototype.reverse = Array.prototype.reverse = function(){
+	var newArray = []
+	for (var i = (this.length - 1); i >= 0; i --) {
+		newArray.push(this[i])
+	}
+	return newArray
+}	
 
 // helper functions
 
@@ -74,7 +81,7 @@ var moveHandler = function(e){
 	window.ev = e
 	if (e.target.className.contains('block')) changeColors(e.target)
 	if (e.target.id === "invert") invertColors()
-	// if (e.target.id === "reverse") reverseColors()		
+	if (e.target.id === "reverse") reverseColors()		
 	var matched = evaluateMove() // returns true if at least one match was found
 	console.log(matched)
 	if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
@@ -154,7 +161,6 @@ var invertColors = function() {
 	playerRowEl.childNodes.forEach(function(block){
 		changeColors(block)
 	})
-	console.log('inverted')
 }
 
 var makeRow = function() {
@@ -178,7 +184,11 @@ var removeGridRow = function(row) {
 }
 
 var reverseColors = function() {
-
+	var reversed = playerRowEl.childNodes.reverse()
+	playerRowEl.clearChildren()
+	reversed.forEach(function(block){
+		playerRowEl.appendChild(block)
+	})
 }
 
 var sendRowDown = function(row) {
