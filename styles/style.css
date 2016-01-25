@@ -4,9 +4,14 @@
     box-sizing: border-box;
 }
 
+div#powerUpContainer {
+    position: absolute;
+}
+
 * {
 	transition: .5s opacity ease;
 }
+
 
 body {
 	font-family: Helvetica, Arial, sans-serif; 
@@ -34,6 +39,18 @@ h1 {
 	z-index: -1;
 }
 
+.powerup {
+    display: block;
+}
+
+.powerup:nth-child(even) {
+	color: rgb(170, 77, 57);
+}
+
+.powerup:nth-child(odd) {
+	color: rgb(39, 88, 107);
+	margin-bottom: 23px;
+}
 
 #grid,#playerRow {
 	margin: auto;
@@ -46,7 +63,11 @@ h1 {
 	text-align: center;
 	position: relative;
 	opacity: 1;
-	transition: .75s opacity ease;
+}
+
+#powerUpContainer {
+    left: -35px;
+    bottom: 0;
 }
 
 #grid {
@@ -55,7 +76,6 @@ h1 {
 	vertical-align: bottom;
 	position: relative;
 	opacity: 1;
-	transition: .5s all ease;
 }
 
 #loseMessage {
@@ -63,7 +83,6 @@ h1 {
 	color: #888;
 	margin: 5px;
 	opacity: 0;
-	transition: .5s all ease;
 	line-height: 75px;
 }
 
@@ -71,6 +90,13 @@ h1 {
 	margin-top: 40px;
 	height: 75px;
 	opacity: 1;
+	position: relative;
+}
+
+#powerUpContainer {
+    left: -45px;
+    bottom: 0;
+    cursor: pointer;
 }
 
 #score {
@@ -78,5 +104,4 @@ h1 {
 	margin: 40px auto;
 	max-width: 75px;
 	opacity: 1;
-	transition: .5s all ease;
 }

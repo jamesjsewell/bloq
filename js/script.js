@@ -6,6 +6,10 @@ Array.prototype.choice = function() {
 	return this[index]
 }
 
+String.prototype.contains = function(substr) {
+	return this.indexOf(substr) !== -1
+}
+
 Node.prototype.clearChildren = function(){
 	while (this.childNodes.length > 0) {
 		this.removeChild(this.childNodes[0])
@@ -59,17 +63,19 @@ var arraysEqual = function(a1,a2) {
     return JSON.stringify(a1)==JSON.stringify(a2);
 }
 
-var changeColors = function(e) {
-	var block = e.target
+var changeColors = function(block) {
 	var eligibleColors = COLORS.filter(function(item){
 		return item !== block.style.backgroundColor 
 	})
 	block.style.backgroundColor = eligibleColors.choice()
 }
 
-var moveListener = function(e){
-	changeColors(e)
+var moveHandler = function(e){
+	if (e.target.className.contains('block')) changeColors(e.target)
+	if (e.target.id === "inverse") invertColors()
+	// if (e.target.id === "reverse") reverseColors()		
 	var matched = evaluateMove() // returns true if at least one match was found
+	console.log(matched)
 	if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
 		handleLoss()
 		return
@@ -102,7 +108,7 @@ var handleLoss = function() {
 		block.style.opacity = 0
 	})
 	setTimeout(function(){
-		playerRowEl.removeEventListener('click',moveListener)
+		playerRowEl.removeEventListener('click',moveHandler)
 		playerRowEl.clearChildren()
 	},750)
 	setTimeout(function(){
@@ -140,7 +146,14 @@ var initLevel = function() {
 	addGridRow()
 	
 	// assign event listener for player row
-	playerRowEl.addEventListener('click',moveListener)
+	playerRowEl.addEventListener('click',moveHandler)
+}
+
+var invertColors = function() {
+	playerRowEl.childNodes.forEach(function(block){
+		changeColors(block)
+	})
+	console.log('inverted')
 }
 
 var makeRow = function() {
@@ -163,11 +176,15 @@ var removeGridRow = function(row) {
 	state.currentRows -= 1 
 }
 
+var reverseColors = function() {
+
+}
+
 var sendRowDown = function(row) {
 	var currentRows = gridEl.childNodes.length,
 		fallDistance = state.gridHeight - currentRows * state.sqSide,
 		time = fallDistance / 600 // formula for making uniform falling rate, where 600 is the desired rate
-	row.style.transition = time + 's bottom linear, .5s opacity ease' // AVOID OVERWRITING OPACITY TRANSITION!
+	row.style.transition = time + 's bottom ease, .5s opacity ease' // AVOID OVERWRITING OPACITY TRANSITION!
 	row.style.bottom = toPx(state.gridHeight)
 	setTimeout(function(){
 		var rowIndex = gridEl.childNodes.indexOf(row)
@@ -208,5 +225,10 @@ var gameContainerEl = document.querySelector('#gameContainer')
 
 var playerRowEl
 var i = 0 
+
+// set up power ups
+
+document.querySelector('#invert').addEventListener('click',invertColors)
+document.querySelector('#reverse').addEventListener('click',reverseColors)
 
 initLevel()
