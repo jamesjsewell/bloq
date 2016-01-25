@@ -30,9 +30,12 @@ var addCSSRule = function(sheet, selector, rules, index) {
 
 var addGridRow = function() {
 	var row = makeRow()
+	if (arraysEqual(getColors(playerRowEl),getColors(row))) { //if this is already a match
+		addGridRow()
+		console.log('equal')
+		return
+	}
 	row.className = 'gridRow'
-    // assign bottom according to number of rows
-	gridEl.childNodes.length += 1
 	gridEl.appendChild(row)
 	sendRowDown(row)
 }
@@ -64,20 +67,22 @@ var changeColors = function(e) {
 	block.style.backgroundColor = eligibleColors.choice()
 }
 
-var evaluateMatch = function() {
-	var playerColors = playerRowEl.childNodes.map(function(block) {
-		return block.style.backgroundColor
-	})
+var evaluateMove = function() {
+	var playerColors = getColors(playerRow)
 	var matched = []
 	gridEl.childNodes.forEach(function(row){
-		var rowColors = row.childNodes.map(function(block){
-			return block.style.backgroundColor
-		})
+		var rowColors = getColors(row)
 		if (arraysEqual(playerColors,rowColors)) {
 			matched.push(row)
 		}
 	})
 	return matched
+}
+
+var getColors = function(row) {
+	return row.childNodes.map(function(block) {
+		return block.style.backgroundColor
+	})
 }
 
 var handleLoss = function() {
@@ -108,23 +113,26 @@ var handleMatched = function(matched){
 
 var initLevel = function() {
 	state.rowBlocks += 1
-	gameContainerEl
-	gridEl.clearChildren()
-	addGridRow(state.rowBlocks)
+	gameContainerEl.style.maxWidth = toPx(state.sqSide * state.rowBlocks)
+	
 	// add player row
 	if (state.rowBlocks > 4) {
 		playerRowEl.removeEventListener('click')
 		gameContainerEl.removeChild(playerRowEl)
 	}
-	playerRowEl = makeRow(state.rowBlocks)
+	playerRowEl = makeRow()
 	playerRowEl.id = "playerRow"
 	gameContainerEl.appendChild(playerRowEl)
-	gameContainerEl.style.maxWidth = toPx(state.sqSide * state.rowBlocks)
+
+	// initiate new grid
+	gridEl.clearChildren()
+	addGridRow()
+	
 	// assign event listener for player row
 	playerRowEl.addEventListener('click',function(e) 
 		{
 			changeColors(e)
-			var matched = evaluateMatch() // returns true if at least one match was found
+			var matched = evaluateMove() // returns true if at least one match was found
 			if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
 				handleLoss()
 				return
