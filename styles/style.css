@@ -3,6 +3,7 @@
 *:after {
     box-sizing: border-box;
 }
+
 body {
 	font-family: Helvetica, Arial, sans-serif; 
 	font-size: 0;
@@ -11,6 +12,10 @@ body {
 h1 {
 	font-size: 38px;
 	text-align: center;
+	margin: 0;
+	padding: 20px;
+	background: white;
+	z-index: 1;
 }
 
 .block {
@@ -21,7 +26,8 @@ h1 {
 .gridRow {
 	height: 75px;
 	opacity: 1;
-	transition: .75s all ease;
+	position: absolute;
+	z-index: -1;
 }
 
 
@@ -32,21 +38,35 @@ h1 {
 
 #gameContainer {
 	display: block;
-	max-width: 300px;
+	width: 300px;
 	margin: auto;
 	text-align: center;
 	position: relative;
+	opacity: 1;
+	transition: .75s opacity ease;
 }
 
 #grid {
 	height: 450px;
-	display: table-cell;
+	display: block;
 	vertical-align: bottom;
 	position: relative;
+	opacity: 1;
+	transition: .5s all ease;
+}
+
+#loseMessage {
+	font-size: 48px;
+	color: #888;
+	margin: 5px;
+	opacity: 0;
+	transition: .5s all ease;
+	line-height: 75px;
 }
 
 #playerRow {
 	margin-top: 40px;
+	height: 75px;
 }
 
 #score {
