@@ -43,7 +43,6 @@ var addGridRow = function() {
 	var row = makeRow()
 	if (arraysEqual(getColors(playerRowEl),getColors(row))) { //if this is already a match
 		addGridRow()
-		console.log('equal')
 		return
 	}
 	row.className = 'gridRow'
@@ -83,7 +82,6 @@ var moveHandler = function(e){
 	if (e.target.id === "invert") invertColors()
 	if (e.target.id === "reverse") reverseColors()		
 	var matched = evaluateMove() // returns true if at least one match was found
-	console.log(matched)
 	if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
 		handleLoss()
 		return
@@ -117,6 +115,7 @@ var handleLoss = function() {
 	})
 	setTimeout(function(){
 		playerRowEl.removeEventListener('click',moveHandler)
+		powerUpContainerEl.removeEventListener('click',moveHandler)
 		playerRowEl.clearChildren()
 	},750)
 	setTimeout(function(){
@@ -220,6 +219,7 @@ var updateScore = function() {
 var gameContainerEl = document.querySelector('#gameContainer')
 	gridEl = document.querySelector("#grid"),
 	scoreEl = document.querySelector('#score'),
+	powerUpContainerEl = document.querySelector('#powerUpContainer')
 	GRIDWIDTH = parseInt(window.getComputedStyle(gridEl).width),
 	GRIDHEIGHT = parseInt(window.getComputedStyle(gridEl).height),
 	COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)'],
@@ -239,7 +239,6 @@ var i = 0
 
 // set up power ups
 
-document.querySelector('#invert').addEventListener('click',moveHandler)
-document.querySelector('#reverse').addEventListener('click',moveHandler)
+powerUpContainerEl.addEventListener('click',moveHandler)
 
 initLevel()
