@@ -67,6 +67,17 @@ var changeColors = function(e) {
 	block.style.backgroundColor = eligibleColors.choice()
 }
 
+var moveListener = function(e){
+	changeColors(e)
+	var matched = evaluateMove() // returns true if at least one match was found
+	if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
+		handleLoss()
+		return
+	}
+	handleMatched(matched)
+	addGridRow()
+}
+
 var evaluateMove = function() {
 	var playerColors = getColors(playerRow)
 	var matched = []
@@ -91,6 +102,7 @@ var handleLoss = function() {
 		block.style.opacity = 0
 	})
 	setTimeout(function(){
+		playerRowEl.removeEventListener('click',moveListener)
 		playerRowEl.clearChildren()
 	},750)
 	setTimeout(function(){
@@ -104,11 +116,10 @@ var handleLoss = function() {
 
 var handleMatched = function(matched){
 	matched.forEach(function(row){
-		gridEl.removeChild(row)
+		removeGridRow(row)
 		gridEl.childNodes.forEach(sendRowDown)
 		updateScore()
 	})
-	
 }
 
 var initLevel = function() {
@@ -129,17 +140,7 @@ var initLevel = function() {
 	addGridRow()
 	
 	// assign event listener for player row
-	playerRowEl.addEventListener('click',function(e) 
-		{
-			changeColors(e)
-			var matched = evaluateMove() // returns true if at least one match was found
-			if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
-				handleLoss()
-				return
-			}
-			handleMatched(matched)
-			addGridRow()
-		})
+	playerRowEl.addEventListener('click',moveListener)
 }
 
 var makeRow = function() {
@@ -157,11 +158,16 @@ var makeRow = function() {
 	return rowEl
 }
 
+var removeGridRow = function(row) {
+	gridEl.removeChild(row)
+	state.currentRows -= 1 
+}
+
 var sendRowDown = function(row) {
 	var currentRows = gridEl.childNodes.length,
 		fallDistance = state.gridHeight - currentRows * state.sqSide,
 		time = fallDistance / 600 // formula for making uniform falling rate, where 600 is the desired rate
-	row.style.transition = time + 's bottom linear'
+	row.style.transition = time + 's bottom linear, .5s opacity ease' // AVOID OVERWRITING OPACITY TRANSITION!
 	row.style.bottom = toPx(state.gridHeight)
 	setTimeout(function(){
 		var rowIndex = gridEl.childNodes.indexOf(row)
