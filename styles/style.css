@@ -47,9 +47,8 @@ h1 {
 
 .powerUp {
 	display: block;
-	/*	opacity: 0;
+	opacity: 0;
 	visibility: hidden;
-*/
 	margin: 25px 0;
 	padding: 5px;
 	border2px solid #ddd:;
@@ -91,7 +90,8 @@ h1 {
 	opacity: 0;
 	line-height: 75px;
 	position: absolute;
-	left: 12%;
+	left: 33.3%;
+	transform: translateX(-50%);
 }
 
 #overlay {
@@ -104,6 +104,7 @@ h1 {
 	transition: .5s right linear, .5s left linear;
 	width: 150%;
 	transition: transform .75s ease;
+	left: 0;
 }
 
 #playerRowContainer {

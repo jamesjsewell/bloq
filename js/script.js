@@ -166,8 +166,11 @@ var initLevel = function() {
 }
 
 var invertColors = function() {
+
 	playerRowEl.childNodes.forEach(function(block){
+		block.style.transition = "background .5s ease"
 		changeColors(block)
+		setTimeout(function(){block.style.transition = "none"},500)
 	})
 }
 
@@ -257,11 +260,11 @@ var sendRowDown = function(row) {
 }
 
 var shiftLeft = function() {
+	state.animating = true
 	var firstClone = playerRowEl.childNodes[0].cloneNode()
 	playerRowEl.appendChild(firstClone)
-	playerRowEl.style.transition = ".5s all linear"
-	playerRowEl.style.left = "-75px"
-	state.animating = true
+	playerRowEl.style.transition = ".5s left linear"
+	setTimeout(function(){playerRowEl.style.left = "-75px"},15)
 	setTimeout(function(){
 		playerRowEl.style.transition = "none"
 		playerRowEl.removeChild(playerRowEl.childNodes[0])
@@ -276,7 +279,7 @@ var shiftRight = function() {
 	var lastClone = blocks[blocks.length - 1].cloneNode()
 	// playerRowEl.removeChild(blocks[0])
 	playerRowEl.style.transition = "none"
-	playerRowEl.style.left = toPx(parseInt(playerRowEl.style.left) - 75)
+	playerRowEl.style.left = "-75px"
 	playerRowEl.insertBefore(lastClone,blocks[0]) 
 	
 	setTimeout(function(){
