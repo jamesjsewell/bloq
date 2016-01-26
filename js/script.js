@@ -330,5 +330,5 @@ window.shiftLeft = shiftLeft
 var playerRowEl
 var i = 0 
 powerUpContainerEl.addEventListener('click',moveHandler)
-setTimeout()
+
 initLevel()
