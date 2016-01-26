@@ -108,7 +108,7 @@ h1 {
 
 #playerRowContainer {
 	width: 100%;
-	overflow: overlay;
+	overflow: hidden;
 	margin-top: 40px;
 	height: 75px;
 	position: relative;

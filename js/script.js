@@ -224,7 +224,7 @@ var reverseColors = function() {
 
 	// the animation does a superficial rotation, leaving the original row intact.
 	// it must be followed up with an actual transformation of the data, 
-	// at which point the superficial changes must be reversed.
+	// then the superficial changes must be reversed.
 	state.animating = true
 	playerRowEl.style.textAlign = "center"
 	playerRowEl.style.left = "-25%"
@@ -330,4 +330,5 @@ window.shiftLeft = shiftLeft
 var playerRowEl
 var i = 0 
 powerUpContainerEl.addEventListener('click',moveHandler)
+setTimeout()
 initLevel()
