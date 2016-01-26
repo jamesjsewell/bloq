@@ -103,6 +103,7 @@ h1 {
 	position: absolute;
 	transition: .5s right linear, .5s left linear;
 	width: 150%;
+	transition: transform .75s ease;
 }
 
 #playerRowContainer {

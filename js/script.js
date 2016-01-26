@@ -217,13 +217,31 @@ var respondToMove = function() {
 }
 
 var reverseColors = function() {
-	playerRowEl.style.transform = "rotateY(180deg)"
+	var reversed = playerRowEl.childNodes.reverse()
 
-	// var reversed = playerRowEl.childNodes.reverse()
-	// playerRowEl.clearChildren()
-	// reversed.forEach(function(block){
-	// 	playerRowEl.appendChild(block)
-	// })
+	// the animation does a superficial rotation, leaving the original row intact.
+	// it must be followed up with an actual transformation of the data, 
+	// at which point the superficial changes must be reversed.
+	state.animating = true
+	playerRowEl.style.textAlign = "center"
+	playerRowEl.style.left = "-25%"
+	if (playerRowEl.style.transform === "rotateY(180deg)") {
+		playerRowEl.style.transform = "rotateY(0deg)"
+	}
+	else playerRowEl.style.transform = "rotateY(180deg)"
+
+	setTimeout(function() {
+		playerRowEl.clearChildren()
+		playerRowEl.style.transition = "none"
+		playerRowEl.style.textAlign = "left"
+		playerRowEl.style.left = "0"
+		playerRowEl.style.transform = "rotateY(0deg)"
+		reversed.forEach(function(block){
+			playerRowEl.appendChild(block)
+		})
+		state.animating = false
+	},730) 
+	playerRowEl.style.transition = ".75s transform ease"
 }
 
 var sendRowDown = function(row) {
