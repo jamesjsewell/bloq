@@ -63,8 +63,6 @@ var addPowerUp = function(){
 	if (state.rowBlocks === 7) {
 		powerUpContainerEl.querySelector('#shiftLeft').style.opacity = 1
 		powerUpContainerEl.querySelector('#shiftLeft').style.visibility = "visible"	
-	}
-	if (state.rowBlocks === 8) {
 		powerUpContainerEl.querySelector('#shiftRight').style.opacity = 1
 		powerUpContainerEl.querySelector('#shiftRight').style.visibility = "visible"	
 	}
@@ -190,12 +188,12 @@ var makeRow = function() {
 }
 
 var moveHandler = function(e){
-	window.ev = e
 	if (e.target.className.contains('block')) changeColors(e.target)
-	if (e.target.id === "invert") invertColors()
-	if (e.target.id === "reverse") reverseColors()		
-	if (e.target.id === "shiftLeft") shiftLeft()		
-	if (e.target.id === "shiftRight") shiftRight()	
+	else if (e.target.id === "invert") invertColors()
+	else if (e.target.id === "reverse") reverseColors()		
+	else if (e.target.id === "shiftLeft") shiftLeft()		
+	else if (e.target.id === "shiftRight") shiftRight()	
+	else return
 	respondToMove()
 }
 

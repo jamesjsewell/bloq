@@ -45,18 +45,26 @@ h1 {
 	background: rgba(170, 77, 57,.75);
 }
 
+#shifters {
+	display: block;
+	margin-bottom: 25px;
+	width: 100%;
+}
+
+
 .powerUp {
 	display: block;
-	opacity: 0;
+		opacity: 0;
 	visibility: hidden;
+
 	margin: 25px 0;
 	padding: 5px;
 	border: 2px solid #ddd;
-	border-radius: 35%;
+	/* border-radius: 35%; */
 	text-shadow: -.1px -.1px 0 #ddd,      
 				  .1px -.1px 0 #ddd,     
 				 -.1px .1px 0 #ddd,      
-				  .1px .1px 0 #ddd;
+				  .1px .1px 0 #ddd;.1px.1px0#ddd;
 	font-weight: bolder;
 	font-size: 39px;
 	}
@@ -116,8 +124,8 @@ h1 {
 }
 
 #powerUpContainer {
-    left: -85px;
-    bottom: -25px;
+    left: -77px;
+    bottom: -27px;
     cursor: pointer;
     position: absolute;
 }
