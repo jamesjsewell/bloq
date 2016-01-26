@@ -35,20 +35,35 @@ h1 {
 	z-index: -1;
 }
 
-.powerup {
-    display: block;
-}
-
-.powerup:nth-child(even) {
+.powerUp:nth-child(even) {
 	color: rgb(170, 77, 57);
+	background: rgba(39, 88, 107,.75);
 }
 
-.powerup:nth-child(odd) {
+.powerUp:nth-child(odd) {
 	color: rgb(39, 88, 107);
-	margin-bottom: 23px;
+	background: rgba(170, 77, 57,.75);
 }
 
-#grid,#playerRow {
+.powerUp {
+	display: block;
+	/*	opacity: 0;
+	visibility: hidden;
+*/
+	margin: 25px 0;
+	padding: 5px;
+	border2px solid #ddd:;
+	border: 2px solid #ddd;
+	border-radius: 35%;
+	text-shadow: -.1px -.1px 0 #ddd,      
+				  .1px -.1px 0 #ddd,     
+				 -.1px .1px 0 #ddd,      
+				  .1px .1px 0 #ddd;
+	font-weight: bolder;
+	font-size: 39px;
+	}
+
+#grid,#playerRowContainer {
 	margin: auto;
 	outline: 2px solid #ddd;
 }
@@ -61,11 +76,6 @@ h1 {
 	opacity: 1;
 }
 
-#powerUpContainer {
-    left: -35px;
-    bottom: 0;
-}
-
 #grid {
 	height: 450px;
 	display: block;
@@ -74,29 +84,39 @@ h1 {
 	opacity: 1;
 }
 
-#invert,#reverse {
-	opacity: 0;
-	visibility: hidden;
-}
-
 #loseMessage {
 	font-size: 48px;
 	color: #888;
-	margin: 5px;
+	margin: auto;
 	opacity: 0;
 	line-height: 75px;
+	position: absolute;
+	left: 12%;
+}
+
+#overlay {
+	background: white;
 }
 
 #playerRow {
+	opacity: 1;
+	position: absolute;
+	transition: .5s right linear, .5s left linear;
+	width: 150%;
+}
+
+#playerRowContainer {
+	width: 100%;
+	overflow: overlay;
 	margin-top: 40px;
 	height: 75px;
-	opacity: 1;
 	position: relative;
+	text-align: left;
 }
 
 #powerUpContainer {
-    left: -45px;
-    bottom: 0;
+    left: -85px;
+    bottom: -25px;
     cursor: pointer;
     position: absolute;
 }

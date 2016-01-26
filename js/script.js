@@ -50,6 +50,26 @@ var addGridRow = function() {
 	sendRowDown(row)
 }
 
+var addPowerUp = function(){
+	if (state.rowBlocks === 5) {
+		// invert enters the arena
+		powerUpContainerEl.querySelector('#invert').style.opacity = 1
+		powerUpContainerEl.querySelector('#invert').style.visibility = "visible"	
+	}
+	if (state.rowBlocks === 6) {
+		powerUpContainerEl.querySelector('#reverse').style.opacity = 1
+		powerUpContainerEl.querySelector('#reverse').style.visibility = "visible"	
+	}
+	if (state.rowBlocks === 7) {
+		powerUpContainerEl.querySelector('#shiftLeft').style.opacity = 1
+		powerUpContainerEl.querySelector('#shiftLeft').style.visibility = "visible"	
+	}
+	if (state.rowBlocks === 8) {
+		powerUpContainerEl.querySelector('#shiftRight').style.opacity = 1
+		powerUpContainerEl.querySelector('#shiftRight').style.visibility = "visible"	
+	}
+}
+
 var advanceLevel = function() {
 	state.score = 0
 	state.maxScore += 1
@@ -74,20 +94,6 @@ var changeColors = function(block) {
 		return item !== block.style.backgroundColor 
 	})
 	block.style.backgroundColor = eligibleColors.choice()
-}
-
-var moveHandler = function(e){
-	window.ev = e
-	if (e.target.className.contains('block')) changeColors(e.target)
-	if (e.target.id === "invert") invertColors()
-	if (e.target.id === "reverse") reverseColors()		
-	var matched = evaluateMove() // returns true if at least one match was found
-	if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
-		handleLoss()
-		return
-	}
-	handleMatched(matched)
-	addGridRow()
 }
 
 var evaluateMove = function() {
@@ -137,28 +143,19 @@ var handleMatched = function(matched){
 
 var initLevel = function() {
 	state.rowBlocks += 1
-	gameContainerEl.style.maxWidth = toPx(state.sqSide * state.rowBlocks)
+	gameContainerEl.style.width = toPx(state.sqSide * state.rowBlocks)
 	
 	// add player row
 	if (state.rowBlocks > 4) {
 		// replace player row with bigger one
 		playerRowEl.removeEventListener('click')
-		gameContainerEl.removeChild(playerRowEl)
+		playerRowContainerEl.removeChild(playerRowEl)
 
 	}
-	if (state.rowBlocks === 5) {
-		// invert enters the arena
-		powerUpContainerEl.querySelector('#invert').style.opacity = 1
-		powerUpContainerEl.querySelector('#invert').style.visibility = "visible"	
-	}
-	if (state.rowBlocks === 6) {
-		powerUpContainerEl.querySelector('#reverse').style.opacity = 1
-		powerUpContainerEl.querySelector('#reverse').style.visibility = "visible"	
-	}
-
+	addPowerUp()
 	playerRowEl = makeRow()
 	playerRowEl.id = "playerRow"
-	gameContainerEl.appendChild(playerRowEl)
+	playerRowContainerEl.appendChild(playerRowEl)
 
 	// initiate new grid
 	gridEl.clearChildren()
@@ -189,17 +186,44 @@ var makeRow = function() {
 	return rowEl
 }
 
+var moveHandler = function(e){
+	window.ev = e
+	if (e.target.className.contains('block')) changeColors(e.target)
+	if (e.target.id === "invert") invertColors()
+	if (e.target.id === "reverse") reverseColors()		
+	if (e.target.id === "shiftLeft") shiftLeft()		
+	if (e.target.id === "shiftRight") shiftRight()	
+	respondToMove()
+}
+
 var removeGridRow = function(row) {
 	gridEl.removeChild(row)
 	state.currentRows -= 1 
 }
 
+var respondToMove = function() {
+	if (state.animating) {
+		setTimeout(respondToMove,50)
+	}
+	else {
+		var matched = evaluateMove() // returns true if at least one match was found
+		if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
+			handleLoss()
+			return
+		}
+		handleMatched(matched)
+		addGridRow()
+	}
+}
+
 var reverseColors = function() {
-	var reversed = playerRowEl.childNodes.reverse()
-	playerRowEl.clearChildren()
-	reversed.forEach(function(block){
-		playerRowEl.appendChild(block)
-	})
+	playerRowEl.style.transform = "rotateY(180deg)"
+
+	// var reversed = playerRowEl.childNodes.reverse()
+	// playerRowEl.clearChildren()
+	// reversed.forEach(function(block){
+	// 	playerRowEl.appendChild(block)
+	// })
 }
 
 var sendRowDown = function(row) {
@@ -212,6 +236,39 @@ var sendRowDown = function(row) {
 		var rowIndex = gridEl.childNodes.indexOf(row)
 		row.style.bottom = toPx(rowIndex * state.sqSide)
 	},10)
+}
+
+var shiftLeft = function() {
+	var firstClone = playerRowEl.childNodes[0].cloneNode()
+	playerRowEl.appendChild(firstClone)
+	playerRowEl.style.transition = ".5s all linear"
+	playerRowEl.style.left = "-75px"
+	state.animating = true
+	setTimeout(function(){
+		playerRowEl.style.transition = "none"
+		playerRowEl.removeChild(playerRowEl.childNodes[0])
+		playerRowEl.style.left = 0
+		state.animating = false
+		},500)
+	}
+
+var shiftRight = function() {
+	state.animating = true
+	var blocks = playerRowEl.childNodes
+	var lastClone = blocks[blocks.length - 1].cloneNode()
+	// playerRowEl.removeChild(blocks[0])
+	playerRowEl.style.transition = "none"
+	playerRowEl.style.left = toPx(parseInt(playerRowEl.style.left) - 75)
+	playerRowEl.insertBefore(lastClone,blocks[0]) 
+	
+	setTimeout(function(){
+		playerRowEl.style.transition = ".5s all linear"
+		playerRowEl.style.left = "0"
+		},30)
+	setTimeout(function(){
+		playerRowEl.removeChild(blocks[blocks.length - 1])
+		state.animating = false
+	},500)
 }
 
 var toPx = function(val) {
@@ -231,11 +288,13 @@ var updateScore = function() {
 var gameContainerEl = document.querySelector('#gameContainer')
 	gridEl = document.querySelector("#grid"),
 	scoreEl = document.querySelector('#score'),
-	powerUpContainerEl = document.querySelector('#powerUpContainer')
+	powerUpContainerEl = document.querySelector('#powerUpContainer'),
+	playerRowContainerEl = document.querySelector('#playerRowContainer')
 	GRIDWIDTH = parseInt(window.getComputedStyle(gridEl).width),
 	GRIDHEIGHT = parseInt(window.getComputedStyle(gridEl).height),
 	COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)'],
 	state = {
+		animating: false,
 		currentRows: gridEl.childNodes.length,
 		gridHeight: "450",
 		match: false,
@@ -245,6 +304,7 @@ var gameContainerEl = document.querySelector('#gameContainer')
 		score: 0,
 		sqSide:75,
 	}
+window.shiftLeft = shiftLeft
 
 var playerRowEl
 var i = 0 
