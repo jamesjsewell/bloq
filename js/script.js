@@ -164,11 +164,14 @@ var initLevel = function() {
 }
 
 var invertColors = function() {
-
+	state.animating = true
 	playerRowEl.childNodes.forEach(function(block){
 		block.style.transition = "background .5s ease"
 		changeColors(block)
-		setTimeout(function(){block.style.transition = "none"},500)
+		setTimeout(function(){
+			block.style.transition = "none"
+			state.animating = false
+		},500)
 	})
 }
 
