@@ -208,6 +208,7 @@ var removeGridRow = function(row) {
 var respondToMove = function() {
 	if (state.animating) {
 		setTimeout(respondToMove,50)
+		return
 	}
 	else {
 		var matched = evaluateMove() // returns true if at least one match was found
