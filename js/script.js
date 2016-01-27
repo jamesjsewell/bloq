@@ -258,7 +258,7 @@ var sendRowDown = function(row) {
 	setTimeout(function(){
 		var rowIndex = gridEl.childNodes.indexOf(row)
 		row.style.bottom = toPx(rowIndex * state.sqSide)
-	},10)
+	},50)
 }
 
 var shiftLeft = function() {
