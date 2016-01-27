@@ -6,17 +6,25 @@
 
 a {
     text-decoration: none;
-    color: #000;
+    color: inherit;
 }
 
 * {
 	transition: .5s opacity ease;
 }
 
+#tutorialContainer p#powerUpAdvice {
+    left: -59%;
+    bottom: 290px;
+    max-width: 150px;
+}
+
 
 body {
 	font-family: Helvetica, Arial, sans-serif; 
 	font-size: 0;
+	color: #444;
+	background: #fff;
 }
 
 h1 {
@@ -24,8 +32,8 @@ h1 {
 	text-align: center;
 	margin: 0;
 	padding: 20px;
-	background: white;
 	z-index: 1;
+	margin: auto;
 }
 
 .block {
@@ -52,9 +60,8 @@ h1 {
 
 .powerUp {
 	display: block;
-/*		opacity: 0;
+	opacity: 0;
 	visibility: hidden;
-*/
 	margin: 25px 0;
 	padding: 5px;
 	border: 2px solid #ddd;
@@ -65,8 +72,6 @@ h1 {
 				  .1px .1px 0 #ddd; */.1px.1px0#ddd;
 	/* font-weight: bolder; */
 	font-size: 39px;
-	color: #444;
-	background: #fff;
 	}
 
 #grid,#playerRowContainer {
@@ -101,6 +106,17 @@ h1 {
 	transform: translateX(-50%);
 }
 
+#nav {
+	margin-right: 15%;
+	float: right;
+	display: block;
+}
+
+#nav a {
+	font-size: 12px;
+	margin: 5px 15px;
+}
+
 #overlay {
 	background: white;
 }
@@ -125,7 +141,7 @@ h1 {
 
 #powerUpContainer {
     left: -77px;
-    bottom: -25px;
+    bottom: -13px;
     cursor: pointer;
     position: absolute;
 }
@@ -157,4 +173,36 @@ h1 {
     /* padding-top: 1px; */
     /* padding-bottom: 1px; */
     border-top: 1px solid #ddd;
+}
+
+#titleWrapper {
+	background: #fff;
+}
+
+#titleWrapper a {
+    display: block;
+    max-width: 150px;
+    margin: auto;
+}
+
+#tutorialContainer {
+	visibility: hidden;
+}
+
+#tutorialContainer p {
+	font-size: 14px;
+	position: absolute;
+	font-weight: 100;
+	line-height: 21px;
+	max-width: 130px;
+}
+
+#gridAdvice {
+    right: -155px;
+    bottom: 330px;
+}
+
+#blockAdvice {
+    right: -150px;
+    bottom: 2%;
 }

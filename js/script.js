@@ -17,7 +17,7 @@ Node.prototype.clearChildren = function(){
 	}
 }
 
-NodeList.prototype.forEach = Array.prototype.forEach
+NodeList.prototype.forEach = HTMLCollection.prototype.forEach = Array.prototype.forEach
 NodeList.prototype.map = Array.prototype.map
 NodeList.prototype.indexOf = Array.prototype.indexOf	
 NodeList.prototype.reverse = Array.prototype.reverse = function(){
@@ -175,6 +175,30 @@ var invertColors = function() {
 	})
 }
 
+var makeDay = function() {
+	state.night = false
+	var b = document.querySelector('body'),
+		n = document.querySelector('#night')
+	b.style.color = "#444"
+	b.style.background = "#fff"
+	document.querySelector('#titleWrapper').style.background = "#fff"
+	n.innerHTML = "night."
+}
+
+var makeNight = function() {
+	if (state.night) {
+		makeDay()
+		return
+	}
+	state.night = true
+	var b = document.querySelector('body'),
+		n = document.querySelector('#night')
+	b.style.color = "#fff"
+	b.style.background = "#444"
+	document.querySelector('#titleWrapper').style.background = "#444"
+	n.innerHTML = "day."
+}
+
 var makeRow = function() {
 	var rowEl = document.createElement('div')
 	var i = 0
@@ -295,6 +319,28 @@ var shiftRight = function() {
 	},500)
 }
 
+var toggleInstructions = function() {
+	console.log('toggling')
+	if (state.instructions) {
+		console.log('hiding')
+		document.querySelector("#tutorialContainer").style.visibility = 'hidden'
+		document.getElementsByClassName("powerUp").forEach(function(el){
+			el.style.visibility = 'hidden'
+			el.style.opacity = 0
+		})
+		state.instructions = false
+	}
+	else {
+		console.log('showing')
+		document.querySelector("#tutorialContainer").style.visibility = 'visible'
+		document.getElementsByClassName("powerUp").forEach(function(el){
+			el.style.visibility = 'visible'
+			el.style.opacity = 1
+		})
+		state.instructions = true
+	}
+}
+
 var toPx = function(val) {
 	return val + 'px'
 }
@@ -321,9 +367,11 @@ var gameContainerEl = document.querySelector('#gameContainer')
 		animating: false,
 		currentRows: gridEl.childNodes.length,
 		gridHeight: "450",
+		instructions: false,
 		match: false,
 		maxRows: 6,
 		maxScore: 4,
+		night: false,
 		rowBlocks: 3,
 		score: 0,
 		sqSide:75,
@@ -332,6 +380,10 @@ window.shiftLeft = shiftLeft
 
 var playerRowEl
 var i = 0 
+
+// event listeners
 powerUpContainerEl.addEventListener('click',moveHandler)
+document.querySelector('#tutorial').addEventListener('click',toggleInstructions)
+document.querySelector('#night').addEventListener('click',makeNight)
 
 initLevel()
