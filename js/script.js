@@ -30,6 +30,13 @@ NodeList.prototype.reverse = Array.prototype.reverse = function(){
 
 // helper functions
 
+var $$ = function(selector) {
+	if (selector[0] === '.') {
+		return document.getElementsByClassName(selector.slice(1))
+	}
+	return document.querySelector(selector)
+}
+
 var addCSSRule = function(sheet, selector, rules, index) {
 	if("insertRule" in sheet) {
 		sheet.insertRule(selector + "{" + rules + "}", index);
@@ -113,6 +120,7 @@ var getColors = function(row) {
 }
 
 var handleLoss = function() {
+	if (state.instructions.stage > -1) return
 	scoreEl.style.opacity = 0
 	playerRowEl.childNodes.forEach(function(block){
 		block.style.opacity = 0
@@ -137,6 +145,14 @@ var handleMatched = function(matched){
 		gridEl.childNodes.forEach(sendRowDown)
 		updateScore()
 	})
+	
+	if (matched.length && (state.instructions.stage === 1)) {
+		setTimeout(function(){
+			$$("#powerUpAdvice").style.opacity = 1
+			$$('.powerUp').forEach(function(pu){pu.style.opacity = 1;pu.style.visibility = 'visible'})
+		},600)
+		state.instructions.stage += 1
+	}
 }
 
 var initLevel = function() {
@@ -163,6 +179,22 @@ var initLevel = function() {
 	playerRowEl.addEventListener('click',moveHandler)
 }
 
+var initState = function() {
+	state = {
+		animating: false,
+		currentRows: gridEl.childNodes.length,
+		gridHeight: "450",
+		instructions: {stage:-1},
+		match: false,
+		maxRows: 6,
+		maxScore: 4,
+		night: false,
+		rowBlocks: 3,
+		score: 0,
+		sqSide:75,
+	}
+}
+
 var invertColors = function() {
 	state.animating = true
 	playerRowEl.childNodes.forEach(function(block){
@@ -177,11 +209,12 @@ var invertColors = function() {
 
 var makeDay = function() {
 	state.night = false
-	var b = document.querySelector('body'),
-		n = document.querySelector('#night')
+	var b = $$('body'),
+		n = $$('#night')
 	b.style.color = "#444"
 	b.style.background = "#fff"
-	document.querySelector('#titleWrapper').style.background = "#fff"
+	$$('#titleWrapper').style.background = "#fff"
+	$$('#playButton').style.background = "#fff"
 	n.innerHTML = "night."
 }
 
@@ -191,11 +224,12 @@ var makeNight = function() {
 		return
 	}
 	state.night = true
-	var b = document.querySelector('body'),
-		n = document.querySelector('#night')
+	var b = $$('body'),
+		n = $$('#night')
 	b.style.color = "#fff"
 	b.style.background = "#444"
-	document.querySelector('#titleWrapper').style.background = "#444"
+	$$('#titleWrapper').style.background = "#444"
+	$$('#playButton').style.background = "#444"
 	n.innerHTML = "day."
 }
 
@@ -216,6 +250,21 @@ var makeRow = function() {
 
 var moveHandler = function(e){
 	if (state.animating) return
+	// handle tutorial mode
+	if (e.target.className.contains('block') && (state.instructions.stage === 0)) {
+				setTimeout(function(){
+					$$("#gridAdvice").style.opacity = 1
+					state.instructions.stage += 1
+				},600)
+			}
+	if (e.target.className.contains('powerUp') && (state.instructions.stage === 2)) {
+				setTimeout(function(){
+					$$("#playButton").style.opacity = 1
+					state.instructions.stage += 1
+				},600)
+			}
+
+	// do what they meant to do
 	if (e.target.className.contains('block')) changeColors(e.target)
 	else if (e.target.id === "invert") invertColors()
 	else if (e.target.id === "reverse") reverseColors()		
@@ -244,6 +293,18 @@ var respondToMove = function() {
 		handleMatched(matched)
 		addGridRow()
 	}
+}
+
+var restart = function() {
+	$$(".powerUp").forEach(function(el){
+		el.style.opacity = 0
+		setTimeout(function(){el.style.visibility = 'hidden'},500)
+	})	
+	$$(".advice").forEach(function(el){
+		el.style.opacity = 0
+	})
+	initState()
+	initLevel()
 }
 
 var reverseColors = function() {
@@ -320,10 +381,10 @@ var shiftRight = function() {
 }
 
 var toggleInstructions = function() {
-	console.log('toggling')
+	
 	if (state.instructions) {
-		console.log('hiding')
-		document.querySelector("#tutorialContainer").style.visibility = 'hidden'
+		
+		$$("#tutorialContainer").style.visibility = 'hidden'
 		document.getElementsByClassName("powerUp").forEach(function(el){
 			el.style.visibility = 'hidden'
 			el.style.opacity = 0
@@ -331,8 +392,8 @@ var toggleInstructions = function() {
 		state.instructions = false
 	}
 	else {
-		console.log('showing')
-		document.querySelector("#tutorialContainer").style.visibility = 'visible'
+		
+		$$("#tutorialContainer").style.visibility = 'visible'
 		document.getElementsByClassName("powerUp").forEach(function(el){
 			el.style.visibility = 'visible'
 			el.style.opacity = 1
@@ -341,12 +402,25 @@ var toggleInstructions = function() {
 	}
 }
 
+var showInstructions = function() {
+	if (state.instructions.stage === -1) {
+		state.instructions.stage += 1
+		$$("#blockAdvice").style.opacity = 1
+	}
+}
+
 var toPx = function(val) {
 	return val + 'px'
 }
 
 var updateScore = function() {
-	// var state.score = parseInt(scoreEl.innerHTML.split('/')[0].trim()),
+	// don't allow someone in tutorial mode to advance levels
+	if (state.instructions.stage > -1) {
+		if (state.score === state.maxScore - 1) {
+			scoreEl.innerHTML = state.maxScore + ' / ' + state.maxScore
+			return
+		}
+	}
 	state.score += 1
 	scoreEl.innerHTML = state.score + ' / ' + state.maxScore
 	if (state.score === state.maxScore) {
@@ -355,35 +429,25 @@ var updateScore = function() {
 }
 
 // assign global variables
-var gameContainerEl = document.querySelector('#gameContainer')
-	gridEl = document.querySelector("#grid"),
-	scoreEl = document.querySelector('#score'),
-	powerUpContainerEl = document.querySelector('#powerUpContainer'),
-	playerRowContainerEl = document.querySelector('#playerRowContainer')
+var gameContainerEl = $$('#gameContainer')
+	gridEl = $$("#grid"),
+	scoreEl = $$('#score'),
+	powerUpContainerEl = $$('#powerUpContainer'),
+	playerRowContainerEl = $$('#playerRowContainer')
 	GRIDWIDTH = parseInt(window.getComputedStyle(gridEl).width),
 	GRIDHEIGHT = parseInt(window.getComputedStyle(gridEl).height),
-	COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)'],
-	state = {
-		animating: false,
-		currentRows: gridEl.childNodes.length,
-		gridHeight: "450",
-		instructions: false,
-		match: false,
-		maxRows: 6,
-		maxScore: 4,
-		night: false,
-		rowBlocks: 3,
-		score: 0,
-		sqSide:75,
-	}
-window.shiftLeft = shiftLeft
+	COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)']
 
-var playerRowEl
-var i = 0 
+var playerRowEl, state
+
+initState()
+
 
 // event listeners
 powerUpContainerEl.addEventListener('click',moveHandler)
-document.querySelector('#tutorial').addEventListener('click',toggleInstructions)
-document.querySelector('#night').addEventListener('click',makeNight)
+$$('#tutorial').addEventListener('click',showInstructions)
+$$('#night').addEventListener('click',makeNight)
+$$("#playButton").addEventListener('click',restart)
+$$("#restart").addEventListener('click',restart)
 
 initLevel()

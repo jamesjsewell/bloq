@@ -186,7 +186,7 @@ h1 {
 }
 
 #tutorialContainer {
-	visibility: hidden;
+	visibility: visible;
 }
 
 #tutorialContainer p {
@@ -195,6 +195,18 @@ h1 {
 	font-weight: 100;
 	line-height: 21px;
 	max-width: 130px;
+	opacity: 0;
+}
+
+#tutorialContainer #playButton {
+    left: 50%;
+    transform: translateX(-50%);
+    border: 2px solid #ddd;
+    background-color: #fff;
+    padding: 10px;
+    font-size: 24px;
+    bottom: 54%;
+    cursor: pointer;
 }
 
 #gridAdvice {
