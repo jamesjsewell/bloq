@@ -250,19 +250,19 @@ var makeRow = function() {
 
 var moveHandler = function(e){
 	if (state.animating) return
+
 	// handle tutorial mode
 	if (e.target.className.contains('block') && (state.instructions.stage === 0)) {
-				setTimeout(function(){
-					$$("#gridAdvice").style.opacity = 1
-					state.instructions.stage += 1
-				},600)
-			}
+		setTimeout(function(){
+			$$("#gridAdvice").style.opacity = 1
+			state.instructions.stage += 1
+		},600)
+	}
 	if (e.target.className.contains('powerUp') && (state.instructions.stage === 2)) {
-				setTimeout(function(){
-					$$("#playButton").style.opacity = 1
-					state.instructions.stage += 1
-				},600)
-			}
+		setTimeout(function(){
+			$$("#playButton").style.opacity = 1
+		},2000)
+	}
 
 	// do what they meant to do
 	if (e.target.className.contains('block')) changeColors(e.target)
