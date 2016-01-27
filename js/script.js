@@ -102,7 +102,7 @@ var changeColors = function(block) {
 }
 
 var evaluateMove = function() {
-	var playerColors = getColors(playerRow)
+	var playerColors = getColors(playerRowEl)
 	var matched = []
 	gridEl.childNodes.forEach(function(row){
 		var rowColors = getColors(row)
@@ -114,6 +114,7 @@ var evaluateMove = function() {
 }
 
 var getColors = function(row) {
+	console.log(row)
 	return row.childNodes.map(function(block) {
 		return block.style.backgroundColor
 	})
@@ -160,14 +161,13 @@ var initLevel = function() {
 	gameContainerEl.style.width = toPx(state.sqSide * state.rowBlocks)
 	
 	// add player row
-	if (state.rowBlocks > 4) {
-		// replace player row with bigger one
+	if (playerRowContainer.childNodes.length){
 		playerRowEl.removeEventListener('click')
 		playerRowContainerEl.removeChild(playerRowEl)
-
 	}
 	addPowerUp()
 	playerRowEl = makeRow()
+	console.log(playerRowEl)
 	playerRowEl.id = "playerRow"
 	playerRowContainerEl.appendChild(playerRowEl)
 
