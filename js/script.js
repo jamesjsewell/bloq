@@ -227,9 +227,9 @@ var makeNight = function() {
 	var b = $$('body'),
 		n = $$('#night')
 	b.style.color = "#fff"
-	b.style.background = "#444"
-	$$('#titleWrapper').style.background = "#444"
-	$$('#playButton').style.background = "#444"
+	b.style.background = "#333"
+	$$('#titleWrapper').style.background = "#333"
+	$$('#playButton').style.background = "#333"
 	n.innerHTML = "day."
 }
 
