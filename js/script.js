@@ -261,6 +261,7 @@ var moveHandler = function(e){
 	if (e.target.className.contains('powerUp') && (state.instructions.stage === 2)) {
 		setTimeout(function(){
 			$$("#playButton").style.opacity = 1
+			$$("#playButton").style.visibility = 'visible'
 		},2000)
 	}
 
@@ -298,8 +299,11 @@ var respondToMove = function() {
 var restart = function() {
 	$$(".powerUp").forEach(function(el){
 		el.style.opacity = 0
-		setTimeout(function(){el.style.visibility = 'hidden'},500)
-	})	
+		setTimeout(function(){
+			el.style.visibility = 'hidden'
+		},500)
+	})
+	setTimeout(function(){$$("#playButton").style.visibility = "hidden"},750)
 	$$(".advice").forEach(function(el){
 		el.style.opacity = 0
 	})
