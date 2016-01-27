@@ -191,6 +191,7 @@ var makeRow = function() {
 }
 
 var moveHandler = function(e){
+	if (state.animating) return
 	if (e.target.className.contains('block')) changeColors(e.target)
 	else if (e.target.id === "invert") invertColors()
 	else if (e.target.id === "reverse") reverseColors()		
