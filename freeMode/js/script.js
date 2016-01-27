@@ -166,11 +166,14 @@ var initLevel = function() {
 }
 
 var invertColors = function() {
-
+	state.animating = true
 	playerRowEl.childNodes.forEach(function(block){
 		block.style.transition = "background .5s ease"
 		changeColors(block)
-		setTimeout(function(){block.style.transition = "none"},500)
+		setTimeout(function(){
+			block.style.transition = "none"
+			state.animating = false
+		},500)
 	})
 }
 
@@ -190,7 +193,6 @@ var makeRow = function() {
 }
 
 var moveHandler = function(e){
-	window.ev = e
 	if (e.target.className.contains('block')) changeColors(e.target)
 	if (e.target.id === "invert") invertColors()
 	if (e.target.id === "reverse") reverseColors()		
@@ -207,6 +209,7 @@ var removeGridRow = function(row) {
 var respondToMove = function() {
 	if (state.animating) {
 		setTimeout(respondToMove,50)
+		return
 	}
 	else {
 		var matched = evaluateMove() // returns true if at least one match was found
