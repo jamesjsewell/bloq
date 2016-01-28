@@ -114,7 +114,6 @@ var evaluateMove = function() {
 }
 
 var getColors = function(row) {
-	console.log(row)
 	return row.childNodes.map(function(block) {
 		return block.style.backgroundColor
 	})
@@ -122,13 +121,13 @@ var getColors = function(row) {
 
 var handleLoss = function() {
 	if (state.instructions.stage > -1) return
+
+	state.lost = true
 	scoreEl.style.opacity = 0
 	playerRowEl.childNodes.forEach(function(block){
 		block.style.opacity = 0
 	})
 	setTimeout(function(){
-		playerRowEl.removeEventListener('click',moveHandler)
-		powerUpContainerEl.removeEventListener('click',moveHandler)
 		playerRowEl.clearChildren()
 	},750)
 	setTimeout(function(){
@@ -167,7 +166,6 @@ var initLevel = function() {
 	}
 	addPowerUp()
 	playerRowEl = makeRow()
-	console.log(playerRowEl)
 	playerRowEl.id = "playerRow"
 	playerRowContainerEl.appendChild(playerRowEl)
 
@@ -185,6 +183,7 @@ var initState = function() {
 		currentRows: gridEl.childNodes.length,
 		gridHeight: "450",
 		instructions: {stage:-1},
+		lost: false,
 		match: false,
 		maxRows: 6,
 		maxScore: 4,
@@ -250,6 +249,7 @@ var makeRow = function() {
 
 var moveHandler = function(e){
 	if (state.animating) return
+	if (state.lost) return
 
 	// handle tutorial mode
 	if (e.target.className.contains('block') && (state.instructions.stage === 0)) {
@@ -266,6 +266,7 @@ var moveHandler = function(e){
 	}
 
 	// do what they meant to do
+	console.log(e.target.id)
 	if (e.target.className.contains('block')) changeColors(e.target)
 	else if (e.target.id === "invert") invertColors()
 	else if (e.target.id === "reverse") reverseColors()		
@@ -297,6 +298,7 @@ var respondToMove = function() {
 }
 
 var restart = function() {
+	state.lost = false
 	$$(".powerUp").forEach(function(el){
 		el.style.opacity = 0
 		setTimeout(function(){
@@ -308,6 +310,8 @@ var restart = function() {
 		el.style.opacity = 0
 	})
 	initState()
+	scoreEl.innerHTML = state.score + ' / ' + state.maxScore
+	scoreEl.style.opacity = 1
 	initLevel()
 }
 
