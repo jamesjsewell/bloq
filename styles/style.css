@@ -42,7 +42,6 @@ h1 {
 }
 
 .gridRow {
-	height: 75px;
 	opacity: 1;
 	position: absolute;
 	z-index: -1;

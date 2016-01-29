@@ -76,17 +76,23 @@ var addPowerUp = function(){
 }
 
 var advanceLevel = function() {
+	state.level += 1
 	state.score = 0
 	state.maxScore += 1
+	if (state.level > 1 && (state.level % 2 === 1)) {
+		state.sqSide *= .8
+		state.maxRows += 1	
+	}
+
 	setTimeout(function() {
 		scoreEl.style.opacity = 0
 		gameContainerEl.style.opacity = 0
 		setTimeout(function(){
-			scoreEl.innerHTML = state.score + ' / ' + state.maxScore
+			scoreEl.innerHTML = 0 + ' / ' + state.maxScore
 			scoreEl.style.opacity = 1
 			initLevel()
 			gameContainerEl.style.opacity = 1
-		},500)
+					},500)
 	},500)
 }
 
@@ -132,6 +138,8 @@ var handleLoss = function() {
 	},750)
 	setTimeout(function(){
 		var msg = document.createElement('h2')
+		msg.style.fontSize = toPx(state.sqSide * .75)
+		msg.style.lineHeight = toPx(state.sqSide)
 		msg.innerHTML = "you lose"
 		msg.id = "loseMessage" 
 		playerRowEl.appendChild(msg)
@@ -158,6 +166,8 @@ var handleMatched = function(matched){
 var initLevel = function() {
 	state.rowBlocks += 1
 	gameContainerEl.style.width = toPx(state.sqSide * state.rowBlocks)
+	gridEl.style.height = toPx(state.maxRows * state.sqSide)
+	playerRowContainerEl.style.height = toPx(state.sqSide)
 	
 	// add player row
 	if (playerRowContainer.childNodes.length){
@@ -179,10 +189,11 @@ var initLevel = function() {
 
 var initState = function() {
 	state = {
+		advancing: false,
 		animating: false,
 		currentRows: gridEl.childNodes.length,
-		gridHeight: "450",
 		instructions: {stage:-1},
+		level: 1,
 		lost: false,
 		match: false,
 		maxRows: 6,
@@ -191,6 +202,9 @@ var initState = function() {
 		rowBlocks: 3,
 		score: 0,
 		sqSide:75,
+		getGridHeight: function() {
+			return this.maxRows * this.sqSide
+		}
 	}
 }
 
@@ -226,9 +240,9 @@ var makeNight = function() {
 	var b = $$('body'),
 		n = $$('#night')
 	b.style.color = "#fff"
-	b.style.background = "rgb(30, 30, 30)"
-	$$('#titleWrapper').style.background = "rgb(30, 30, 30)"
-	$$('#playButton').style.background = "rgb(30, 30, 30)"
+	b.style.background = "rgb(40, 40, 40)"
+	$$('#titleWrapper').style.background = "rgb(40, 40, 40)"
+	$$('#playButton').style.background = "rgb(40, 40, 40)"
 	n.innerHTML = "day."
 }
 
@@ -266,7 +280,6 @@ var moveHandler = function(e){
 	}
 
 	// do what they meant to do
-	console.log(e.target.id)
 	if (e.target.className.contains('block')) changeColors(e.target)
 	else if (e.target.id === "invert") invertColors()
 	else if (e.target.id === "reverse") reverseColors()		
@@ -293,7 +306,8 @@ var respondToMove = function() {
 			return
 		}
 		handleMatched(matched)
-		addGridRow()
+		if (!state.advancing) addGridRow()
+		state.advancing = false
 	}
 }
 
@@ -345,10 +359,10 @@ var reverseColors = function() {
 
 var sendRowDown = function(row) {
 	var currentRows = gridEl.childNodes.length,
-		fallDistance = state.gridHeight - currentRows * state.sqSide,
+		fallDistance = (state.maxRows - currentRows) * state.sqSide,
 		time = fallDistance / 600 // formula for making uniform falling rate, where 600 is the desired rate
 	row.style.transition = time + 's bottom ease, .5s opacity ease' // AVOID OVERWRITING OPACITY TRANSITION!
-	row.style.bottom = toPx(state.gridHeight)
+	row.style.bottom = toPx(state.getGridHeight())
 	setTimeout(function(){
 		var rowIndex = gridEl.childNodes.indexOf(row)
 		row.style.bottom = toPx(rowIndex * state.sqSide)
@@ -360,7 +374,7 @@ var shiftLeft = function() {
 	var firstClone = playerRowEl.childNodes[0].cloneNode()
 	playerRowEl.appendChild(firstClone)
 	playerRowEl.style.transition = ".5s left linear"
-	setTimeout(function(){playerRowEl.style.left = "-75px"},15)
+	setTimeout(function(){playerRowEl.style.left = toPx(-1 * state.sqSide)},15)
 	setTimeout(function(){
 		playerRowEl.style.transition = "none"
 		playerRowEl.removeChild(playerRowEl.childNodes[0])
@@ -375,7 +389,7 @@ var shiftRight = function() {
 	var lastClone = blocks[blocks.length - 1].cloneNode()
 	// playerRowEl.removeChild(blocks[0])
 	playerRowEl.style.transition = "none"
-	playerRowEl.style.left = "-75px"
+	playerRowEl.style.left = toPx(-1 * state.sqSide)
 	playerRowEl.insertBefore(lastClone,blocks[0]) 
 	
 	setTimeout(function(){
@@ -431,8 +445,11 @@ var updateScore = function() {
 	}
 	state.score += 1
 	scoreEl.innerHTML = state.score + ' / ' + state.maxScore
+	console.log(state)
 	if (state.score === state.maxScore) {
 		advanceLevel()
+		state.advancing = true
+		console.log(state)
 	}
 }
 
