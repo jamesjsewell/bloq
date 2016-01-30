@@ -307,7 +307,7 @@ var respondToMove = function() {
 	}
 	else {
 		var matched = evaluateMove() // returns true if at least one match was found
-		if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
+		if (!matched.length && state.drop && (gridEl.childNodes.length === state.maxRows)) {
 			handleLoss()
 			return
 		}
