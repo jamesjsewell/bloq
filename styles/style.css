@@ -2,15 +2,13 @@
 *:before,
 *:after {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+	transition: .5s opacity ease;
 }
 
 a {
     text-decoration: none;
     color: inherit;
-}
-
-* {
-	transition: .5s opacity ease;
 }
 
 #tutorialContainer p#powerUpAdvice {

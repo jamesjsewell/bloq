@@ -86,10 +86,10 @@ var advanceLevel = function() {
 		setTimeout(function(){
 			scoreEl.innerHTML = 0 + ' / ' + state.maxScore
 			scoreEl.style.opacity = 1
-			if (state.level > 1 && (state.level % 2 === 1)) {
-				state.sqSide *= .8
-				state.maxRows += 1	
-			}
+			// if (state.level > 1 && (state.level % 2 === 1)) {
+			// 	state.sqSide *= .8
+			// 	state.maxRows += 1	
+			// }
 			initLevel()
 			gameContainerEl.style.opacity = 1
 					},500)
