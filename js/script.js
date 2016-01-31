@@ -86,10 +86,10 @@ var advanceLevel = function() {
 		setTimeout(function(){
 			scoreEl.innerHTML = 0 + ' / ' + state.maxScore
 			scoreEl.style.opacity = 1
-			// if (state.level > 1 && (state.level % 2 === 1)) {
-			// 	state.sqSide *= .8
-			// 	state.maxRows += 1	
-			// }
+			if (state.level > 1 && (state.level % 2 === 1)) {
+				state.sqSide *= .85
+				state.maxRows += 1
+			}
 			initLevel()
 			gameContainerEl.style.opacity = 1
 					},500)
@@ -164,6 +164,7 @@ var handleMatched = function(matched){
 }
 
 var initLevel = function() {
+	state.advancing = false
 	state.rowBlocks += 1
 	gameContainerEl.style.width = toPx(state.sqSide * state.rowBlocks)
 	gridEl.style.height = toPx(state.maxRows * state.sqSide)
@@ -262,6 +263,7 @@ var makeRow = function() {
 }
 
 var moveHandler = function(e){
+	state.drop = false
 	if (state.animating) return
 	if (state.lost) return
 
@@ -280,13 +282,17 @@ var moveHandler = function(e){
 	}
 
 	// do what they meant to do
-	if (e.target.className.contains('block')) changeColors(e.target)
+	if (e.target.className.contains('block')) {
+		state.drop = true
+		changeColors(e.target)
+	}
 	else if (e.target.id === "invert") invertColors()
 	else if (e.target.id === "reverse") reverseColors()		
 	else if (e.target.id === "shiftLeft") shiftLeft()		
 	else if (e.target.id === "shiftRight") shiftRight()	
 	else return
 	respondToMove()
+	if (!state.advancing && state.drop) addGridRow()
 }
 
 var removeGridRow = function(row) {
@@ -301,13 +307,11 @@ var respondToMove = function() {
 	}
 	else {
 		var matched = evaluateMove() // returns true if at least one match was found
-		if (!matched.length && (gridEl.childNodes.length === state.maxRows)) {
+		if (!matched.length && !state.drop && (gridEl.childNodes.length === state.maxRows)) {
 			handleLoss()
 			return
 		}
 		handleMatched(matched)
-		if (!state.advancing) addGridRow()
-		state.advancing = false
 	}
 }
 
