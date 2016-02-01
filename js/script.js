@@ -207,6 +207,7 @@ var initState = function() {
 			return this.maxRows * this.sqSide
 		}
 	}
+	window.state = state
 }
 
 var invertColors = function() {
@@ -307,7 +308,7 @@ var respondToMove = function() {
 	}
 	else {
 		var matched = evaluateMove() // returns true if at least one match was found
-		if (!matched.length && !state.drop && (gridEl.childNodes.length === state.maxRows)) {
+		if (!matched.length && state.drop && (gridEl.childNodes.length === state.maxRows)) {
 			handleLoss()
 			return
 		}
@@ -478,5 +479,12 @@ $$('#tutorial').addEventListener('click',showInstructions)
 $$('#night').addEventListener('click',makeNight)
 $$("#playButton").addEventListener('click',restart)
 $$("#restart").addEventListener('click',restart)
+
+powerUpContainerEl.addEventListener('touchstart',moveHandler)
+$$('#tutorial').addEventListener('touchstart',showInstructions)
+$$('#night').addEventListener('touchstart',makeNight)
+$$("#playButton").addEventListener('touchstart',restart)
+$$("#restart").addEventListener('touchstart',restart)
+
 
 initLevel()

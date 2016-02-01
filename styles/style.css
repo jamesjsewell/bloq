@@ -3,6 +3,7 @@
 *:after {
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
+	touch-action: manipulation; /* meant to prevent 300ms delay on phone touch */
 	transition: .5s opacity ease;
 }
 
@@ -146,7 +147,7 @@ h1 {
 #score {
 	font-size: 34px;
 	margin: 40px auto;
-	max-width: 75px;
+	text-align: center;
 	opacity: 1;
 }
 
