@@ -230,6 +230,7 @@ var makeDay = function() {
 	b.style.background = "#fff"
 	$$('#titleWrapper').style.background = "#fff"
 	$$('#playButton').style.background = "#fff"
+	$$("#nav").className = "day"
 	n.innerHTML = "night."
 }
 
@@ -245,6 +246,7 @@ var makeNight = function() {
 	b.style.background = "rgb(40, 40, 40)"
 	$$('#titleWrapper').style.background = "rgb(40, 40, 40)"
 	$$('#playButton').style.background = "rgb(40, 40, 40)"
+	$$("#nav").className = "night"
 	n.innerHTML = "day."
 }
 
@@ -479,12 +481,5 @@ $$('#tutorial').addEventListener('click',showInstructions)
 $$('#night').addEventListener('click',makeNight)
 $$("#playButton").addEventListener('click',restart)
 $$("#restart").addEventListener('click',restart)
-
-powerUpContainerEl.addEventListener('touchstart',moveHandler)
-$$('#tutorial').addEventListener('touchstart',showInstructions)
-$$('#night').addEventListener('touchstart',makeNight)
-$$("#playButton").addEventListener('touchstart',restart)
-$$("#restart").addEventListener('touchstart',restart)
-
 
 initLevel()

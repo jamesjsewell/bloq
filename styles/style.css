@@ -105,7 +105,7 @@ h1 {
 }
 
 #nav {
-	margin-right: 15%;
+	/* margin-right: 15%; */
 	float: right;
 	display: block;
 }
@@ -217,4 +217,31 @@ h1 {
 #blockAdvice {
     right: -150px;
     bottom: 2%;
+}
+
+@media screen and (max-width: 800px) {
+
+	#nav {
+		float: none;
+		text-align: center;
+		margin: 0;
+		padding: 10px;
+		margin-bottom: 5%		
+	}
+
+	#nav.day {
+		background: #ddd;
+		}
+	
+	#nav.night {
+		background: none;
+	}
+	
+	#nav a {
+		font-size: 22px;
+	}
+
+	#titleWrapper {
+		margin-bottom: 5%;
+	}
 }
