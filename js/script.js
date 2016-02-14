@@ -383,8 +383,8 @@ var sendRowDown = function(row) {
 	row.style.bottom = toPx(state.getGridHeight())
 	setTimeout(function(){
 		var rowIndex = gridEl.childNodes.indexOf(row)
-		row.style.bottom = toPx(rowIndex * state.sqSide)
-	},50)
+		row.style.transform = "translate3d(0," + toPx(fallDistance) + ",0)"
+	},30)
 }
 
 var shiftLeft = function() {
