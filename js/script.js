@@ -95,9 +95,9 @@ var advanceLevel = function() {
 	})
 }
 
-var appear = function(...args) {
-	args.forEach(function(arg) {
-		arg.style.opacity = 1
+var appear = function() {
+	Array.prototype.forEach.call(arguments,function(arg){
+        arg.style.opacity = 1
 	})
 }
 
@@ -113,9 +113,9 @@ var changeColors = function(block) {
 	block.style.backgroundColor = eligibleColors.choice()
 }
 
-var disappear = function(...args) {
-	args.forEach(function(arg) {
-		arg.style.opacity = 0
+var disappear = function() {
+	Array.prototype.forEach.call(arguments,function(arg){
+        arg.style.opacity = 0
 	})
 }
 
