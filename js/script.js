@@ -77,24 +77,30 @@ var addPowerUp = function(){
 
 var advanceLevel = function() {
 	state.level += 1
-	state.score = 0
+	state.matches = 0
 	state.maxScore += 1
-
-	setTimeout(function() {
-		scoreEl.style.opacity = 0
-		gameContainerEl.style.opacity = 0
+	var theyDisappeared = new Promise(function(resolve,reject) {
+		setTimeout(function() {
+			disappear(scoreEl,gameContainerEl)
+			resolve()
+		},500)
+	})
+	theyDisappeared.then(function(val) {
 		setTimeout(function(){
-			scoreEl.innerHTML = 0 + ' / ' + state.maxScore
-			scoreEl.style.opacity = 1
-			if (state.level > 1 && (state.level % 2 === 1)) {
-				state.sqSide *= .85
-				state.maxRows += 1
-			}
+			updateScore()
+			appear(scoreEl)
 			initLevel()
-			gameContainerEl.style.opacity = 1
-					},500)
-	},500)
+			appear(gameContainerEl)
+		},500)
+	})
 }
+
+var appear = function(...args) {
+	args.forEach(function(arg) {
+		arg.style.opacity = 1
+	})
+}
+
 
 var arraysEqual = function(a1,a2) {
     return JSON.stringify(a1)==JSON.stringify(a2);
@@ -105,6 +111,12 @@ var changeColors = function(block) {
 		return item !== block.style.backgroundColor 
 	})
 	block.style.backgroundColor = eligibleColors.choice()
+}
+
+var disappear = function(...args) {
+	args.forEach(function(arg) {
+		arg.style.opacity = 0
+	})
 }
 
 var evaluateMove = function() {
@@ -135,8 +147,6 @@ var handleLoss = function() {
 	})
 	setTimeout(function(){
 		playerRowEl.clearChildren()
-	},750)
-	setTimeout(function(){
 		var msg = document.createElement('h2')
 		msg.style.fontSize = toPx(state.sqSide * .75)
 		msg.style.lineHeight = toPx(state.sqSide)
@@ -151,7 +161,7 @@ var handleMatched = function(matched){
 	matched.forEach(function(row){
 		removeGridRow(row)
 		gridEl.childNodes.forEach(sendRowDown)
-		updateScore()
+		updateMatches()
 	})
 	
 	if (matched.length && (state.instructions.stage === 1)) {
@@ -197,12 +207,13 @@ var initState = function() {
 		level: 1,
 		lost: false,
 		match: false,
-		maxRows: 6,
+		maxRows: 8,
 		maxScore: 4,
 		night: false,
 		rowBlocks: 3,
+		matches: 0,
 		score: 0,
-		sqSide:75,
+		sqSide:60,
 		getGridHeight: function() {
 			return this.maxRows * this.sqSide
 		}
@@ -331,7 +342,7 @@ var restart = function() {
 		el.style.opacity = 0
 	})
 	initState()
-	scoreEl.innerHTML = state.score + ' / ' + state.maxScore
+	scoreEl.innerHTML = state.matches + ' / ' + state.maxScore
 	scoreEl.style.opacity = 1
 	initLevel()
 }
@@ -442,22 +453,25 @@ var toPx = function(val) {
 	return val + 'px'
 }
 
-var updateScore = function() {
+var updateMatches = function() {
 	// don't allow someone in tutorial mode to advance levels
 	if (state.instructions.stage > -1) {
-		if (state.score === state.maxScore - 1) {
-			scoreEl.innerHTML = state.maxScore + ' / ' + state.maxScore
+		if (state.matches === state.maxScore - 1) {
+			updateScore()
 			return
 		}
 	}
-	state.score += 1
-	scoreEl.innerHTML = state.score + ' / ' + state.maxScore
-	console.log(state)
-	if (state.score === state.maxScore) {
+	state.matches += 1
+	updateScore()
+	if (state.matches === state.maxScore) {
 		advanceLevel()
 		state.advancing = true
 		console.log(state)
 	}
+}
+
+var updateScore = function() {
+	scoreEl.innerHTML = state.matches + ' / ' + state.maxScore
 }
 
 // assign global variables
