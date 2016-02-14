@@ -379,7 +379,7 @@ var sendRowDown = function(row) {
 	var currentRows = gridEl.childNodes.length,
 		fallDistance = (state.maxRows + 1 - currentRows) * state.sqSide,
 		time = fallDistance / 600 // formula for making uniform falling rate, where 600 is the desired rate
-	row.style.transition = time + 's transform ease, .5s opacity ease' // AVOID OVERWRITING OPACITY TRANSITION!
+	row.style.transition = time + 's all ease' // AVOID OVERWRITING OPACITY TRANSITION!
 	row.style.bottom = toPx(state.getGridHeight())
 	setTimeout(function(){
 		var rowIndex = gridEl.childNodes.indexOf(row)
