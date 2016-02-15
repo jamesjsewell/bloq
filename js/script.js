@@ -188,6 +188,8 @@ var initLevel = function() {
 	addPowerUp()
 	playerRowEl = makeRow()
 	playerRowEl.id = "playerRow"
+	playerRowEl.style.bottom = "0" //important because rows by default
+		// are sent to the top of the grid
 	playerRowContainerEl.appendChild(playerRowEl)
 
 	// initiate new grid
@@ -273,6 +275,7 @@ var makeRow = function() {
 		rowEl.appendChild(block)
 		i += 1
 	}
+	rowEl.style.bottom = toPx(state.getGridHeight())
 	return rowEl
 }
 
@@ -377,16 +380,38 @@ var reverseColors = function() {
 
 var sendRowDown = function(row) {
 	var currentRows = gridEl.childNodes.length,
-		fallDistance = (state.maxRows + 1 - currentRows) * state.sqSide,
-		time = fallDistance / 600 // formula for making uniform falling rate, where 600 is the desired rate
-	row.style.transition = time + 's all ease' // AVOID OVERWRITING OPACITY TRANSITION!
-	row.style.bottom = toPx(state.getGridHeight())
-	setTimeout(function(){
-		var rowIndex = gridEl.childNodes.indexOf(row)
-		row.style.transform = "translate3d(0," + toPx(fallDistance) + ",0)"
-		row.style.webkitTransform = "translate3d(0," + toPx(fallDistance) + ",0)"
-		row.style.MozTransform = "translate3d(0," + toPx(fallDistance) + ",0)"
-	},30)
+		rowIndex = gridEl.childNodes.indexOf(row),
+		animatedFallDistance = state.getGridHeight() - 
+			currentRows * state.sqSide, // these are different
+			// because rows that drop only one square length should
+			// not actually fall as quickly as they should mathematically.
+		actualFallDistance = parseInt(row.style.bottom) - ((rowIndex ) * state.sqSide) 
+		time = animatedFallDistance / 400 // formula for making uniform falling rate, where 600 is the desired rate
+	row.style.transition = time + 's transform ease, .5s opacity ease, ' + 
+		time + 's -webkit-transform ease, '  + time + 's -moz-transform ease'// AVOID OVERWRITING OPACITY TRANSITION!
+	
+	var dropped = new Promise(function(res,rej) {
+		setTimeout(function(){
+			console.log(actualFallDistance)
+			row.style.transform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
+			row.style.webkitTransform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
+			row.style.MozTransform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
+			res()
+		},30)
+	})
+	dropped.then(function() {
+		setTimeout(function() {
+			row.style.bottom = toPx(rowIndex * state.sqSide) // we use bottom to 
+				// store the distance, and we use translate3d to perform the translation. 
+			row.style.transition = "none"
+			row.style.transform = "translate3d(0,0,0)"
+			row.style.webkitTransform = "translate3d(0,0,0)"
+			row.style.MozTransform = "translate3d(0,0,0)"
+		},time * 1000)	
+	})
+		
+
+
 }
 
 var shiftLeft = function() {
