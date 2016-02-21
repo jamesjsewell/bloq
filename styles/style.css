@@ -64,18 +64,15 @@ h1 {
 
 .powerUp {
 	display: block;
-	opacity: 0;
+		opacity: 0;
 	visibility: hidden;
+
 	margin: 25px 0;
 	padding: 5px;
-	border: 2px solid #ddd;
-	/* border-radius: 35%; */
-	/* text-shadow: -.1px -.1px 0 #ddd,      
-				  .1px -.1px 0 #ddd,     
-				 -.1px .1px 0 #ddd,      
-				  .1px .1px 0 #ddd; */.1px.1px0#ddd;
-	/* font-weight: bolder; */
+	border: 2px solid #ddd;.1px.1px0#ddd;
 	font-size: 39px;
+	width: auto;
+	height: auto;
 }
 
 .scoreAnimation {
@@ -131,7 +128,8 @@ h1 {
 }
 
 #nav {
-	margin-left: 65%; 
+	margin-top: 2%;
+	margin-left: 65%;
 	display: block;
 }
 
@@ -206,7 +204,7 @@ h1 {
 	transform: translateZ(1px);/* necessary to stay on top of falling row */
 	width: 100%;
 	position: relative;
-	height: 98px;
+	height: 80px;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
 }

@@ -56,6 +56,7 @@ var addGridRow = function() {
 	row.className = 'gridRow'
 	gridEl.appendChild(row)
 	sendRowDown(row)
+	state.currentRows += 1
 }
 
 var addPowerUp = function(){
@@ -77,12 +78,21 @@ var addPowerUp = function(){
 }
 
 var advanceLevel = function() {
+	// animate clearance points
+	var remainingRows = state.maxRows - state.currentRows,
+		topMostBorder = state.currentRows * state.sqSide
+	console.log('remaining rows: ' + remainingRows)
+	console.log('top border ' + topMostBorder)
+	for (var rowTop = topMostBorder; rowTop < state.getGridHeight(); rowTop += state.sqSide) {
+		console.log(state.getGridHeight() - rowTop)
+		animateScore(state.getGridHeight() - rowTop,.5)
+	}
+	state.score += remainingRows * 5 * state.getRowBlocks()
+	updateScoreDisplay()
 	state.level += 1
 	state.matchesThusFar = 0
 	state.totalMatchesNeeded += 1
-	var remainingRows = state.maxRows - gridEl.children.length
-	state.score += remainingRows * 5 * state.getRowBlocks()
-	updateScoreDisplay()
+
 
 	var theyDisappeared = new Promise(function(resolve,reject) {
 		setTimeout(function() {
@@ -97,24 +107,19 @@ var advanceLevel = function() {
 	})
 }
 
-var animateScore = function(row) {
-	console.log('animating')
+var animateScore = function(distanceFromTop,multiplier) {
 	return new Promise(function(res,rej) {
-		console.log('clearing children')
-		row.clearChildren()
-		var bottom = row.style.bottom
 		var scoreMsg = document.createElement('p')
 		var edge = (state.sqSide - 24) / 2 //assuming font-size 24
-		scoreMsg.style.bottom = toPx(parseFloat(bottom) + edge)
+		scoreMsg.style.top = toPx(parseFloat(distanceFromTop) - state.sqSide + edge)
 		scoreMsg.className = "scoreAnimation"
-		scoreMsg.textContent = '+ ' + state.getRowBlocks() * 10
+		scoreMsg.textContent = '+ ' + state.getRowBlocks() * 10 * multiplier
 		setTimeout(function(){
 			scoreMsg.style.opacity = 0
 			setTimeout(function(){
 				gridEl.removeChild(scoreMsg)
 			},1500)
 		},200)		
-		console.log(scoreMsg)
 		gridEl.appendChild(scoreMsg)
 		res()
 	})
@@ -129,6 +134,13 @@ var appear = function() {
 
 var arraysEqual = function(a1,a2) {
     return JSON.stringify(a1)==JSON.stringify(a2);
+}
+
+var calcFallDistance = function(row,rowIndex) {
+	// calculations are based on the bottom border of the row
+	var landingPlace = state.sqSide * rowIndex
+	var startingPlace = state.getGridHeight() - row.distanceFromTop
+	return startingPlace - landingPlace
 }
 
 var changeColors = function(block) {
@@ -183,15 +195,18 @@ var handleLoss = function() {
 	},750)
 }
 
-var handleMatched = function(matched){
+var handleMatched = function(matched,res){
 	matched.forEach(function(row){
-		animateScore(row).then(function(){
+		animateScore(row.distanceFromTop,1).then(function(){
 			removeGridRow(row)
 			gridEl.querySelectorAll('.gridRow').forEach(sendRowDown)
-		})
+			res()
+		}).catch(logErrors)
 		state.matchesThusFar += 1
 		state.score += state.getRowBlocks() * 10
 	})
+	updateScoreDisplay()
+	updateMatchedDisplay()
 	
 	if (matched.length && (state.instructions.stage === 1)) {
 		setTimeout(function(){
@@ -207,14 +222,13 @@ var handleMatched = function(matched){
 			return
 		}
 	}
-
-	updateScoreDisplay()
-	updateMatchedDisplay()
 }
 
 var initLevel = function() {
+	console.log('initting level')
 	state.advancing = false
 	state.matchesThusFar = 0
+	state.currentRows = 0
 
 
 	// reassign heights and widths
@@ -237,7 +251,7 @@ var initState = function() {
 	state = {
 		advancing: false,
 		animating: false,
-		currentRows: gridEl.childNodes.length,
+		currentRows: 0,
 		instructions: {stage:-1},
 		level: 1,
 		lost: false,
@@ -267,6 +281,10 @@ var invertColors = function(res) {
 			res()
 		},500)
 	})
+}
+
+var logErrors = function(error) {
+	console.log(error.stack)
 }
 
 var makeBlock = function() {
@@ -314,7 +332,8 @@ var makeRow = function() {
 		rowEl.appendChild(block)
 		i += 1
 	}
-	rowEl.style.bottom = toPx(state.getGridHeight())
+	rowEl.distanceFromTop = 0 //topVal is used internally to track the position. actual location is handled via 3d-transform
+	rowEl.style.top = toPx(-1 * state.sqSide)
 	return rowEl
 }
 
@@ -369,17 +388,19 @@ var removeGridRow = function(row) {
 var respondToMove = function() {
 
 	var matched = evaluateMove() // returns true if at least one match was found
-	if (!matched.length && (gridEl.children.length >= state.maxRows)) {
+	if (!matched.length && (state.currentRows >= state.maxRows)) {
 		handleLoss()
 		return
 	}
-	handleMatched(matched)
-
-
-	if (state.matchesThusFar === state.totalMatchesNeeded) {
-		advanceLevel()
-		state.advancing = true
-	}
+	var p = new Promise(function(res,rej) {
+		handleMatched(matched,res)
+	})
+	p.then(function() {
+		if (state.matchesThusFar >= state.totalMatchesNeeded) {
+				advanceLevel()
+				state.advancing = true
+			}
+	}).catch(logErrors)
 }
 
 var restart = function() {
@@ -428,6 +449,8 @@ var reverseColors = function(res) {
 	playerRowEl.style.transition = ".75s transform ease"
 }
 
+// important! the interpretation of actualFallDistance is "distance from the top"
+
 var sendRowDown = function(row) {
 	var rowList = gridEl.querySelectorAll('.gridRow')
 	var currentRows = rowList.length,
@@ -436,32 +459,21 @@ var sendRowDown = function(row) {
 			currentRows * state.sqSide, // these are different
 			// because rows that drop only one square length should
 			// not actually fall as quickly as they should mathematically.
-		actualFallDistance = parseInt(row.style.bottom) - ((rowIndex ) * state.sqSide) 
-		time = animatedFallDistance / 200 // formula for making uniform falling rate, where 600 is the desired rate
-	row.style.transition = time + 's transform ease, .5s opacity ease, ' + 
-		time + 's -webkit-transform ease, '  + time + 's -moz-transform ease'// AVOID OVERWRITING OPACITY TRANSITION!
+		actualFallDistance = calcFallDistance(row,rowIndex),
+		newTransform = row.distanceFromTop + actualFallDistance
+		time = animatedFallDistance / 400 // formula for making uniform falling rate, where 400px/s is the desired rate
+	row.style.transition = time + 's ease all'// AVOID OVERWRITING OPACITY TRANSITION!
+
 	
 	var dropped = new Promise(function(res,rej) {
 		setTimeout(function(){
-			row.style.transform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
-			row.style.webkitTransform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
-			row.style.MozTransform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
+			row.distanceFromTop = newTransform
+			row.style.transform = "translate3d(0," + toPx(newTransform) + ",0)"
+			row.style.webkitTransform = "translate3d(0," + toPx(newTransform) + ",0)"
+			row.style.MozTransform = "translate3d(0," + toPx(newTransform) + ",0)"
 			res()
 		},50)
 	})
-	dropped.then(function() {
-		setTimeout(function() {
-			row.style.bottom = toPx(rowIndex * state.sqSide) // we use bottom to 
-				// store the distance, and we use translate3d to perform the translation. 
-			row.style.transition = "none"
-			row.style.transform = "translate3d(0,0,0)"
-			row.style.webkitTransform = "translate3d(0,0,0)"
-			row.style.MozTransform = "translate3d(0,0,0)"
-		},time * 1000)	
-	})
-		
-
-
 }
 
 var shiftLeft = function(res) {
@@ -568,4 +580,5 @@ $$('#night').addEventListener('click',makeNight)
 $$("#playButton").addEventListener('click',restart)
 $$("#restart").addEventListener('click',restart)
 
+makeNight()
 initLevel()
