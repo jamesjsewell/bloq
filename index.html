@@ -19,9 +19,9 @@
 	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
 	<meta name="viewport" content="width=device-width, initial-scale=.5, minimum-scale=.5, maximum-scale=.5">
-	<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/necolas/normalize.css/master/normalize.css">
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+<!-- 	<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/necolas/normalize.css/master/normalize.css">
+ -->	<!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"> -->
 	<link rel="stylesheet" type="text/css" href="styles/style.css">
 	<title>bloq</title>
 </head>
@@ -32,8 +32,10 @@
 		<a target="_blank" href="http://github.com/magentanova/bloq">github.</a>
 		<a id="night" href="#">night.</a>
 	</p>
-	<div id="titleWrapper"><a target="_blank" href="./index.html"><h1>bloq</h1></a></div>
 	<div id="gameContainer">
+		<div id="titleWrapper">
+			<a target="_blank" href="./index.html"><h1>bloq</h1></a><span id="score">0</span>
+		</div>
 		<div id="powerUpContainer">
 			<div id="shifters">
 				<i id="shiftLeft" class="material-icons powerUp powerUpLeft">chevron_left</i>
@@ -44,7 +46,10 @@
 			<p></p>
 		</div>
 		<div id="grid"></div>
-		<div id="playerRowContainer"></div>
+		<div id="playerRowContainer">
+			<div id="playerRow">
+			</div>
+		</div>
 		<div id="tutorialContainer">
 			<p class="advice" id="blockAdvice">click on a block to change its color</p>
 			<p class="advice" id="gridAdvice">match your row to a row in the grid</p>
@@ -52,9 +57,8 @@
 			<p class="advice" id="playButton">play</p>
 		</div>
 	</div>
-	<h3 id="score">0 / 4</h3>
+	<h3 id="matchedDisplay">0 / 4</h3>
 	<script type="text/javascript" src="js/promise-polyfill.js"></script>
-	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="js/script.js"></script>
 </body>
 </html>

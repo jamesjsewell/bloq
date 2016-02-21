@@ -5,6 +5,7 @@
     -webkit-tap-highlight-color: transparent;
 	touch-action: manipulation; /* meant to prevent 300ms delay on phone touch */
 	transition: .5s opacity ease;
+	white-space-collapse: discard; 
 }
 
 * {
@@ -33,11 +34,9 @@ body {
 
 h1 {
 	font-size: 38px;
-	text-align: center;
-	margin: 0;
-	padding: 20px;
 	z-index: 1;
-	margin: auto;
+	margin: 0;
+	display: inline-block;
 }
 
 .block {
@@ -48,7 +47,9 @@ h1 {
 .gridRow {
 	opacity: 1;
 	position: absolute;
-	z-index: -1;
+	transform-style: preserve-3d;
+	-webkit-transform-style: preserve-3d;
+	width: 100%;
 }
 
 .powerUp:nth-child(even) {
@@ -75,7 +76,19 @@ h1 {
 				  .1px .1px 0 #ddd; */.1px.1px0#ddd;
 	/* font-weight: bolder; */
 	font-size: 39px;
-	}
+}
+
+.scoreAnimation {
+	font-size: 30px;
+	opacity: 1;
+	transition: 1s opacity ease;
+	margin: 0 auto;
+	width: 95%;
+	color: #444;
+	text-shadow: 1px 1px 1px #ddd, -1px -1px 1px#ddd;
+	font-weight: 900;
+	position: absolute;
+}
 
 #grid,#playerRowContainer {
 	margin: auto;
@@ -88,6 +101,7 @@ h1 {
 	text-align: center;
 	position: relative;
 	opacity: 1;
+	perspective: 500px;
 }
 
 #grid {
@@ -96,6 +110,7 @@ h1 {
 	vertical-align: bottom;
 	position: relative;
 	opacity: 1;
+	perspective: 800px;
 }
 
 #loseMessage {
@@ -109,9 +124,14 @@ h1 {
 	transform: translateX(-50%);
 }
 
+#matchedDisplay {
+	font-size: 24px;
+	text-align: center;
+	opacity: 1;
+}
+
 #nav {
-	/* margin-right: 15%; */
-	float: right;
+	margin-left: 65%; 
 	display: block;
 }
 
@@ -127,10 +147,10 @@ h1 {
 #playerRow {
 	opacity: 1;
 	position: absolute;
-	transition: .5s right linear, .5s left linear;
+	transition: .5s right linear, .5s left linear, transform .75s ease;
 	width: 150%;
-	transition: transform .75s ease;
 	left: 0;
+	bottom: 0;
 }
 
 #playerRowContainer {
@@ -151,10 +171,12 @@ h1 {
 }
 
 #score {
-	font-size: 34px;
-	margin: 40px auto;
+	font-size: 38px;
 	text-align: center;
 	opacity: 1;
+	position: absolute;
+	bottom: 10px;
+	right: 0;
 }
 
 #shifters {
@@ -181,13 +203,19 @@ h1 {
 
 #titleWrapper {
 	background: #fff;
-	padding-top: 1.5rem;
+	transform: translateZ(1px);/* necessary to stay on top of falling row */
+	width: 100%;
+	position: relative;
+	height: 98px;
+	transform-style: preserve-3d;
+	-webkit-transform-style: preserve-3d;
 }
 
 #titleWrapper a {
-    display: block;
-    max-width: 150px;
     margin: auto;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
 }
 
 #tutorialContainer {
@@ -244,7 +272,7 @@ h1 {
 	}
 	
 	#nav a {
-		font-size: 22px;
+		font-size: 26px;
 	}
 
 	#titleWrapper {

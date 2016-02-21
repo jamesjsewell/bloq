@@ -18,9 +18,9 @@ Node.prototype.clearChildren = function(){
 }
 
 NodeList.prototype.forEach = HTMLCollection.prototype.forEach = Array.prototype.forEach
-NodeList.prototype.map = Array.prototype.map
-NodeList.prototype.indexOf = Array.prototype.indexOf	
-NodeList.prototype.reverse = Array.prototype.reverse = function(){
+NodeList.prototype.map = HTMLCollection.prototype.map = Array.prototype.map
+NodeList.prototype.indexOf = HTMLCollection.prototype.indexOf = Array.prototype.indexOf	
+NodeList.prototype.reverse = HTMLCollection.prototype.reverse = Array.prototype.reverse = function(){
 	var newArray = []
 	for (var i = (this.length - 1); i >= 0; i --) {
 		newArray.push(this[i])
@@ -48,6 +48,7 @@ var addCSSRule = function(sheet, selector, rules, index) {
 
 var addGridRow = function() {
 	var row = makeRow()
+
 	if (arraysEqual(getColors(playerRowEl),getColors(row))) { //if this is already a match
 		addGridRow()
 		return
@@ -58,16 +59,16 @@ var addGridRow = function() {
 }
 
 var addPowerUp = function(){
-	if (state.rowBlocks === 5) {
+	if (state.level === 2) {
 		// invert enters the arena
 		powerUpContainerEl.querySelector('#invert').style.opacity = 1
 		powerUpContainerEl.querySelector('#invert').style.visibility = "visible"	
 	}
-	if (state.rowBlocks === 6) {
+	if (state.level === 3) {
 		powerUpContainerEl.querySelector('#reverse').style.opacity = 1
 		powerUpContainerEl.querySelector('#reverse').style.visibility = "visible"	
 	}
-	if (state.rowBlocks === 7) {
+	if (state.level === 4) {
 		powerUpContainerEl.querySelector('#shiftLeft').style.opacity = 1
 		powerUpContainerEl.querySelector('#shiftLeft').style.visibility = "visible"	
 		powerUpContainerEl.querySelector('#shiftRight').style.opacity = 1
@@ -77,21 +78,45 @@ var addPowerUp = function(){
 
 var advanceLevel = function() {
 	state.level += 1
-	state.matches = 0
-	state.maxScore += 1
+	state.matchesThusFar = 0
+	state.totalMatchesNeeded += 1
+	var remainingRows = state.maxRows - gridEl.children.length
+	state.score += remainingRows * 5 * state.getRowBlocks()
+	updateScoreDisplay()
+
 	var theyDisappeared = new Promise(function(resolve,reject) {
 		setTimeout(function() {
-			disappear(scoreEl,gameContainerEl)
+			disappear(matchedDisplayEl,gameContainerEl)
 			resolve()
 		},500)
 	})
 	theyDisappeared.then(function(val) {
 		setTimeout(function(){
-			updateScore()
-			appear(scoreEl)
 			initLevel()
-			appear(gameContainerEl)
 		},500)
+	})
+}
+
+var animateScore = function(row) {
+	console.log('animating')
+	return new Promise(function(res,rej) {
+		console.log('clearing children')
+		row.clearChildren()
+		var bottom = row.style.bottom
+		var scoreMsg = document.createElement('p')
+		var edge = (state.sqSide - 24) / 2 //assuming font-size 24
+		scoreMsg.style.bottom = toPx(parseFloat(bottom) + edge)
+		scoreMsg.className = "scoreAnimation"
+		scoreMsg.textContent = '+ ' + state.getRowBlocks() * 10
+		setTimeout(function(){
+			scoreMsg.style.opacity = 0
+			setTimeout(function(){
+				gridEl.removeChild(scoreMsg)
+			},1500)
+		},200)		
+		console.log(scoreMsg)
+		gridEl.appendChild(scoreMsg)
+		res()
 	})
 }
 
@@ -122,7 +147,7 @@ var disappear = function() {
 var evaluateMove = function() {
 	var playerColors = getColors(playerRowEl)
 	var matched = []
-	gridEl.childNodes.forEach(function(row){
+	gridEl.children.forEach(function(row){
 		var rowColors = getColors(row)
 		if (arraysEqual(playerColors,rowColors)) {
 			matched.push(row)
@@ -132,7 +157,7 @@ var evaluateMove = function() {
 }
 
 var getColors = function(row) {
-	return row.childNodes.map(function(block) {
+	return row.children.map(function(block) {
 		return block.style.backgroundColor
 	})
 }
@@ -141,8 +166,8 @@ var handleLoss = function() {
 	if (state.instructions.stage > -1) return
 
 	state.lost = true
-	scoreEl.style.opacity = 0
-	playerRowEl.childNodes.forEach(function(block){
+	matchedDisplayEl.style.opacity = 0
+	playerRowEl.children.forEach(function(block){
 		block.style.opacity = 0
 	})
 	setTimeout(function(){
@@ -150,6 +175,7 @@ var handleLoss = function() {
 		var msg = document.createElement('h2')
 		msg.style.fontSize = toPx(state.sqSide * .75)
 		msg.style.lineHeight = toPx(state.sqSide)
+		msg.style.top = toPx(state.sqSide * -1)
 		msg.innerHTML = "you lose"
 		msg.id = "loseMessage" 
 		playerRowEl.appendChild(msg)
@@ -159,9 +185,12 @@ var handleLoss = function() {
 
 var handleMatched = function(matched){
 	matched.forEach(function(row){
-		removeGridRow(row)
-		gridEl.childNodes.forEach(sendRowDown)
-		updateMatches()
+		animateScore(row).then(function(){
+			removeGridRow(row)
+			gridEl.querySelectorAll('.gridRow').forEach(sendRowDown)
+		})
+		state.matchesThusFar += 1
+		state.score += state.getRowBlocks() * 10
 	})
 	
 	if (matched.length && (state.instructions.stage === 1)) {
@@ -171,33 +200,37 @@ var handleMatched = function(matched){
 		},600)
 		state.instructions.stage += 1
 	}
+
+	// don't allow someone in tutorial mode to advance levels
+	if (state.instructions.stage > -1) {
+		if (state.matchesThusFar === state.totalMatchesNeeded - 1) {
+			return
+		}
+	}
+
+	updateScoreDisplay()
+	updateMatchedDisplay()
 }
 
 var initLevel = function() {
 	state.advancing = false
-	state.rowBlocks += 1
-	gameContainerEl.style.width = toPx(state.sqSide * state.rowBlocks)
+	state.matchesThusFar = 0
+
+
+	// reassign heights and widths
+	gameContainerEl.style.width = toPx(state.sqSide * state.getRowBlocks())
 	gridEl.style.height = toPx(state.maxRows * state.sqSide)
 	playerRowContainerEl.style.height = toPx(state.sqSide)
 	
-	// add player row
-	if (playerRowContainer.childNodes.length){
-		playerRowEl.removeEventListener('click')
-		playerRowContainerEl.removeChild(playerRowEl)
-	}
+	updatePlayerRow()
 	addPowerUp()
-	playerRowEl = makeRow()
-	playerRowEl.id = "playerRow"
-	playerRowEl.style.bottom = "0" //important because rows by default
-		// are sent to the top of the grid
-	playerRowContainerEl.appendChild(playerRowEl)
+	updateMatchedDisplay()
 
-	// initiate new grid
+	// refresh grid
 	gridEl.clearChildren()
+	appear(gameContainerEl)
+	appear(matchedDisplayEl)
 	addGridRow()
-	
-	// assign event listener for player row
-	playerRowEl.addEventListener('click',moveHandler)
 }
 
 var initState = function() {
@@ -210,12 +243,12 @@ var initState = function() {
 		lost: false,
 		match: false,
 		maxRows: 8,
-		maxScore: 4,
+		matchesThusFar: 0,
 		night: false,
-		rowBlocks: 3,
-		matches: 0,
 		score: 0,
 		sqSide:60,
+		totalMatchesNeeded: 4,
+		getRowBlocks: function(){return Math.min(this.level + 3,11)},
 		getGridHeight: function() {
 			return this.maxRows * this.sqSide
 		}
@@ -223,16 +256,26 @@ var initState = function() {
 	window.state = state
 }
 
-var invertColors = function() {
+var invertColors = function(res) {
 	state.animating = true
-	playerRowEl.childNodes.forEach(function(block){
+	playerRowEl.children.forEach(function(block){
 		block.style.transition = "background .5s ease"
 		changeColors(block)
 		setTimeout(function(){
 			block.style.transition = "none"
 			state.animating = false
+			res()
 		},500)
 	})
+}
+
+var makeBlock = function() {
+	var block = document.createElement('div')
+	block.className = 'block'
+	block.style.width = toPx(state.sqSide)
+	block.style.height = toPx(state.sqSide)
+	block.style.backgroundColor = COLORS.choice()
+	return block
 }
 
 var makeDay = function() {
@@ -266,12 +309,8 @@ var makeNight = function() {
 var makeRow = function() {
 	var rowEl = document.createElement('div')
 	var i = 0
-	while (i < state.rowBlocks) {
-		var block = document.createElement('div')
-		block.className = 'block'
-		block.style.width = toPx(state.sqSide)
-		block.style.height = toPx(state.sqSide)
-		block.style.backgroundColor = COLORS.choice()
+	while (i < state.getRowBlocks()) {
+		var block = makeBlock()
 		rowEl.appendChild(block)
 		i += 1
 	}
@@ -280,9 +319,7 @@ var makeRow = function() {
 }
 
 var moveHandler = function(e){
-	state.drop = false
-	if (state.animating) return
-	if (state.lost) return
+	if (state.animating || state.advancing || state.lost) return
 
 	// handle tutorial mode
 	if (e.target.className.contains('block') && (state.instructions.stage === 0)) {
@@ -300,16 +337,28 @@ var moveHandler = function(e){
 
 	// do what they meant to do
 	if (e.target.className.contains('block')) {
-		state.drop = true
-		changeColors(e.target)
+		var p = new Promise(function(res,rej) {
+			changeColors(e.target)
+			addGridRow() 
+			res()
+		})
 	}
-	else if (e.target.id === "invert") invertColors()
-	else if (e.target.id === "reverse") reverseColors()		
-	else if (e.target.id === "shiftLeft") shiftLeft()		
-	else if (e.target.id === "shiftRight") shiftRight()	
+	else if (e.target.id === "invert") {
+			var p = new Promise(function(res,rej) {
+			invertColors(res)
+		})
+	}
+	else if (e.target.id === "reverse") var p = new Promise(function(res,rej) {
+		reverseColors(res)	
+	})	
+	else if (e.target.id === "shiftLeft") var p = new Promise(function(res,rej){
+		shiftLeft(res)
+	})		
+	else if (e.target.id === "shiftRight") var p = new Promise(function(res,rej){
+		shiftRight(res)
+	})	
 	else return
-	respondToMove()
-	if (!state.advancing && state.drop) addGridRow()
+	p.then(respondToMove)
 }
 
 var removeGridRow = function(row) {
@@ -318,17 +367,18 @@ var removeGridRow = function(row) {
 }
 
 var respondToMove = function() {
-	if (state.animating) {
-		setTimeout(respondToMove,50)
+
+	var matched = evaluateMove() // returns true if at least one match was found
+	if (!matched.length && (gridEl.children.length >= state.maxRows)) {
+		handleLoss()
 		return
 	}
-	else {
-		var matched = evaluateMove() // returns true if at least one match was found
-		if (!matched.length && state.drop && (gridEl.childNodes.length === state.maxRows)) {
-			handleLoss()
-			return
-		}
-		handleMatched(matched)
+	handleMatched(matched)
+
+
+	if (state.matchesThusFar === state.totalMatchesNeeded) {
+		advanceLevel()
+		state.advancing = true
 	}
 }
 
@@ -340,17 +390,16 @@ var restart = function() {
 			el.style.visibility = 'hidden'
 		},500)
 	})
+
 	setTimeout(function(){$$("#playButton").style.visibility = "hidden"},750)
 	$$(".advice").forEach(function(el){
 		el.style.opacity = 0
 	})
 	initState()
-	scoreEl.innerHTML = state.matches + ' / ' + state.maxScore
-	scoreEl.style.opacity = 1
 	initLevel()
 }
 
-var reverseColors = function() {
+var reverseColors = function(res) {
 	var reversed = playerRowEl.childNodes.reverse()
 
 	// the animation does a superficial rotation, leaving the original row intact.
@@ -374,30 +423,31 @@ var reverseColors = function() {
 			playerRowEl.appendChild(block)
 		})
 		state.animating = false
+		res()
 	},730) 
 	playerRowEl.style.transition = ".75s transform ease"
 }
 
 var sendRowDown = function(row) {
-	var currentRows = gridEl.childNodes.length,
-		rowIndex = gridEl.childNodes.indexOf(row),
+	var rowList = gridEl.querySelectorAll('.gridRow')
+	var currentRows = rowList.length,
+		rowIndex = rowList.indexOf(row),
 		animatedFallDistance = state.getGridHeight() - 
 			currentRows * state.sqSide, // these are different
 			// because rows that drop only one square length should
 			// not actually fall as quickly as they should mathematically.
 		actualFallDistance = parseInt(row.style.bottom) - ((rowIndex ) * state.sqSide) 
-		time = animatedFallDistance / 400 // formula for making uniform falling rate, where 600 is the desired rate
+		time = animatedFallDistance / 200 // formula for making uniform falling rate, where 600 is the desired rate
 	row.style.transition = time + 's transform ease, .5s opacity ease, ' + 
 		time + 's -webkit-transform ease, '  + time + 's -moz-transform ease'// AVOID OVERWRITING OPACITY TRANSITION!
 	
 	var dropped = new Promise(function(res,rej) {
 		setTimeout(function(){
-			console.log(actualFallDistance)
 			row.style.transform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
 			row.style.webkitTransform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
 			row.style.MozTransform = "translate3d(0," + toPx(actualFallDistance) + ",0)"
 			res()
-		},30)
+		},50)
 	})
 	dropped.then(function() {
 		setTimeout(function() {
@@ -414,21 +464,22 @@ var sendRowDown = function(row) {
 
 }
 
-var shiftLeft = function() {
+var shiftLeft = function(res) {
 	state.animating = true
-	var firstClone = playerRowEl.childNodes[0].cloneNode()
+	var firstClone = playerRowEl.children[0].cloneNode()
 	playerRowEl.appendChild(firstClone)
 	playerRowEl.style.transition = ".5s left linear"
 	setTimeout(function(){playerRowEl.style.left = toPx(-1 * state.sqSide)},15)
 	setTimeout(function(){
 		playerRowEl.style.transition = "none"
-		playerRowEl.removeChild(playerRowEl.childNodes[0])
+		playerRowEl.removeChild(playerRowEl.children[0])
 		playerRowEl.style.left = 0
 		state.animating = false
+		res()
 		},500)
 	}
 
-var shiftRight = function() {
+var shiftRight = function(res) {
 	state.animating = true
 	var blocks = playerRowEl.childNodes
 	var lastClone = blocks[blocks.length - 1].cloneNode()
@@ -444,6 +495,7 @@ var shiftRight = function() {
 	setTimeout(function(){
 		playerRowEl.removeChild(blocks[blocks.length - 1])
 		state.animating = false
+		res()
 	},500)
 }
 
@@ -480,44 +532,37 @@ var toPx = function(val) {
 	return val + 'px'
 }
 
-var updateMatches = function() {
-	// don't allow someone in tutorial mode to advance levels
-	if (state.instructions.stage > -1) {
-		if (state.matches === state.maxScore - 1) {
-			updateScore()
-			return
-		}
-	}
-	state.matches += 1
-	updateScore()
-	if (state.matches === state.maxScore) {
-		advanceLevel()
-		state.advancing = true
-		console.log(state)
+var updatePlayerRow = function() {
+	playerRowEl.clearChildren()
+	var blocksCalledFor = Math.min(state.level + 3,11)
+	while (blocksCalledFor > playerRowEl.children.length) {
+		playerRowEl.appendChild(makeBlock())
 	}
 }
 
-var updateScore = function() {
-	scoreEl.innerHTML = state.matches + ' / ' + state.maxScore
+var updateMatchedDisplay = function() {
+	matchedDisplayEl.innerHTML = state.matchesThusFar + ' / ' + state.totalMatchesNeeded
+}
+
+var updateScoreDisplay = function() {
+	scoreEl.innerHTML = state.score
 }
 
 // assign global variables
 var gameContainerEl = $$('#gameContainer')
 	gridEl = $$("#grid"),
-	scoreEl = $$('#score'),
+	matchedDisplayEl = $$('#matchedDisplay'),
 	powerUpContainerEl = $$('#powerUpContainer'),
-	playerRowContainerEl = $$('#playerRowContainer')
-	GRIDWIDTH = parseInt(window.getComputedStyle(gridEl).width),
-	GRIDHEIGHT = parseInt(window.getComputedStyle(gridEl).height),
-	COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)']
-
-var playerRowEl, state
+	playerRowContainerEl = $$('#playerRowContainer'),
+	COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)'],
+	playerRowEl = $$("#playerRow"),
+	scoreEl = $$("#score")
 
 initState()
 
-
 // event listeners
 powerUpContainerEl.addEventListener('click',moveHandler)
+playerRowEl.addEventListener('click',moveHandler)
 $$('#tutorial').addEventListener('click',showInstructions)
 $$('#night').addEventListener('click',makeNight)
 $$("#playButton").addEventListener('click',restart)
