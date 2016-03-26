@@ -64,12 +64,12 @@ h1 {
 
 .powerUp {
 	display: block;
-		opacity: 0;
+	opacity: 0;
 	visibility: hidden;
 
 	margin: 25px 0;
 	padding: 5px;
-	border: 2px solid #ddd;.1px.1px0#ddd;
+	border: 2px solid #ddd;
 	font-size: 39px;
 	width: auto;
 	height: auto;
