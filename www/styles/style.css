@@ -71,7 +71,6 @@ h1 {
 	font-size: 39px;
 	width: 54px;
 	height: 54px;
-	padding-left: 5.5px;
 	line-height: 54px;
 	display: block;
 }
@@ -83,7 +82,8 @@ h1 {
 	margin: 0 auto;
 	width: 95%;
 	color: #444;
-	text-shadow: 1px 1px 1px #ddd, -1px -1px 1px#ddd;
+	text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+	/*text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;*/
 	font-weight: 900;
 	position: absolute;
 }

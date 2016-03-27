@@ -1,6 +1,7 @@
 "use strict;"
-// modify prototypes
 
+
+// modify prototypes
 Array.prototype.choice = function() {
 	var index = Math.floor(Math.random() * this.length)
 	return this[index]
@@ -81,46 +82,51 @@ var advanceLevel = function() {
 	// animate clearance points
 	var remainingRows = state.maxRows - state.currentRows,
 		topMostBorder = state.currentRows * state.sqSide
-	console.log('remaining rows: ' + remainingRows)
-	console.log('top border ' + topMostBorder)
+	
 	for (var rowTop = topMostBorder; rowTop < state.getGridHeight(); rowTop += state.sqSide) {
-		console.log(state.getGridHeight() - rowTop)
-		animateScore(state.getGridHeight() - rowTop,.5)
+		animateScore(state.getGridHeight() - rowTop,.5,true)
 	}
+
 	state.score += remainingRows * 5 * state.getRowBlocks()
 	updateScoreDisplay()
 	state.level += 1
 	state.matchesThusFar = 0
 	state.totalMatchesNeeded += 1
 
-
 	var theyDisappeared = new Promise(function(resolve,reject) {
 		setTimeout(function() {
 			disappear(matchedDisplayEl,gameContainerEl)
 			resolve()
-		},500)
+		},2500)
 	})
-	theyDisappeared.then(function(val) {
-		setTimeout(function(){
-			initLevel()
-		},500)
+	theyDisappeared.then(function() {
+		setTimeout(initLevel,2000)
 	})
 }
 
-var animateScore = function(distanceFromTop,multiplier) {
+var animateScore = function(distanceFromTop,multiplier,endLevel) {
 	return new Promise(function(res,rej) {
+		var removalTimeout = 1000,
+			fadeoutTimeout = 500
 		var scoreMsg = document.createElement('p')
 		var edge = (state.sqSide - 24) / 2 //assuming font-size 24
 		scoreMsg.style.top = toPx(parseFloat(distanceFromTop) - state.sqSide + edge)
 		scoreMsg.className = "scoreAnimation"
 		scoreMsg.textContent = '+ ' + state.getRowBlocks() * 10 * multiplier
+		gridEl.appendChild(scoreMsg)
+		if (endLevel) {
+			removalTimeout = 2000
+			fadeoutTimeout = 1500
+			scoreMsg.style.opacity = 0
+			console.log('setting opacity')
+			setTimeout(function(){scoreMsg.style.opacity = 1},50)
+		}
 		setTimeout(function(){
 			scoreMsg.style.opacity = 0
 			setTimeout(function(){
 				gridEl.removeChild(scoreMsg)
-			},1500)
-		},200)		
-		gridEl.appendChild(scoreMsg)
+			},removalTimeout)
+		},fadeoutTimeout)		
 		res()
 	})
 }
@@ -225,7 +231,6 @@ var handleMatched = function(matched,res){
 }
 
 var initLevel = function() {
-	console.log('initting level')
 	state.advancing = false
 	state.matchesThusFar = 0
 	state.currentRows = 0
@@ -284,7 +289,7 @@ var invertColors = function(res) {
 }
 
 var logErrors = function(error) {
-	console.log(error.stack)
+	
 }
 
 var makeBlock = function() {
@@ -397,7 +402,7 @@ var respondToMove = function() {
 	})
 	p.then(function() {
 		if (state.matchesThusFar >= state.totalMatchesNeeded) {
-				advanceLevel()
+				setTimeout(advanceLevel,1000)
 				state.advancing = true
 			}
 	}).catch(logErrors)
