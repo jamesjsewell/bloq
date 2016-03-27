@@ -65,8 +65,8 @@ h1 {
 }
 
 .powerUp {
-/*	opacity: 0;
-	visibility: hidden;*/
+	opacity: 0;
+	visibility: hidden;
 	margin: 25px 0;
 	border: 2px solid #ddd;
 	font-size: 39px;

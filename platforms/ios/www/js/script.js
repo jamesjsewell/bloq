@@ -1,6 +1,7 @@
 "use strict;"
-// modify prototypes
 
+
+// modify prototypes
 Array.prototype.choice = function() {
 	var index = Math.floor(Math.random() * this.length)
 	return this[index]
@@ -80,47 +81,51 @@ var addPowerUp = function(){
 var advanceLevel = function() {
 	// animate clearance points
 	var remainingRows = state.maxRows - state.currentRows,
-		topMostBorder = state.currentRows * state.sqSide
-	console.log('remaining rows: ' + remainingRows)
-	console.log('top border ' + topMostBorder)
-	for (var rowTop = topMostBorder; rowTop < state.getGridHeight(); rowTop += state.sqSide) {
-		console.log(state.getGridHeight() - rowTop)
-		animateScore(state.getGridHeight() - rowTop,.5)
+		topMostBorder = state.currentRows * state.getActualSqSide()
+	
+	for (var rowTop = topMostBorder; rowTop < state.getGridHeight(); rowTop += state.getActualSqSide()) {
+		animateScore(state.getGridHeight() - rowTop,.5,true)
 	}
+
 	state.score += remainingRows * 5 * state.getRowBlocks()
 	updateScoreDisplay()
 	state.level += 1
 	state.matchesThusFar = 0
 	state.totalMatchesNeeded += 1
 
-
 	var theyDisappeared = new Promise(function(resolve,reject) {
 		setTimeout(function() {
 			disappear(matchedDisplayEl,gameContainerEl)
 			resolve()
-		},500)
+		},2500)
 	})
-	theyDisappeared.then(function(val) {
-		setTimeout(function(){
-			initLevel()
-		},500)
+	theyDisappeared.then(function() {
+		setTimeout(initLevel,1000)
 	})
 }
 
-var animateScore = function(distanceFromTop,multiplier) {
+var animateScore = function(distanceFromTop,multiplier,endLevel) {
 	return new Promise(function(res,rej) {
+		var removalTimeout = 1000,
+			fadeoutTimeout = 500
 		var scoreMsg = document.createElement('p')
-		var edge = (state.sqSide - 24) / 2 //assuming font-size 24
-		scoreMsg.style.top = toPx(parseFloat(distanceFromTop) - state.sqSide + edge)
+		scoreMsg.style.top = toPx(parseFloat(distanceFromTop) - state.getActualSqSide())
+		scoreMsg.style.lineHeight = toPx(state.getActualSqSide())
 		scoreMsg.className = "scoreAnimation"
 		scoreMsg.textContent = '+ ' + state.getRowBlocks() * 10 * multiplier
+		gridEl.appendChild(scoreMsg)
+		if (endLevel) {
+			removalTimeout = 2000
+			fadeoutTimeout = 1500
+			scoreMsg.style.opacity = 0
+			setTimeout(function(){scoreMsg.style.opacity = 1},50)
+		}
 		setTimeout(function(){
 			scoreMsg.style.opacity = 0
 			setTimeout(function(){
 				gridEl.removeChild(scoreMsg)
-			},1500)
-		},200)		
-		gridEl.appendChild(scoreMsg)
+			},removalTimeout)
+		},fadeoutTimeout)		
 		res()
 	})
 }
@@ -138,9 +143,9 @@ var arraysEqual = function(a1,a2) {
 
 var calcFallDistance = function(row,rowIndex) {
 	// calculations are based on the bottom border of the row
-	var landingPlace = state.sqSide * rowIndex
+	var landingPlace = state.getActualSqSide() * rowIndex 
 	var startingPlace = state.getGridHeight() - row.distanceFromTop
-	return startingPlace - landingPlace
+	return startingPlace - landingPlace + 2
 }
 
 var changeColors = function(block) {
@@ -168,6 +173,12 @@ var evaluateMove = function() {
 	return matched
 }
 
+var exposePlayButton = function(text) {
+	$$("#playButton").style.opacity = 1
+	$$("#playButton").style.visibility = 'visible'
+	$$("#playButton").textContent = text
+}
+
 var getColors = function(row) {
 	return row.children.map(function(block) {
 		return block.style.backgroundColor
@@ -184,14 +195,8 @@ var handleLoss = function() {
 	})
 	setTimeout(function(){
 		playerRowEl.clearChildren()
-		var msg = document.createElement('h2')
-		msg.style.fontSize = toPx(state.sqSide * .75)
-		msg.style.lineHeight = toPx(state.sqSide)
-		msg.style.top = toPx(state.sqSide * -1)
-		msg.innerHTML = "you lose"
-		msg.id = "loseMessage" 
-		playerRowEl.appendChild(msg)
-		setTimeout(function(){msg.style.opacity = 1},10)
+		// playerRowEl.appendChild(makeLossMessage())
+		exposePlayButton('again')
 	},750)
 }
 
@@ -225,7 +230,6 @@ var handleMatched = function(matched,res){
 }
 
 var initLevel = function() {
-	console.log('initting level')
 	state.advancing = false
 	state.matchesThusFar = 0
 	state.currentRows = 0
@@ -233,7 +237,7 @@ var initLevel = function() {
 
 	// reassign heights and widths
 	gameContainerEl.style.width = toPx(state.sqSide * state.getRowBlocks())
-	gridEl.style.height = toPx(state.maxRows * state.sqSide)
+	gridEl.style.height = toPx(state.getGridHeight())
 	playerRowContainerEl.style.height = toPx(state.sqSide)
 	
 	updatePlayerRow()
@@ -262,9 +266,10 @@ var initState = function() {
 		score: 0,
 		sqSide:60,
 		totalMatchesNeeded: 4,
+		getActualSqSide: function(){return this.sqSide + 2},
 		getRowBlocks: function(){return Math.min(this.level + 3,11)},
 		getGridHeight: function() {
-			return this.maxRows * this.sqSide
+			return this.maxRows * (this.getActualSqSide()) - 2 // fiddling height to accommodate outlines
 		}
 	}
 	window.state = state
@@ -283,8 +288,8 @@ var invertColors = function(res) {
 	})
 }
 
-var logErrors = function(error) {
-	console.log(error.stack)
+var logErrors = function(e) {
+	console.log(e)
 }
 
 var makeBlock = function() {
@@ -306,6 +311,17 @@ var makeDay = function() {
 	$$('#playButton').style.background = "#fff"
 	$$("#nav").className = "day"
 	n.innerHTML = "night."
+}
+
+var makeLossMessage = function() {
+	var msg = document.createElement('h2')
+	msg.style.fontSize = toPx(state.sqSide * .75)
+	msg.style.lineHeight = toPx(state.sqSide)
+	msg.style.top = toPx(state.sqSide * -1)
+	msg.innerHTML = "you lose"
+	msg.id = "loseMessage" 
+	setTimeout(function(){msg.style.opacity = 1},10)
+	return msg
 }
 
 var makeNight = function() {
@@ -332,12 +348,13 @@ var makeRow = function() {
 		rowEl.appendChild(block)
 		i += 1
 	}
-	rowEl.distanceFromTop = 0 //topVal is used internally to track the position. actual location is handled via 3d-transform
-	rowEl.style.top = toPx(-1 * state.sqSide)
+	rowEl.distanceFromTop = -2 //topVal is used internally to track the position. actual location is handled via 3d-transform
+	rowEl.style.top = toPx(-1 * state.sqSide - 2)
 	return rowEl
 }
 
 var moveHandler = function(e){
+	console.log(state)
 	if (state.animating || state.advancing || state.lost) return
 
 	// handle tutorial mode
@@ -349,8 +366,7 @@ var moveHandler = function(e){
 	}
 	if (e.target.className.contains('powerUp') && (state.instructions.stage === 2)) {
 		setTimeout(function(){
-			$$("#playButton").style.opacity = 1
-			$$("#playButton").style.visibility = 'visible'
+			exposePlayButton('play')
 		},2000)
 	}
 
@@ -388,7 +404,7 @@ var removeGridRow = function(row) {
 var respondToMove = function() {
 
 	var matched = evaluateMove() // returns true if at least one match was found
-	if (!matched.length && (state.currentRows >= state.maxRows)) {
+	if (!matched.length && (state.currentRows > state.maxRows)) {
 		handleLoss()
 		return
 	}
@@ -397,7 +413,7 @@ var respondToMove = function() {
 	})
 	p.then(function() {
 		if (state.matchesThusFar >= state.totalMatchesNeeded) {
-				advanceLevel()
+				setTimeout(advanceLevel,1000)
 				state.advancing = true
 			}
 	}).catch(logErrors)
@@ -460,14 +476,12 @@ var sendRowDown = function(row) {
 			// because rows that drop only one square length should
 			// not actually fall as quickly as they should mathematically.
 		actualFallDistance = calcFallDistance(row,rowIndex),
-		newTransform = row.distanceFromTop + actualFallDistance
+		newTransform = actualFallDistance + row.distanceFromTop
 		time = animatedFallDistance / 400 // formula for making uniform falling rate, where 400px/s is the desired rate
-	row.style.transition = time + 's ease all'// AVOID OVERWRITING OPACITY TRANSITION!
-
-	
+	row.style.transition = time + 's ease all'
 	var dropped = new Promise(function(res,rej) {
 		setTimeout(function(){
-			row.distanceFromTop = newTransform
+			row.distanceFromTop = newTransform 
 			row.style.transform = "translate3d(0," + toPx(newTransform) + ",0)"
 			row.style.webkitTransform = "translate3d(0," + toPx(newTransform) + ",0)"
 			row.style.MozTransform = "translate3d(0," + toPx(newTransform) + ",0)"
