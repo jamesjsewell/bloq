@@ -580,5 +580,12 @@ $$('#night').addEventListener('touchstart',makeNight)
 $$("#playButton").addEventListener('touchstart',restart)
 $$("#restart").addEventListener('touchstart',restart)
 
+powerUpContainerEl.addEventListener('click',moveHandler)
+playerRowEl.addEventListener('click',moveHandler)
+$$('#tutorial').addEventListener('click',showInstructions)
+$$('#night').addEventListener('click',makeNight)
+$$("#playButton").addEventListener('click',restart)
+$$("#restart").addEventListener('click',restart)
+
 makeNight()
 initLevel()
