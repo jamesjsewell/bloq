@@ -32,6 +32,10 @@ body {
 	background: #fff;
 }
 
+body.fix-status-bar {
+	margin-top: 20px;
+}
+
 h1 {
 	font-size: 38px;
 	z-index: 1;

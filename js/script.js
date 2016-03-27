@@ -560,6 +560,12 @@ var updateScoreDisplay = function() {
 	scoreEl.innerHTML = state.score
 }
 
+var runApp = function() {
+	makeNight()
+	initState()
+	initLevel()
+}
+
 // assign global variables
 var gameContainerEl = $$('#gameContainer')
 	gridEl = $$("#grid"),
@@ -569,8 +575,6 @@ var gameContainerEl = $$('#gameContainer')
 	COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)'],
 	playerRowEl = $$("#playerRow"),
 	scoreEl = $$("#score")
-
-initState()
 
 // event listeners
 
@@ -591,5 +595,11 @@ else {
 	$$("#playButton").addEventListener('click',restart)
 	$$("#restart").addEventListener('click',restart)
 }
-makeNight()
-initLevel()
+
+// make room for status bar in ios7
+
+if(window.device && parseFloat(window.device.version) >= 7){
+  document.body.classList.add('fix-status-bar');
+}
+
+runApp()
