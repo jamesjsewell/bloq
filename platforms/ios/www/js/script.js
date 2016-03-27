@@ -83,7 +83,7 @@ var advanceLevel = function() {
 	var remainingRows = state.maxRows - state.currentRows,
 		topMostBorder = state.currentRows * state.sqSide
 	
-	for (var rowTop = topMostBorder; rowTop < state.getGridHeight(); rowTop += state.sqSide) {
+	for (var rowTop = topMostBorder; rowTop < state.getGridHeight(); rowTop += state.getActualSqSide()) {
 		animateScore(state.getGridHeight() - rowTop,.5,true)
 	}
 
@@ -107,15 +107,14 @@ var advanceLevel = function() {
 var animateScore = function(distanceFromTop,multiplier,endLevel) {
 	return new Promise(function(res,rej) {
 		var removalTimeout = 1000,
-			fadeoutTimeout = 50000
+			fadeoutTimeout = 500
 		var scoreMsg = document.createElement('p')
-		var edge = (state.sqSide - 24) / 2 //assuming font-size 24
-		scoreMsg.style.top = toPx(parseFloat(distanceFromTop) - state.sqSide + edge)
+		scoreMsg.style.top = toPx(parseFloat(distanceFromTop) - state.getActualSqSide())
+		scoreMsg.style.lineHeight = toPx(state.getActualSqSide())
 		scoreMsg.className = "scoreAnimation"
 		scoreMsg.textContent = '+ ' + state.getRowBlocks() * 10 * multiplier
 		gridEl.appendChild(scoreMsg)
-		console.log(scoreMsg.style.top)
-		console.log(distanceFromTop)
+
 		if (endLevel) {
 			removalTimeout = 2000
 			fadeoutTimeout = 1500
@@ -151,6 +150,7 @@ var calcFallDistance = function(row,rowIndex) {
 	// console.log('distance from top is ', row.distanceFromTop, 'grid height is ', state.getGridHeight())
 	// console.log('landing place is ', landingPlace, rowIndex)
 	return startingPlace - landingPlace
+
 }
 
 var changeColors = function(block) {
@@ -178,6 +178,12 @@ var evaluateMove = function() {
 	return matched
 }
 
+var exposePlayButton = function(text) {
+	$$("#playButton").style.opacity = 1
+	$$("#playButton").style.visibility = 'visible'
+	$$("#playButton").textContent = text
+}
+
 var getColors = function(row) {
 	return row.children.map(function(block) {
 		return block.style.backgroundColor
@@ -194,14 +200,8 @@ var handleLoss = function() {
 	})
 	setTimeout(function(){
 		playerRowEl.clearChildren()
-		var msg = document.createElement('h2')
-		msg.style.fontSize = toPx(state.sqSide * .75)
-		msg.style.lineHeight = toPx(state.sqSide)
-		msg.style.top = toPx(state.sqSide * -1)
-		msg.innerHTML = "you lose"
-		msg.id = "loseMessage" 
-		playerRowEl.appendChild(msg)
-		setTimeout(function(){msg.style.opacity = 1},10)
+		// playerRowEl.appendChild(makeLossMessage())
+		exposePlayButton('again')
 	},750)
 }
 
@@ -271,9 +271,10 @@ var initState = function() {
 		score: 0,
 		sqSide:60,
 		totalMatchesNeeded: 4,
+		getActualSqSide: function(){return this.sqSide + 2},
 		getRowBlocks: function(){return Math.min(this.level + 3,11)},
 		getGridHeight: function() {
-			return this.maxRows * (this.sqSide + 2) - 2 // fiddling height to accommodate outlines
+			return this.maxRows * (this.getActualSqSide()) - 2 // fiddling height to accommodate outlines
 		}
 	}
 	window.state = state
@@ -317,6 +318,17 @@ var makeDay = function() {
 	n.innerHTML = "night."
 }
 
+var makeLossMessage = function() {
+	var msg = document.createElement('h2')
+	msg.style.fontSize = toPx(state.sqSide * .75)
+	msg.style.lineHeight = toPx(state.sqSide)
+	msg.style.top = toPx(state.sqSide * -1)
+	msg.innerHTML = "you lose"
+	msg.id = "loseMessage" 
+	setTimeout(function(){msg.style.opacity = 1},10)
+	return msg
+}
+
 var makeNight = function() {
 	if (state.night) {
 		makeDay()
@@ -347,6 +359,7 @@ var makeRow = function() {
 }
 
 var moveHandler = function(e){
+	console.log(state)
 	if (state.animating || state.advancing || state.lost) return
 
 	// handle tutorial mode
@@ -358,8 +371,7 @@ var moveHandler = function(e){
 	}
 	if (e.target.className.contains('powerUp') && (state.instructions.stage === 2)) {
 		setTimeout(function(){
-			$$("#playButton").style.opacity = 1
-			$$("#playButton").style.visibility = 'visible'
+			exposePlayButton('play')
 		},2000)
 	}
 
