@@ -573,19 +573,23 @@ var gameContainerEl = $$('#gameContainer')
 initState()
 
 // event listeners
-powerUpContainerEl.addEventListener('touchstart',moveHandler)
-playerRowEl.addEventListener('touchstart',moveHandler)
-$$('#tutorial').addEventListener('touchstart',showInstructions)
-$$('#night').addEventListener('touchstart',makeNight)
-$$("#playButton").addEventListener('touchstart',restart)
-$$("#restart").addEventListener('touchstart',restart)
 
-powerUpContainerEl.addEventListener('click',moveHandler)
-playerRowEl.addEventListener('click',moveHandler)
-$$('#tutorial').addEventListener('click',showInstructions)
-$$('#night').addEventListener('click',makeNight)
-$$("#playButton").addEventListener('click',restart)
-$$("#restart").addEventListener('click',restart)
+if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+	powerUpContainerEl.addEventListener('touchstart',moveHandler)
+	playerRowEl.addEventListener('touchstart',moveHandler)
+	$$('#tutorial').addEventListener('touchstart',showInstructions)
+	$$('#night').addEventListener('touchstart',makeNight)
+	$$("#playButton").addEventListener('touchstart',restart)
+	$$("#restart").addEventListener('touchstart',restart)
+}
 
+else {
+	powerUpContainerEl.addEventListener('click',moveHandler)
+	playerRowEl.addEventListener('click',moveHandler)
+	$$('#tutorial').addEventListener('click',showInstructions)
+	$$('#night').addEventListener('click',makeNight)
+	$$("#playButton").addEventListener('click',restart)
+	$$("#restart").addEventListener('click',restart)
+}
 makeNight()
 initLevel()
