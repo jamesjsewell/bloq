@@ -4,46 +4,51 @@
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 	touch-action: manipulation; /* meant to prevent 300ms delay on phone touch */
-	transition: .5s opacity ease;
 	white-space-collapse: discard; 
 }
 
 * {
-	transform: translate3d(0,0,0);
-	-webkit-transform: translate3d(0,0,0);
+	opacity: 1;
+	transition: 1s opacity ease;
+	transform: translate3d(0, 0, 0);
+	font-weight: 100;
+	-webkit-transform: translate3d(0, 0, 0);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
 }
+
+/*PLAY SCREEN STYLES*/
 
 a {
     text-decoration: none;
     color: inherit;
 }
 
-#tutorialContainer p#powerUpAdvice {
-    left: -59%;
-    bottom: 290px;
-    max-width: 150px;
-}
-
-
 body {
 	font-family: Helvetica, Arial, sans-serif; 
 	font-size: 0;
-	color: #444;
-	background: #fff;
+	color: #ddd;
+	background: #222;
 	height: 100vh;
 }
 
 h1 {
-	font-size: 38px;
+	font-size: 5.8vh;
 	z-index: 1;
 	margin: 0;
 	display: inline-block;
 	font-weight: 200;
+	margin-top: 6vh;
+}
+
+i {
+	cursor: pointer;
 }
 
 .block {
 	display: inline-block;
 	outline: 2px solid #ddd;
+	z-index: 0;
 }
 
 .gridRow {
@@ -55,48 +60,84 @@ h1 {
 	z-index: -1;
 }
 
-.powerUp:nth-child(even) {
-	/* color: rgb(170, 77, 57); */
-	/* background: rgba(39, 88, 107,.75); */
+.miniBlock {
+	display: inline-block;
+	width: 2.5vh;
+	height: 1.8vh;
+	flex: 1;
+	border: 2px solid #ddd;
+	border-right: none;
+	background-color: #222;
+	transition: .4s all ease;
 }
 
-.powerUp:nth-child(odd) {
-	/* color: rgb(39, 88, 107); */
-	/* background: rgba(170, 77, 57,.75); */
+.miniBlock:last-child {
+	border-right: 2px solid #ddd;
+}
+
+.miniBlock.filled {
+	background-color: #ddd;
+	/* border: 2px solid #222; */
 }
 
 .powerUp {
 	opacity: 0;
-	visibility: hidden;
-	margin: 25px 0;
-	border: 2px solid #ddd;
-	font-size: 39px;
-	width: 54px;
-	height: 54px;
-	line-height: 54px;
-	display: block;
+	visibility: hidden;                                    
+    margin: 3vh 0;
+    border: 2px solid #ddd;
+    font-size: 5.6vh;
+    height: auto;
+    width: 100%;
+    padding: 1.5vh;
+    display: block;
+    cursor: pointer;
 }
 
 .scoreAnimation {
-	font-size: 30px;
+	font-size: 4.6vh;
 	opacity: 1;
 	transition: 1s opacity ease;
 	margin: 0 auto;
-	width: 95%;
-	color: #444;
-	text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+	width: 100%;
+	transform: translate3d(0, 0, 0);
+	color: #ddd;
+	text-stroke: 1px #fff;
+	/* -webkit-text-stroke: 1px #fff; */
+	/* text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; */
 	/*text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;*/
 	font-weight: 900;
 	position: absolute;
 }
 
-#grid,#playerRowContainer {
+#blockCounter {
+	display: flex;
 	margin: auto;
-	outline: 2px solid #ddd;
+	margin-top: 2.7vh;
+	width: 96%;
+	/* max-width: 8vh; */
+}
+
+#container {
+    display: block;
+    margin: auto;
+    width: 95%;
+    text-align: center;
+    height: 100vh;
+    position: relative;
+}
+
+#currentMatches {
+	border-bottom: 2px solid #ddd;
+	padding-bottom: 1vh;
+	margin-bottom: 0;
+}
+
+#neededMatches {
+	margin-top: 1vh;
 }
 
 #gameContainer {
-	display: block;
+	display: inline-block;
 	margin: auto;
 	text-align: center;
 	position: relative;
@@ -104,7 +145,24 @@ h1 {
 	perspective: 500px;
 }
 
+#gameContainer.transitioning .block,#gameContainer.transitioning #grid {
+	opacity: .5;
+} 
+
+#gameContainer.transitioning .scoreAnimation {
+	opacity: 1;
+}
+
+#goBack {
+	font-size: 9vh;
+	position: fixed;
+	top: 0;
+	right: 0.5vh;
+}
+
 #grid {
+	margin: auto;
+	outline: 2px solid #ddd;
 	height: 450px;
 	display: block;
 	vertical-align: bottom;
@@ -112,6 +170,14 @@ h1 {
 	opacity: 1;
 	perspective: 800px;
 	z-index: 2;
+}
+
+#leftSide {
+	display: inline-block;
+	margin: 0 4vh 10.4vh 0;
+	vertical-align: bottom;
+	text-align: center;
+	width: 9vh;
 }
 
 #loseMessage {
@@ -130,12 +196,20 @@ h1 {
 	text-align: center;
 	opacity: 1;
 	font-weight: 200;
+	display: block;
+	vertical-align: text-bottom;
+	margin-top: 1vh;
+}
+
+#matchedDisplay p {
+	font-size: 5.6vh;
 }
 
 #nav {
 	margin-top: 2%;
 	margin-left: 65%;
 	display: block;
+	display: none;
 }
 
 #nav a {
@@ -149,37 +223,30 @@ h1 {
 
 #playerRow {
 	opacity: 1;
-	position: absolute;
 	transition: .5s right linear, .5s left linear, transform .75s ease;
 	width: 150%;
-	left: 0;
-	bottom: 0;
+	position: absolute;
+	/*for 2px outline on blocks*/
+	bottom: 4px;
+	left: 2px;
+	z-index: 3;
 }
 
 #playerRowContainer {
 	perspective: 800px;
-	width: 100%;
 	overflow: hidden;
-	margin-top: 40px;
-	height: 75px;
+	margin: auto;
+	margin-top: 3.3vh;
 	position: relative;
 	text-align: left;
+	margin-left: -2px;
 }
 
-#powerUpContainer {
-    left: -77px;
-    bottom: -13px;
-    cursor: pointer;
-    position: absolute;
-}
-
-#score {
-	font-size: 38px;
-	text-align: center;
-	opacity: 1;
-	position: absolute;
-	bottom: 10px;
-	right: 0;
+#readoutData {
+	position: relative;
+	width: 95%;
+	margin: auto;
+	height: 4.5vh;
 }
 
 #shifters {
@@ -187,70 +254,66 @@ h1 {
 }
 
 #shifters .powerUp:first-child {
-    /* border-radius: 35% 35% 0 0; */
-    /* padding-right: 5px; */
-    /* padding-left: 0px; */
     border-bottom: 1px solid #ddd;
     border-top: 2px solid #ddd;
 }
 
 #shifters .powerUp {
-    /* border-radius: 0 0 35% 35%; */
     margin: 0px;
-    /* padding-left: 5px; */
-    /* font-size: 31px; */
-    /* padding-top: 1px; */
-    /* padding-bottom: 1px; */
     border-top: 1px solid #ddd;
 }
 
-#titleWrapper {
-	background: #fff;
+#readout {
+	background: #222;
 	transform: translateZ(0px);
 	width: 105%;
 	position: relative;
 	margin-left: -2.5%;
 	margin-bottom: 2px;
-	height: 80px;
+	margin-top: 1.8vh;
+	height: 10.6vh;
 	z-index: 3;
 	transform-style: preserve-3d;
 	-webkit-transform-style: preserve-3d;
 	font-weight: 200;
 }
 
-#titleWrapper a {
-    margin: auto;
+#readout p {
     position: absolute;
-    bottom: 10px;
-    left: 0;
+    margin: 0;
+    /* bottom: 1vh; */
+    font-size: 5.8vh;
 }
 
-#tutorialContainer {
-	visibility: visible;
-}
-
-#tutorialContainer p {
-	font-size: 14px;
+#readout #level {
+	opacity: 1;
 	position: absolute;
-	font-weight: 100;
-	line-height: 21px;
-	max-width: 130px;
-	opacity: 0;
+	left: 0;
+}
+
+#readout #score {
+	right: 0;
+}
+
+#playButton {
+	border: 2px solid #ddd;
+	background: #222;
+	padding: 20px;
+	cursor: pointer;
+	display: inline-block;
+	margin: 0;
 }
 
 #gameContainer #playButton {
 	position: absolute;
-    left: 50%;
-    top: 45%;
-    transform: translate(-50%,-50%);
-    z-index: 99;
-    border: 2px solid #ddd;
-    background-color: #fff;
-    padding: 10px;
-    padding-top: 8px;
-    font-size: 24px;
-    cursor: pointer;
-    visibility: hidden;
+	left: 50%;
+	top: 45%;
+	transform: translate(-50%, -50%);
+	z-index: 99;
+	padding-top: 8px;
+	font-size: 5.8vh;
+	visibility: hidden;
+	display: inline
 }
 
 #gridAdvice {
@@ -270,17 +333,96 @@ h1 {
 		text-align: center;
 		margin: 0;
 		padding: 10px;
+		background: none;
 	}
 
 	#nav.day {
 		background: #ddd;
 		}
 	
-	#nav.night {
-		background: none;
-	}
-	
 	#nav a {
 		font-size: 26px;
 	}
+}
+
+
+/*HOME SCREEN STYLES*/
+
+.menu-item {
+	height: 20vh;
+	width: 20vh;
+	display: inline-block;
+	border: 2px solid #ddd;
+}
+
+.menu-item.top {
+	border-bottom: none;
+}
+
+.menu-item:nth-child(odd) {
+	border-right: none;
+}
+
+.menu-item .material-icons {
+	font-size: 15vh;
+	line-height: 20vh;
+	cursor: pointer;
+	font-weight: 100;
+}
+
+#menu {
+	margin: auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 40vh;
+	transform: translate(-50%,-50%);
+}
+
+/*TUTORIAL SCREEN*/
+
+.advice {
+	font-size: 5vh;
+	font-weight: 100;
+	opacity: 0;
+	text-align: center;
+	visibility: hidden;
+}
+
+#tutorialContainer {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 100%;
+	transform: translate(-50%,-50%);
+}
+
+#tutorialContainer p#powerUpAdvice {
+    left: -59%;
+    bottom: 290px;
+    max-width: 150px;
+}
+
+/*ABOUT SCREEN*/
+
+#container > img {
+    width: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border: 5px solid #ddd;
+}
+
+/*SETTINGS SCREEN*/
+
+#settingsContainer {
+	overflow: auto;	
+}
+
+#settingsContainer > p {
+	font-size: 10vh;
+	font-weight: 100;
+	margin-top: 30vh;
+	text-align: center;
 }
