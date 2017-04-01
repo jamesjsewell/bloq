@@ -1,770 +1,752 @@
 "use strict;"
 
-// modify prototypes
-Array.prototype.choice = function() {
-	var index = Math.floor(Math.random() * this.length)
-	return this[index]
-}
-
-String.prototype.contains = function(substr) {
-	return this.indexOf(substr) !== -1
-}
-
-Node.prototype.clearChildren = function(){
-	while (this.childNodes.length > 0) {
-		this.removeChild(this.childNodes[0])
-	}
-}
-
-NodeList.prototype.forEach = HTMLCollection.prototype.forEach = Array.prototype.forEach
-NodeList.prototype.map = HTMLCollection.prototype.map = Array.prototype.map
-NodeList.prototype.indexOf = HTMLCollection.prototype.indexOf = Array.prototype.indexOf	
-NodeList.prototype.reverse = HTMLCollection.prototype.reverse = Array.prototype.reverse = function(){
-	var newArray = []
-	for (var i = (this.length - 1); i >= 0; i --) {
-		newArray.push(this[i])
-	}
-	return newArray
-}	
-
-var numeralToWord = {
-	4:"four",
-	5:"five",
-	6:"six",
-	7:"seven",
-	8:"eight",
-	9:"nine",
-	10:"ten",
-	11:"eleven",
-	12:"twelve",
-	13:"thirteen"
-}
-
-// helper functions
-var $$ = function(selector) {
-	if (selector[0] === '.') {
-		return document.getElementsByClassName(selector.slice(1))
-	}
-	return document.querySelector(selector)
-}
-
-// assigning click for desktop, touchstart for mobile
-var eventType = 'click'
-if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-	eventType = 'touchstart'
-}
-
-var addCSSRule = function(sheet, selector, rules, index) {
-	if("insertRule" in sheet) {
-		sheet.insertRule(selector + "{" + rules + "}", index);
-	}
-	else if("addRule" in sheet) {
-		sheet.addRule(selector, rules, index);
-	}
-}
-
-// render functions
-var renderPlayView = function(tutorial) {
-	$$("#container").innerHTML = playHTML
-
-	var addGridRow = function() {
-		var row = makeRow()
-
-		if (arraysEqual(getColors(playerRowEl),getColors(row))) { //if this is already a match
-			addGridRow()
-			return
+// PROTOTYPE MODS
+;(function(){
+	Object.prototype.extend = function(attrs) {
+		var newObj = {}
+		for (var key in this) {
+			newObj[key] = this[key]
 		}
-		row.className = 'gridRow'
-		gridEl.appendChild(row)
-		sendRowDown(row)
-		state.currentRows += 1
-	}
-
-	var addPowerUp = function(){
-		if (state.level >= 5) {
-			// invert enters the arena
-			powerUpContainerEl.querySelector('#invert').style.opacity = 1
-			powerUpContainerEl.querySelector('#invert').style.visibility = "visible"	
+		for (var key in attrs) {
+			if (attrs.hasOwnProperty(key)) newObj[key] = attrs[key]
 		}
-		if (state.level >= 6) {
-			powerUpContainerEl.querySelector('#reverse').style.opacity = 1
-			powerUpContainerEl.querySelector('#reverse').style.visibility = "visible"	
-		}
-		if (state.level >= 7) {
-			powerUpContainerEl.querySelector('#shiftLeft').style.opacity = 1
-			powerUpContainerEl.querySelector('#shiftLeft').style.visibility = "visible"	
-			powerUpContainerEl.querySelector('#shiftRight').style.opacity = 1
-			powerUpContainerEl.querySelector('#shiftRight').style.visibility = "visible"	
-		}
+		return newObj
 	}
 
-	var advanceLevel = function() {
-
-		// animate clearance points
-		var remainingRows = state.maxRows - state.currentRows,
-			topMostBorder = state.currentRows * getActualSqSide()
-
-		for (var rowTop = topMostBorder; rowTop < getGridHeight(); rowTop += getActualSqSide()) {
-			animateScore(getGridHeight() - rowTop,.5,true)
-		}
-
-		state.score += remainingRows * 5 * getRowBlocks()
-		updateReadout()
-		state.level += 1
-		state.matchesThusFar = 0
-		state.totalMatchesNeeded += 1
-
-		var disappearTimeout = remainingRows ? 2500: 500
-		var theyDisappeared = new Promise(function(resolve,reject) {
-			setTimeout(function() {
-				disappear(leftSideEl,gameContainerEl)
-				resolve()
-			},disappearTimeout)
-		})
-		theyDisappeared.then(function() {
-			setTimeout(initLevel,1000)
-		})
-	}
-
-	var animateScore = function(distanceFromTop,multiplier,endLevel) {
-		return new Promise(function(res,rej) {
-			var removalTimeout = 1000,
-				fadeoutTimeout = 500
-			var scoreMsg = document.createElement('p')
-			scoreMsg.style.top = toPx(parseFloat(distanceFromTop) - getActualSqSide())
-			scoreMsg.style.lineHeight = toPx(getActualSqSide())
-			scoreMsg.className = "scoreAnimation"
-			scoreMsg.textContent = '+ ' + getRowBlocks() * 10 * multiplier
-			gridEl.appendChild(scoreMsg)
-			if (endLevel) {
-				removalTimeout = 2000
-				fadeoutTimeout = 1500
-				scoreMsg.style.opacity = 0
-				setTimeout(function(){scoreMsg.style.opacity = 1},50)
-			}
-			setTimeout(function(){
-				scoreMsg.style.opacity = 0
-				setTimeout(function(){
-					gridEl.removeChild(scoreMsg)
-				},removalTimeout)
-			},fadeoutTimeout)		
-			res()
-		})
-	}
-
-	var appear = function() {
-		Array.prototype.forEach.call(arguments,function(arg){
-	        arg.style.opacity = 1
-		})
-	}
-
-
-	var arraysEqual = function(a1,a2) {
-	    return JSON.stringify(a1)==JSON.stringify(a2);
-	}
-
-	var calcFallDistance = function(row,rowIndex) {
-		// calculations are based on the bottom border of the row
-		var landingPlace = getActualSqSide() * rowIndex 
-		var startingPlace = getGridHeight() - row.distanceFromTop
-		return startingPlace - landingPlace + 2
-	}
-
-	var changeColors = function(block) {
-		var eligibleColors = COLORS.filter(function(item){
-			return item !== block.style.backgroundColor 
-		})
-		block.style.backgroundColor = eligibleColors.choice()
-	}
-
-	var disappear = function() {
-		Array.prototype.forEach.call(arguments,function(arg){
-	        arg.style.opacity = 0
-		})
-	}
-
-	var evaluateMove = function() {
-		var playerColors = getColors(playerRowEl)
-		console.log(playerColors)
-		var matched = []
-		gridEl.children.forEach(function(row){
-			var rowColors = getColors(row)
-			console.log(rowColors)
-			console.log(row)
-			if (arraysEqual(playerColors,rowColors)) {
-				matched.push(row)
-			}
-		})
-		return matched
-	}
-
-	var exposePlayButton = function(text) {
-		
-		$$("#playButton").style.opacity = 1
-		$$("#playButton").style.visibility = 'visible'
-		$$("#playButton").textContent = text
-	}
-
-	var getColors = function(row) {
-		return row.children.map(function(block) {
-			return block.style.backgroundColor
-		})
-	}
-
-	var getActualSqSide = function(){
-		return state.sqSide + 2
-	}
-	
-	var getGridHeight = function() {
-		return state.maxRows * (getActualSqSide()) - 2 // fiddling height to accommodate outlines
-	}
-
-	var getPlayerRowWidth = function() {
-		return toPx(state.sqSide * getRowBlocks() + 4)
-	}
-
-	var getPlayerRowHeight = function() {
-		return toPx(state.sqSide + 5)
-	}
-
-	var getRowBlocks = function(){
-		return Math.min(state.level,11)
-	}
-	
-	var handleLoss = function() {
-		if (state.instructions.stage > -1) return
-		state.lost = true
-		setTimeout(function(){
-			
-			exposePlayButton('again')
-		},750)
-	}
-
-	var handleMatched = function(matched,res){
-		matched.forEach(function(row){
-			animateScore(row.distanceFromTop,1).then(function(){
-				removeGridRow(row)
-				gridEl.querySelectorAll('.gridRow').forEach(sendRowDown)
-				res()
-			}).catch(logErrors)
-			state.matchesThusFar += 1
-			state.score += getRowBlocks() * 10
-		})
-		updateReadout()
-		
-		if (matched.length && (state.instructions.stage === 1)) {
-			setTimeout(function(){
-				$$("#powerUpAdvice").style.opacity = 1
-				$$('.powerUp').forEach(function(pu){pu.style.opacity = 1;pu.style.visibility = 'visible'})
-			},600)
-			state.instructions.stage += 1
-		}
-
-		// don't allow someone in tutorial mode to advance levels
-		if (state.instructions.stage > -1) {
-			if (state.matchesThusFar === state.totalMatchesNeeded - 1) {
-				return
-			}
-		}
-	}
-
-	var initFromStorage = function() {
-		state = JSON.parse(localStorage.block12_state)
-		console.log(state)
-
-		gameContainerEl.style.width = toPx(state.sqSide * getRowBlocks())
-		gridEl.style.height = toPx(getGridHeight())
-		playerRowContainerEl.style.width = getPlayerRowWidth()	
-		playerRowContainerEl.style.height = toPx(state.sqSide + 8)
-
-		// playerRowEl.innerHTML = localStorage.block12_playerRow
-		// gridEl.innerHTML = localStorage.block12_gridRows
-		var playerBlocks = JSON.parse(localStorage.block12_playerRow)
-		
-		var rowFromData = function(arr) {
-			var htmlString = ''
-			arr.forEach(function(bgColor) {
-				var styleString = "width: " + state.sqSide + "px; height: " + state.sqSide + "px; background-color: " + bgColor + ";"
-				htmlString += '<div class="block" style="' + styleString + '"></div>'
-			})
-			return htmlString
-		}	
-
-		var objToInlineStyle = function(obj) {
-			var styleString = ''
-			for (var prop in obj) {
-				styleString += prop + ':' + obj[prop] + '; '
-			}
-			return styleString
-		}
-
-		playerRowEl.innerHTML = rowFromData(playerBlocks)
-
-		var gridRows = JSON.parse(localStorage.block12_gridRows)
-		var rowEls = gridRows.map(function(rowObj) {
-			var htmlString = '<div class="gridRow" style="' + objToInlineStyle(rowObj.style) + '">' 
-			var htmlString = '' 
-			rowObj.blocks.forEach(function(blockEl){
-				htmlString += '<div class="block" style="' + objToInlineStyle(blockEl.style) + ';"></div>' 
-			})
-			var rowEl = document.createElement('div')
-			rowEl.distanceFromTop = rowObj.distanceFromTop
-			rowEl.classList.add('gridRow')
-			rowEl.style.top = rowObj.style.top
-			rowEl.style.transition = rowObj.style.transition
-			rowEl.style.transform = rowObj.style.transform
-			console.log(rowEl)
-			rowEl.innerHTML = htmlString
-			gridEl.appendChild(rowEl)
-		})
-
-		// gridEl.innerHTML = htmlString
-		addPowerUp()
-		makeMiniBlocks()
-		updateReadout()
-	}
-
-	var initLevel = function() {
-
-		state.advancing = false
-		state.matchesThusFar = 0
-		state.currentRows = 0
-
-
-		// reassign heights and widths
-		gameContainerEl.style.width = toPx(state.sqSide * getRowBlocks())
-		gridEl.style.height = toPx(getGridHeight())
-		playerRowContainerEl.style.width = getPlayerRowWidth()
-		playerRowContainerEl.style.height = toPx(state.sqSide + 8)
-
-		// make possible updates to readouts/display
-		updatePlayerRow()
-		addPowerUp()
-		makeMiniBlocks()
-		updateReadout()
-
-		// refresh grid
-		gridEl.clearChildren()
-		appear(gameContainerEl)
-		appear(leftSideEl)
-		addGridRow()
-	}
-
-	var initState = function() {
-		console.log('initting regular')
-		var containerHeight = window.getComputedStyle(document.querySelector("#container")).height
-		var sideLength = parseInt(containerHeight) * .087
-		state = {
-			advancing: false,
-			animating: false,
-			currentRows: 0,
-			instructions: {stage:-1},
-			level: 4,
-			lost: false,
-			match: false,
-			maxRows: 8,
-			matchesThusFar: 0,
-			score: 0,
-			sqSide: sideLength,
-			totalMatchesNeeded: 4,
-		}
-		window.state = state
-	}
-
-	var invertColors = function(res) {
-		state.animating = true
-		playerRowEl.children.forEach(function(block){
-			block.style.transition = "background .5s ease"
-			changeColors(block)
-			setTimeout(function(){
-				block.style.transition = "none"
-				state.animating = false
-				res()
-			},500)
-		})
-	}
-
-	var logErrors = function(e) {
-		console.log(e)
-	}
-
-	var makeBlock = function() {
-		var block = document.createElement('div')
-		block.className = 'block'
-		block.style.width = toPx(state.sqSide)
-		block.style.height = toPx(state.sqSide)
-		block.style.backgroundColor = COLORS.choice()
-		return block
-	}
-
-	var makeLossMessage = function() {
-		var msg = document.createElement('h2')
-		msg.style.fontSize = toPx(state.sqSide * .75)
-		msg.style.lineHeight = toPx(state.sqSide)
-		msg.style.top = toPx(state.sqSide * -1)
-		msg.innerHTML = "you lose"
-		msg.id = "loseMessage" 
-		setTimeout(function(){msg.style.opacity = 1},10)
-		return msg
-	}
-
-	var makeMiniBlocks = function() {
-		var htmlStr = ''
-		for (var i = 0; i < state.level; i ++) {
-			htmlStr += '<div class="miniBlock"></div>'
-		}
-		blockCounterEl.innerHTML = htmlStr
-	}
-
-	var makeRow = function() {
-		var rowEl = document.createElement('div')
-		var i = 0
-		while (i < getRowBlocks()) {
-			var block = makeBlock()
-			rowEl.appendChild(block)
-			i += 1
-		}
-		rowEl.distanceFromTop = -2 //topVal is used internally to track the position. actual location is handled via 3d-transform
-		rowEl.style.top = toPx(-1 * state.sqSide - 2)
-		return rowEl
-	}
-
-	var moveHandler = function(e){
-		if (state.animating || state.advancing || state.lost) return
-
-		// handle tutorial mode
-		if (e.target.className.contains('block') && (state.instructions.stage === 0)) {
-			setTimeout(function(){
-				$$("#gridAdvice").style.opacity = 1
-				state.instructions.stage += 1
-			},600)
-		}
-		if (e.target.className.contains('powerUp') && (state.instructions.stage === 2)) {
-			setTimeout(function(){
-				exposePlayButton('play')
-			},2000)
-		}
-
-		// do what they meant to do
-		if (e.target.className.contains('block')) {
-			var p = new Promise(function(res,rej) {
-				changeColors(e.target)
-				addGridRow() 
-				res()
-			})
-		}
-		else if (e.target.id === "invert") {
-				var p = new Promise(function(res,rej) {
-				invertColors(res)
-			})
-		}
-		else if (e.target.id === "reverse") var p = new Promise(function(res,rej) {
-			reverseColors(res)	
-		})	
-		else if (e.target.id === "shiftLeft") var p = new Promise(function(res,rej){
-			shiftLeft(res)
-		})		
-		else if (e.target.id === "shiftRight") var p = new Promise(function(res,rej){
-			shiftRight(res)
-		})	
-		else return
-		p.then(respondToMove)
-		saveState()
-	}
-
-	var removeGridRow = function(row) {
-		gridEl.removeChild(row)
-		state.currentRows -= 1 
-	}
-
-	var respondToMove = function() {
-
-		var matched = evaluateMove() // returns true if at least one match was found
-		if (!matched.length && (state.currentRows > state.maxRows)) {
-			handleLoss()
-			return
-		}
-		var p = new Promise(function(res,rej) {
-			handleMatched(matched,res)
-		})
-		p.then(function() {
-			if (state.matchesThusFar >= state.totalMatchesNeeded) {
-					setTimeout(advanceLevel,1000)
-					state.advancing = true
-				}
-
-		}).catch(logErrors)
-	}
-
-	var restart = function() {
-		state.lost = false
-		$$(".powerUp").forEach(function(el){
-			el.style.opacity = 0
-			setTimeout(function(){
-				el.style.visibility = 'hidden'
-			},500)
-		})
-
-		setTimeout(function(){$$("#playButton").style.visibility = "hidden"},750)
-		$$(".advice").forEach(function(el){
-			el.style.opacity = 0
-		})
-		initState()
-		initLevel()
-	}
-
-	var reverseColors = function(res) {
-		var reversed = playerRowEl.childNodes.reverse()
-
-		// the animation does a superficial rotation, leaving the original row intact.
-		// it must be followed up with an actual transformation of the data, 
-		// then the superficial changes must be reversed.
-		state.animating = true
-		playerRowEl.style.textAlign = "center"
-		playerRowEl.style.left = "-26%" //fudged to accommodate outline
-		if (playerRowEl.style.transform === "rotateY(180deg)") {
-			playerRowEl.style.transform = "rotateY(0deg)"
-		}
-		else playerRowEl.style.transform = "rotateY(180deg)"
-
-		setTimeout(function() {
-			playerRowEl.clearChildren()
-			playerRowEl.style.transition = "none"
-			playerRowEl.style.textAlign = "left"
-			playerRowEl.style.left = "2px"
-			playerRowEl.style.transform = "rotateY(0deg)"
-			reversed.forEach(function(block){
-				playerRowEl.appendChild(block)
-			})
-			state.animating = false
-			res()
-		},730) 
-		playerRowEl.style.transition = ".75s transform ease"
-	}
-// <div class="gridRow" style="top: -72.035px; transition: all 1.08552s ease; transform: translate3d(0px, 504.245px, 0px);"><div class="block" style="width: 70.035px; height: 70.035px; background-color: rgb(39, 88, 107);"></div><div class="block" style="width: 70.035px; height: 70.035px; background-color: rgb(170, 77, 57);"></div><div class="block" style="width: 70.035px; height: 70.035px; background-color: rgb(39, 88, 107);"></div><div class="block" style="width: 70.035px; height: 70.035px; background-color: rgb(170, 77, 57);"></div></div>
-// <div class="block" style="width: 70.035px; height: 70.035px; background-color: rgb(170, 77, 57);"></div>
-	var saveState = function() {
-		localStorage.block12_state = JSON.stringify(state)
-		localStorage.block12_gridRows = JSON.stringify(gridEl.querySelectorAll('.gridRow').map(
-			function(rowEl) {
-				return {
-					style: {
-						top: rowEl.style.top,
-						transition: rowEl.style.transition,
-						transform: rowEl.style.transform
-					},
-					distanceFromTop: rowEl.distanceFromTop,
-					blocks: rowEl.querySelectorAll('.block').map(function(blockEl) {
-							return {
-								style: {
-									"background-color": blockEl.style.backgroundColor,
-									width: blockEl.style.width,
-									height: blockEl.style.height
-								}
-							}
-						})
-				} 
-			})
-		)
-		// localStorage.block12_gridRows = JSON.stringify(gridEl.querySelectorAll('.gridRow'))
-		
-		localStorage.block12_playerRow = JSON.stringify(
-			playerRowEl.querySelectorAll('.block').map(function(blockEl) {
-					return blockEl.style.backgroundColor
-				})
-			)
-
-		// localStorage.block12_playerRow = playerRowEl.innerHTML
-		// localStorage.block12_gridRows = gridEl.innerHTML
-	}
-
-	// important! the interpretation of actualFallDistance is "distance from the top"
-
-	var sendRowDown = function(row) {
-		var rowList = gridEl.querySelectorAll('.gridRow')
-		var currentRows = rowList.length,
-			rowIndex = rowList.indexOf(row),
-			animatedFallDistance = getGridHeight() - 
-				currentRows * state.sqSide, // these are different
-				// because rows that drop only one square length should
-				// not actually fall as quickly as they should mathematically.
-			actualFallDistance = calcFallDistance(row,rowIndex),
-			newTransform = actualFallDistance + row.distanceFromTop
-			time = animatedFallDistance / 400 // formula for making uniform falling rate, where 400px/s is the desired rate
-		row.style.transition = time + 's ease all'
-		var dropped = new Promise(function(res,rej) {
-			setTimeout(function(){
-				row.distanceFromTop = newTransform 
-				row.style.transform = "translate3d(0," + toPx(newTransform) + ",0)"
-				row.style.webkitTransform = "translate3d(0," + toPx(newTransform) + ",0)"
-				row.style.MozTransform = "translate3d(0," + toPx(newTransform) + ",0)"
-				saveState()
-				res()
-			},50)
-		})
-	}
-
-	var shiftLeft = function(res) {
-		state.animating = true
-		var firstClone = playerRowEl.children[0].cloneNode()
-		playerRowEl.appendChild(firstClone)
-		playerRowEl.style.transition = ".5s left linear"
-		setTimeout(function(){playerRowEl.style.left = toPx(-1 * state.sqSide)},15)
-		setTimeout(function(){
-			playerRowEl.style.transition = "none"
-			playerRowEl.removeChild(playerRowEl.children[0])
-			playerRowEl.style.left = "2px"
-			state.animating = false
-			res()
-			},500)
-		}
-
-	var shiftRight = function(res) {
-		state.animating = true
-		var blocks = playerRowEl.childNodes
-		var lastClone = blocks[blocks.length - 1].cloneNode()
-		// playerRowEl.removeChild(blocks[0])
-		playerRowEl.style.transition = "none"
-		playerRowEl.style.left = toPx(-1 * state.sqSide)
-		playerRowEl.insertBefore(lastClone,blocks[0]) 
-		
-		setTimeout(function(){
-			playerRowEl.style.transition = ".5s all linear"
-			playerRowEl.style.left = "2px"
-			},30)
-		setTimeout(function(){
-			playerRowEl.removeChild(blocks[blocks.length - 1])
-			state.animating = false
-			res()
-		},500)
-	}
-
-	var toggleInstructions = function() {
-		
-		if (state.instructions) {
-			
-			$$("#tutorialContainer").style.visibility = 'hidden'
-			document.getElementsByClassName("powerUp").forEach(function(el){
-				el.style.visibility = 'hidden'
-				el.style.opacity = 0
-			})
-			state.instructions = false
+	Object.prototype.choice = function() {
+		if (this instanceof Array) {
+			var index = Math.floor(Math.random() * this.length)
+			return this[index]
 		}
 		else {
-			
-			$$("#tutorialContainer").style.visibility = 'visible'
-			document.getElementsByClassName("powerUp").forEach(function(el){
-				el.style.visibility = 'visible'
-				el.style.opacity = 1
+			return this.values().choice()
+		} 
+	}
+
+	Object.prototype.values = function() {
+		var output = []
+		for (var key in this)  {
+			if (this.hasOwnProperty(key)) {
+				output.push(this[key])
+			}
+		}
+		return output
+	}
+
+	Array.prototype.remove = function(el) {
+		var i = this.indexOf(el)
+		return this.slice(0,i).concat(this.slice(i + 1))
+	}
+
+	String.prototype.contains = function(substr) {
+		return this.indexOf(substr) !== -1
+	}
+
+	Node.prototype.clearChildren = function(){
+		while (this.childNodes.length > 0) {
+			this.removeChild(this.childNodes[0])
+		}
+	}
+
+	NodeList.prototype.forEach = HTMLCollection.prototype.forEach = Array.prototype.forEach
+	NodeList.prototype.map = HTMLCollection.prototype.map = Array.prototype.map
+	NodeList.prototype.indexOf = HTMLCollection.prototype.indexOf = Array.prototype.indexOf	
+	NodeList.prototype.reverse = HTMLCollection.prototype.reverse = Array.prototype.reverse = function(){
+		var newArray = []
+		for (var i = (this.length - 1); i >= 0; i --) {
+			newArray.push(this[i])
+		}
+		return newArray
+	}	
+})();
+
+var CONSTANTS = {
+	numeralToWord: {
+		4:"four",
+		5:"five",
+		6:"six",
+		7:"seven",
+		8:"eight",
+		9:"nine",
+		10:"ten",
+		11:"eleven",
+		12:"twelve",
+		13:"thirteen"
+	},
+	colors: {
+		red: 'rgb(170, 77, 57)',
+		blue: 'rgb(39, 88, 107)'
+	},
+	dropIncr: 12,
+	fadeIncr: .08,
+	invertSpeed: 20,
+	rotateIncr: 2.88
+}
+
+var EVENTS = {
+	eventMap: {},
+	off: function(evt,cb) {
+		if (cb) {
+			this.eventMap[evt] = this.eventMap[evt].remove(cb)
+		}
+		else {
+			this.eventMap[evt] = []
+		}
+	},
+	on: function(evt,cb) {
+		if (this.eventMap[evt]) {
+			this.eventMap[evt].push(cb)
+		}
+		else {
+			this.eventMap[evt] = [cb]
+		}
+	},
+	trigger: function(evt,arg) {
+		if (!this.eventMap[evt]) return
+		this.eventMap[evt].forEach(function(cb) {cb(arg)})
+	}
+}
+
+// APP STATE
+
+var STATE = EVENTS.extend({
+	attributes: {
+		animating: false,
+		level: 3,
+		currentRows: 0,
+		maxRows: 8,
+		matchesThusFar: 0,
+		score: 0,
+		sqSide: null
+	},
+
+	levelDefaults: {
+		currentRows: 0,
+		matchesThusFar: 0
+	},
+
+	get: function(prop) {
+		if (this.attributes[prop] === undefined) {
+			throw new Error(`property ${prop} does not exist on state.`)
+		}
+		return this.attributes[prop]
+	},
+
+	getGridTop: function() {
+		return this.get('currentRows') * this.get('sqSide') || -1
+	},
+
+	getRowBlocks: function() {
+		return Math.min(this.get('level'), 11)
+	},
+
+	getRowWidth: function() {
+		return toPx(this.get('sqSide') * this.getRowBlocks())
+	},
+
+	levelUp: function() {
+		var S = this
+		// constant actions at level change
+		// trigger level change, grid and width-dependent things will subscribe to it.
+		if (this.get('matchesThusFar') < this.get('level')) return 
+		disappear($$('#container'))
+			.then(function() {
+				S.trigger('levelChange')
+				S.revealButtons()
+				appear($$('#container'))
 			})
-			state.instructions = true
+	},
+
+	resetLevelDefaults: function() {
+		this.attributes = this.attributes.extend(this.levelDefaults)
+	},
+
+	revealButtons: function() {
+		if (this.get('level') >= 1) {
+			appear($$('#invert'))
+			$$('#invert').onclick = invertPlayerRow
+		}
+		if (this.get('level') >= 2) {
+			appear($$('#flip'))
+			$$('#flip').onclick = flipPlayerRow
+		}
+		if (this.get('level') >= 3) {
+			appear($$('#shifters'))
+			console.log($$('#shifters'))
+			// $$('#shiftLeft').onclick = shiftRowRight
+			// $$('#shiftRight').onclick = shiftRowLeft
+		}
+	},
+
+	set: function(attrs) {
+		this.attributes = this.attributes.extend(attrs)
+		this.trigger('change')
+	},
+
+	updateScore: function(addition) {
+		this.set({
+			score: this.get('score') + addition,
+		})
+		this.trigger('scoreUpdate')
+	}
+})
+
+// TEMPLATES
+
+var TEMPLATES = {
+	play: {
+		content: TEMPLATES.play,
+		init: function() {
+			// set dimensions according to device 
+			var containerHeight = window.getComputedStyle(document.querySelector("#container")).height
+			var sideLength = parseInt(containerHeight) * .087
+
+			var gameContainer = new Component().assignNode('#gameContainer'),
+				playerRowContainer = new Component().assignNode('#playerRowContainer'),
+				scoreEl = new Component().assignNode('#score'),
+				blockCounter = new Component().assignNode('#blockCounter')
+
+
+			STATE.set({
+				sqSide: sideLength,
+				gridHeight: STATE.get('maxRows') * sideLength,
+				playerRow: new PlayerRow()
+			})
+			STATE.set({
+				grid: new Grid()
+			})
+			gameContainer.setStyle({
+				height: toPx(STATE.get('gridHeight'))
+			})
+			playerRowContainer.setStyle({
+				height: toPx(sideLength)
+			})
+
+			// set up subscriptions
+			STATE.on('levelChange', initLevel)
+			STATE.on('scoreUpdate', function() {
+				scoreEl.write(STATE.get('score'))
+			})
+
+			// set it off
+			STATE.trigger('levelChange')
+			STATE.revealButtons()
+
+		},
+	},
+	settings: {
+		content: '\
+			<div id="settingsContainer">\
+				<p>coming soon</p>\
+			</div>',
+		init: function() {
+
+		}
+	},
+	home: {
+		content: '\
+			<div id="titleWrapper" class="home">\
+		    	<h1>block12</h1>\
+		    </div>\
+		    <div id="menu">\
+				<div class="menu-item top">\
+					<i id="play" class="material-icons">play_arrow</i>\
+				</div>\
+				<div class="menu-item top">\
+					<i id="tutorial" class="material-icons">help</i>\
+				</div>\
+				<div class="menu-item">\
+					<i id="settings" class="material-icons">settings</i>\
+				</div>\
+				<div class="menu-item">\
+					<i id="about" class="material-icons">pets</i>\
+				</div>\
+			</div>',
+		init: function() {
+			var ids = ['play','tutorial','settings','about']
+			ids.forEach(function(id) {
+				$$('#' + id).onclick = function() {loadTemplate(id)}
+			})
+		}
+	},
+	about: {
+		content: '',
+		init: function() {
+
 		}
 	}
+}
 
-	var showInstructions = function() {
-		if (state.instructions.stage === -1) {
-			state.instructions.stage += 1
-			$$("#blockAdvice").style.opacity = 1
+
+// COMPONENTS
+
+function Component(sel) {
+	this.sel = sel
+	// if the node is being read, we find it. otherwise, we
+		// create it and make it a div by default
+	this.node = $$(sel) || document.createElement('div')
+}
+
+Component.prototype = EVENTS.extend({
+
+	assignNode: function(sel) {
+		this.node = $$(sel)
+		return this
+	},
+
+	get: function(key) {
+		return this.node.getAttribute(key)
+	},
+
+	getStyle: function(key) {
+		var val = this.node.style[key]
+		// parse to a number if possible
+		return parseInt(val) ? parseInt(val) : val
+	},
+
+	makeNode: function(tag) {
+		this.node = document.createElement(tag)
+		return this
+	},
+
+	set: function(attrs) {
+		Object.keys(attrs).forEach(function(key) {
+			this.node.setAttribute(key,attrs[key])						
+		}.bind(this))
+		return this
+	},
+
+	setStyle: function(attrs) {
+		for (var prop in attrs) {
+			if (typeof prop === 'number') prop = toPx(prop)
+			this.node.style[prop] = attrs[prop]
 		}
-	}
+		return this
+	},
 
-	var toPx = function(val) {
-		return val + 'px'
-	}
+	getNode: function() {
+		return $$(this.sel)
+	},
 
-	var updatePlayerRow = function() {
-		playerRowEl.clearChildren()
-		var blocksCalledFor = Math.min(state.level,11)
-		while (blocksCalledFor > playerRowEl.children.length) {
-			playerRowEl.appendChild(makeBlock())
+	write: function(content) {
+		this.node.innerHTML = content
+	}
+})
+
+function Grid() {
+	// assign node and height
+	this.assignNode('#grid')
+	this.setStyle({
+		height: toPx(STATE.get('sqSide') * STATE.get('maxRows'))
+	})
+
+	// set up subscriptions
+		// add a row whenever it's time to do so
+	var addRow = this.addRow.bind(this),
+		checkForMatch = this.checkForMatch.bind(this)
+	EVENTS.on('drop', addRow)
+
+		// check for match whenever playerRowChanges
+	EVENTS.on('playerRowChange', checkForMatch)
+}
+
+Grid.prototype = Component.prototype.extend({
+	addRow: function() {		
+		var row = new GridRow()
+		row.fill()
+		if (arraysEqual(row.colors(),this.playerRow.colors())) {
+			return this.addRow()
 		}
-	}
+		row.set({
+			'data-position': STATE.get('currentRows')
+		})
+		STATE.set({
+			currentRows: STATE.get('currentRows') + 1
+		})
+		row.setStyle({
+			bottom: toPx(STATE.get('gridHeight')),
+			width: STATE.getRowWidth()
+		})
+		this.node.appendChild(row.node)
+		return this.sendRowDown(row)
+	},
 
-	var updateReadout = function() {
-		readoutEl.querySelector("#level").textContent = numeralToWord[state.level]
-		scoreEl.innerHTML = state.score
-		blockCounterEl.children.forEach(function(miniEl,i){
-			if (state.matchesThusFar > i) miniEl.classList.add('filled')
+	checkForMatch: function() {
+		var gridRows = this.node.children,
+			playerColors = this.playerRow.node.children.map(function(el) {
+				return el.style.background
+			}),
+			matchedRows = []
+		gridRows.forEach(function(row) {
+			var colors = row.children.map(function(el) {
+				return el.style.background
+			})
+			if (arraysEqual(playerColors,colors)) {
+				matchedRows.push(row)
+			}
+		})
+		if (matchedRows.length) {
+			this.handleMatches(matchedRows).then(STATE.levelUp.bind(STATE))
+		}
+	},
+
+	clear: function() {
+		this.node.clearChildren()
+	},
+
+	getRows: function() {
+		return this.node.querySelectorAll('.gridRow')
+	},
+
+	handleMatches: function(matches) {
+		var grid = this
+		var ps = matches.map(function(row) {
+			// handle scoring
+			var points = STATE.getRowBlocks() * 10
+			var score = new Score({
+				bottomPos: row.style.bottom,
+				val: points
+			})
+			grid.node.appendChild(score.node)
+			STATE.updateScore(points)
+			setTimeout(function() {
+				disappear(score.node)
+			}, 350)
+
+			// handle row mechanics
+			STATE.set({
+				currentRows: STATE.get('currentRows') - 1,
+				matchesThusFar: STATE.get('matchesThusFar') + 1
+			}) // update currentRows *before* the row has disappeared,
+				// so that the next row knows where to land
+			return disappear(row).then(function() {
+				grid.node.removeChild(row)
+			})
+		}) // each disappearance returns a promise
+		window.all = Promise.all(ps)
+		return Promise.all(ps).then(function() {
+			grid.resetIndices()
+			grid.sendAllDown()
+		})
+	},
+
+	resetIndices: function() {
+		var rows = this.getRows()
+		for (var i = 0; i < rows.length; i ++) {
+			rows[i].setAttribute('data-position',i)
+		}
+	},
+
+	sendAllDown: function() {
+		this.getRows().forEach(function(el) {
+			var rowComp = new Row()
+			rowComp.node = el
+			this.sendRowDown(rowComp)
+		}.bind(this))
+	},
+
+	sendRowDown: function(rowComp) {
+		return animate(function(res) {
+			var incr = CONSTANTS.dropIncr,
+				rockBottom = rowComp.get('data-position') * STATE.get('sqSide')
+			var inchDown = function() {
+				var newBottom = rowComp.getStyle('bottom') - incr
+				rowComp.setStyle({
+					bottom: newBottom > rockBottom ? 
+						toPx(newBottom) : toPx(rockBottom)
+				})
+				if (rowComp.getStyle('bottom') > rockBottom) {
+					requestAnimationFrame(inchDown)
+				}
+				else {
+					
+					res()
+				}	
+			}
+			inchDown()
 		})
 	}
+})
 
-	// assign global variables
-	var state
-	var gameContainerEl = $$('#gameContainer')
-		gridEl = $$("#grid"),
-		leftSideEl = $$('#leftSide')
-		matchedDisplayEl = $$('#matchedDisplay'),
-		powerUpContainerEl = $$('#powerUpContainer'),
-		playerRowContainerEl = $$('#playerRowContainer'),
-		readoutEl = $$("#readout")
-		COLORS = ['rgb(170, 77, 57)','rgb(39, 88, 107)'],
-		playerRowEl = $$("#playerRow"),
-		scoreEl = $$("#score"),
-		blockCounterEl = $$("#blockCounter")
+function Row() {
+}
 
+Row.prototype = Component.prototype.extend({
+	blocks: function() {
+		return this.node.querySelectorAll('.block')
+	},
 
-	// event listeners
-	
-	powerUpContainerEl.addEventListener(eventType,moveHandler)
-	playerRowEl.addEventListener(eventType,moveHandler)
-	playerRowEl.addEventListener(eventType,moveHandler)
-	$$("#playButton").addEventListener(eventType,restart)
-	$$("#restart").addEventListener(eventType,restart)
-	$$("#goBack").addEventListener(eventType,renderHomeView)
+	colors: function() {
+		return this.blocks().map(function(el) {
+			return el.style.background
+		})
+	},
 
-	var begin = function() {
-		if (localStorage.block12_state) {
-			initFromStorage()
-			return
+	empty: function() {
+		this.node.clearChildren()
+		return this
+	},
+
+	fill: function() {
+		this.node.clearChildren()
+		var blocksCalledFor = Math.min(STATE.get('level'),11)
+		while (blocksCalledFor > this.node.children.length) {
+			this.node.appendChild(new Block().node)
 		}
-		
-		initState()
-		initLevel()
-		if (tutorial) showInstructions()
+		return this
+	},
+
+	reverseBlocks: function() {
+		var reversedBlocks = this.blocks().reverse()
+		this.empty()
+		reversedBlocks.forEach(function(blockEl) {
+			this.node.appendChild(blockEl)
+		}.bind(this))
 	}
+})
 
-	begin()
+function GridRow() {
+	this.node = document.createElement('div')
+	this.node.className = 'gridRow'
 }
 
-var renderAbout = function() {
-	var photos = ['business.jpg', 'cayambe.jpg', 'woods.jpg','wat.jpg','moosing.jpg'],
-		imgSrc = './img/' + photos.choice(),
-		htmlString = '<img src="' + imgSrc + '">'
-	$$("#container").innerHTML = aboutHTML + htmlString
+GridRow.prototype = Row.prototype.extend({
+
+})	
+
+function PlayerRow() {
+	this.assignNode('#playerRow')
 }
 
-var renderHomeView = function() {
-	$$("#container").innerHTML = homeHTML
-	$$("#goBack").style.display = "none"
+PlayerRow.prototype = Row.prototype.extend({
 
-	var toggleView = function(e) {
-		var view = e.target.getAttribute('which')
-		$$("#goBack").style.display = "block"
-		var funcMap = {
-			play: renderPlayView,
-			tutorial: renderTutorial,
-			about: renderAbout,
-			settings: renderSettings
-		}
-		funcMap[view]()
+})
+
+function Block() {
+	var block = document.createElement('div')
+	block.className = 'block'
+	block.style.width = block.style.height = toPx(STATE.get('sqSide'))
+	block.style.background = CONSTANTS.colors.choice()
+	block.onclick = function(event) {
+		var bgColor = event.target.style.background
+		event.target.style.background = 
+			bgColor === CONSTANTS.colors.red ? 
+			CONSTANTS.colors.blue : CONSTANTS.colors.red
+		EVENTS.trigger('drop')
+		EVENTS.trigger('playerRowChange')
 	}
-	$$("#menu").addEventListener(eventType,toggleView)	
+	this.node = block
 }
 
-var renderSettings = function() {
-	$$("#container").innerHTML = settingsHTML
-}
+Block.prototype = Component.prototype.extend({
 
-var renderTutorial = function() {
-	$$("#container").innerHTML = tutorialHTML
-	$$("#tutorialContainer").children.forEach(function(adviceP,i) {
-		setTimeout(function(){
-			adviceP.style.opacity = 1
-			adviceP.style.visibility = 'visible'
-		}, i * 2000)
+})
+
+function Score(opts) {
+	this.makeNode('p')	
+	this.setStyle({
+		bottom: opts.bottomPos,
+		lineHeight: toPx(STATE.get('sqSide')),
+		opacity: 1
 	})
-	$$("#playButton").addEventListener(eventType,renderPlayView)
+	this.set({
+		class: 'scoreAnimation'
+	})
+	this.node.textContent = '+ ' + opts.val
 }
 
-$$("#goBack").addEventListener(eventType,renderHomeView)
-renderHomeView()
+Score.prototype = Component.prototype.extend({
+
+})
+
+// GLOBAL FUNCTIONS
+
+function $$(sel) {
+	return document.querySelector(sel)
+}
+	
+function animate(cb) {
+	STATE.set({
+		animating: true
+	})
+	return new Promise(function(res) {
+		cb(res)
+	}).then(function() {
+		STATE.set({
+			animating: false
+		})
+	})
+}
+
+function arraysEqual(arr1,arr2) {
+	if (arr1.length !== arr2.length) return false
+	for (var i = 0; i < arr1.length; i ++) {
+		if (arr1[i] !== arr2[i]) return false
+	}
+	return true
+}
+
+function appear(el) {
+	el.style.opacity = 0
+	el.style.visibility = 'visible'
+	return animate(function(res) {
+		var brighten = function() {
+			el.style.opacity = parseFloat(el.style.opacity) + CONSTANTS.fadeIncr
+			if (el.style.opacity < 1) {
+				requestAnimationFrame(brighten)
+			}
+			else {
+				res()
+			}
+		}
+		requestAnimationFrame(brighten)
+	})
+}
+
+function disappear(el) {
+	el.style.opacity = 1
+	return animate(function(res) {
+		var dimIt = function() {
+			el.style.opacity = parseFloat(el.style.opacity) - CONSTANTS.fadeIncr
+			if (el.style.opacity > 0) {
+				requestAnimationFrame(dimIt)
+			}
+			else {
+				res()
+			}
+		}
+		requestAnimationFrame(dimIt)
+	})
+}
+
+function flipPlayerRow() {
+	if (STATE.get('animating')) return
+	var rowComp = STATE.get('playerRow'),
+		origTransform = rowComp.getStyle('transform').split(' ').filter(function(transPart) {
+			return !transPart.includes('rotate')
+		}).join(' '),
+		deg = 0
+	rowComp.setStyle({
+		transform: 'rotateY(0deg)'
+	})
+	return animate(function(res) {
+		var pivot = function() {
+			deg += CONSTANTS.rotateIncr
+			rowComp.setStyle({
+				transform: origTransform + ' rotateY(' + deg + 'deg)'
+			})
+			// console.log()
+			if (deg >= 180) {
+				rowComp.setStyle({
+					transform: origTransform + ' rotateY(180deg)'
+				})
+				res()
+			}
+			else {
+				requestAnimationFrame(pivot)
+			}
+		}
+		pivot()
+	}).then(function() {
+		rowComp.setStyle({
+			transform: origTransform + ' rotateY(0deg)'
+		})
+		rowComp.reverseBlocks()
+	})
+}
+function getRGBObj(str) {
+	var pat = /rgb\((\d+),\s*(\d+),\s*(\d+)/
+	var arr = str.match(pat)
+	return {
+		red: parseInt(arr[1]),
+		green: parseInt(arr[2]),
+		blue: parseInt(arr[3])
+	}
+}
+
+function getRGBStr(obj) {
+	return 'rgb(' + parseInt(obj.red) + ',' + parseInt(obj.green) + ',' + parseInt(obj.blue) + ')'
+}
+
+function initLevel() {
+	//update state
+	STATE.resetLevelDefaults()
+	STATE.set({
+		level: STATE.get('level') + 1,
+	})
+	
+	//update readout
+	levelEl = new Component().assignNode('#level')
+	levelEl.write(CONSTANTS.numeralToWord[STATE.get('level')])
+
+	//update widths
+	var newWidth = STATE.getRowWidth()
+	$$('#gameContainer').style.width = newWidth
+	$$('#playerRowContainer').style.width = newWidth
+
+	// refill rows
+	var row = STATE.get('playerRow')
+	row.fill()
+	var grid = STATE.get('grid')
+	grid.playerRow = row
+	grid.clear()
+	grid.addRow()
+}
+
+function invertBlock(blockNode) {
+	return animate(function(res) {
+		var currentColors = getRGBObj(blockNode.style.background),
+			targetColors = getRGBObj(blockNode.style.background === CONSTANTS.colors.red ? 
+			CONSTANTS.colors.blue : CONSTANTS.colors.red),
+			redIncr = (targetColors.red - currentColors.red) / CONSTANTS.invertSpeed,
+			greenIncr = (targetColors.green - currentColors.green) / CONSTANTS.invertSpeed,
+			blueIncr = (targetColors.blue - currentColors.blue) / CONSTANTS.invertSpeed
+
+		function blend() {
+			currentColors.red = currentColors.red + redIncr
+			currentColors.green = currentColors.green + greenIncr
+			currentColors.blue = currentColors.blue + blueIncr
+			blockNode.style.background = getRGBStr(currentColors)
+			if (currentColors.red * redIncr > targetColors.red * redIncr) { 
+				// the above formula allows us to accommodate both those values that were 
+					// ascending and those that were descending.
+				blockNode.style.background = getRGBStr(targetColors)
+				res()
+			}
+			else {
+				requestAnimationFrame(blend)
+			}
+		}
+		requestAnimationFrame(blend)
+	})
+}
+
+function invertPlayerRow() {
+	if (STATE.get('animating')) return 
+	var playerRow = STATE.get('playerRow')
+	var ps = playerRow.blocks().map(invertBlock)
+	return Promise.all(ps).then(function(){
+		console.log('triggering')
+		EVENTS.trigger('playerRowChange')
+	})
+}
+
+function loadTemplate(name) {
+	
+	$$('#container').innerHTML = TEMPLATES[name].content
+	TEMPLATES[name].init()
+}
+
+function main() {
+	loadTemplate('home')
+}
+
+function shiftRowLeft() {
+
+}
+
+function toPx(val) {
+	return val + 'px'
+}
+
+main()
