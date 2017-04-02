@@ -163,15 +163,15 @@ var STATE = EVENTS.extend({
 	},
 
 	revealButtons: function() {
-		if (this.get('level') >= 1) {
+		if (this.get('level') >= 5) {
 			appear($$('#invert'))
 			$$('#invert').onclick = invertPlayerRow
 		}
-		if (this.get('level') >= 2) {
+		if (this.get('level') >= 6) {
 			appear($$('#flip'))
 			$$('#flip').onclick = flipPlayerRow
 		}
-		if (this.get('level') >= 3) {
+		if (this.get('level') >= 7) {
 			appear($$('#shiftLeft'))
 			appear($$('#shiftRight'))
 			$$('#shiftLeft').onclick = function() {
