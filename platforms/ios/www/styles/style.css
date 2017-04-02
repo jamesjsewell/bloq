@@ -45,13 +45,13 @@ i {
 
 .block {
 	display: inline-block;
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
 	outline-right: none;
 	z-index: 0;
 }
 
 .block:last-child {
-	outline-right: 2px solid #ddd;
+	outline-right: 1px solid #ddd;
 }
 
 .gridRow {
@@ -63,17 +63,16 @@ i {
 
 .miniBlock {
 	display: inline-block;
-	width: 2.5vh;
 	height: 1.8vh;
 	flex: 1;
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
 	outline-right: none;
 	background-color: #222;
 	transition: .4s all ease;
 }
 
 .miniBlock:last-child {
-	outline-right: 2px solid #ddd;
+	outline-right: 1px solid #ddd;
 }
 
 .miniBlock.filled {
@@ -85,7 +84,7 @@ i {
 	opacity: 0;
 	visibility: hidden;
 	margin: 3vh 0;
-	outline: 2px solid #ddd;
+	border: 1px solid #ddd;
 	font-size: 5.6vh;
 	height: auto;
 	padding: 1.5vh;
@@ -112,7 +111,7 @@ i {
 	margin: auto;
 	margin-top: 2.7vh;
 	width: 96%;
-	/* max-width: 8vh; */
+	height: 1vh;
 }
 
 #container {
@@ -125,7 +124,7 @@ i {
 }
 
 #currentMatches {
-	outline-bottom: 2px solid #ddd;
+	outline-bottom: 1px solid #ddd;
 	padding-bottom: 1vh;
 	margin-bottom: 0;
 }
@@ -153,7 +152,7 @@ i {
 
 #grid {
 	margin: auto;
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
 	height: 450px;
 	display: block;
 	vertical-align: bottom;
@@ -216,7 +215,6 @@ i {
 	opacity: 1;
 	position: absolute;
 	perspective: 800px;
-	/*z-index: 3;*/
 }
 
 #playerRowContainer {
@@ -225,7 +223,7 @@ i {
 	margin-top: 3.3vh;
 	position: relative;
 	text-align: left;
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
 }
 
 #readoutData {
@@ -240,13 +238,11 @@ i {
 }
 
 #shifters .powerUp:first-child {
-    outline-bottom: 1px solid #ddd;
-    outline-top: 2px solid #ddd;
+    border-bottom: none;
 }
 
 #shifters .powerUp {
     margin: 0px;
-    outline-top: 1px solid #ddd;
 }
 
 #readout {
@@ -294,7 +290,7 @@ i {
 }
 
 #playButton {
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
 	background: #222;
 	padding: 20px;
 	cursor: pointer;
@@ -350,7 +346,7 @@ i {
 	height: 20vh;
 	width: 20vh;
 	display: inline-block;
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
 }
 
 .menu-item.top {

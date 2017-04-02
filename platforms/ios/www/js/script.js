@@ -80,7 +80,8 @@ var CONSTANTS = {
 	dropIncr: 12,
 	fadeIncr: .08,
 	invertSpeed: 20,
-	rotateIncr: 2.88
+	rotateIncr: 2.88,
+	// slideSpeed: STATE.get('sqSide') / 16 // this needs to be computed after page load. hrmm. 
 }
 
 var EVENTS = {
@@ -171,23 +172,27 @@ var STATE = EVENTS.extend({
 			$$('#flip').onclick = flipPlayerRow
 		}
 		if (this.get('level') >= 3) {
-			appear($$('#shifters'))
-			console.log($$('#shifters'))
-			// $$('#shiftLeft').onclick = shiftRowRight
-			// $$('#shiftRight').onclick = shiftRowLeft
+			appear($$('#shiftLeft'))
+			appear($$('#shiftRight'))
+			$$('#shiftLeft').onclick = function() {
+				shiftRow('left')
+			}
+			$$('#shiftRight').onclick = function() {
+				shiftRow('right')
+			}
 		}
 	},
 
 	set: function(attrs) {
 		this.attributes = this.attributes.extend(attrs)
-		this.trigger('change')
+		EVENTS.trigger('change')
 	},
 
 	updateScore: function(addition) {
 		this.set({
 			score: this.get('score') + addition,
 		})
-		this.trigger('scoreUpdate')
+		EVENTS.trigger('scoreUpdate')
 	}
 })
 
@@ -204,32 +209,31 @@ var TEMPLATES = {
 			var gameContainer = new Component().assignNode('#gameContainer'),
 				playerRowContainer = new Component().assignNode('#playerRowContainer'),
 				scoreEl = new Component().assignNode('#score'),
+				counterRow = new CounterRow(),
 				blockCounter = new Component().assignNode('#blockCounter')
 
 
 			STATE.set({
 				sqSide: sideLength,
 				gridHeight: STATE.get('maxRows') * sideLength,
-				playerRow: new PlayerRow()
+				playerRow: new PlayerRow(),
 			})
+
 			STATE.set({
 				grid: new Grid()
-			})
-			gameContainer.setStyle({
-				height: toPx(STATE.get('gridHeight'))
 			})
 			playerRowContainer.setStyle({
 				height: toPx(sideLength)
 			})
 
 			// set up subscriptions
-			STATE.on('levelChange', initLevel)
-			STATE.on('scoreUpdate', function() {
-				scoreEl.write(STATE.get('score'))
+			EVENTS.on('levelChange', function() {
+				initLevel()
+				counterRow.fill()
 			})
 
 			// set it off
-			STATE.trigger('levelChange')
+			EVENTS.trigger('levelChange')
 			STATE.revealButtons()
 
 		},
@@ -289,9 +293,24 @@ function Component(sel) {
 
 Component.prototype = EVENTS.extend({
 
-	assignNode: function(sel) {
-		this.node = $$(sel)
+	assignNode: function(input) {
+		if (typeof input === 'string') {
+			this.node = $$(input)
+		}
+		else {
+			this.node = input
+		}
 		return this
+	},
+
+	class: function(className) {
+		if (className) {
+			this.node.className += ' ' + className
+			return this
+		}
+		else {
+			return this.node.className
+		}
 	},
 
 	get: function(key) {
@@ -305,7 +324,7 @@ Component.prototype = EVENTS.extend({
 	},
 
 	makeNode: function(tag) {
-		this.node = document.createElement(tag)
+		this.node = document.createElement(tag || 'div')
 		return this
 	},
 
@@ -372,6 +391,7 @@ Grid.prototype = Component.prototype.extend({
 	},
 
 	checkForMatch: function() {
+		console.log('checking')
 		var gridRows = this.node.children,
 			playerColors = this.playerRow.node.children.map(function(el) {
 				return el.style.background
@@ -401,6 +421,13 @@ Grid.prototype = Component.prototype.extend({
 	handleMatches: function(matches) {
 		var grid = this
 		var ps = matches.map(function(row) {
+			// handle row mechanics
+			STATE.set({
+				currentRows: STATE.get('currentRows') - 1,
+				matchesThusFar: STATE.get('matchesThusFar') + 1
+			}) // update currentRows *before* the row has disappeared,
+				// so that the next row knows where to land
+
 			// handle scoring
 			var points = STATE.getRowBlocks() * 10
 			var score = new Score({
@@ -411,14 +438,8 @@ Grid.prototype = Component.prototype.extend({
 			STATE.updateScore(points)
 			setTimeout(function() {
 				disappear(score.node)
-			}, 350)
+			}, 550)
 
-			// handle row mechanics
-			STATE.set({
-				currentRows: STATE.get('currentRows') - 1,
-				matchesThusFar: STATE.get('matchesThusFar') + 1
-			}) // update currentRows *before* the row has disappeared,
-				// so that the next row knows where to land
 			return disappear(row).then(function() {
 				grid.node.removeChild(row)
 			})
@@ -522,6 +543,31 @@ PlayerRow.prototype = Row.prototype.extend({
 
 })
 
+function CounterRow() {
+	this.assignNode('#blockCounter')
+	EVENTS.on('scoreUpdate', this.update.bind(this))
+}
+
+CounterRow.prototype = Row.prototype.extend({
+
+	fill: function() {
+		this.empty()
+		var blocksCalledFor = Math.min(STATE.get('level'),11)
+		while (blocksCalledFor > this.node.children.length) {
+			this.node.appendChild(new Component().makeNode().class('miniBlock').node)
+		}
+		return this
+	},
+
+	update: function() {
+		console.log('updating')
+		this.node.children.forEach(function(miniEl,i){
+			console.log(STATE.get('matchesThusFar'))
+			if (STATE.get('matchesThusFar') > i) miniEl.classList.add('filled')
+		})
+	}
+})
+
 function Block() {
 	var block = document.createElement('div')
 	block.className = 'block'
@@ -553,10 +599,13 @@ function Score(opts) {
 		class: 'scoreAnimation'
 	})
 	this.node.textContent = '+ ' + opts.val
+	EVENTS.on('scoreUpdate', this.update.bind(this))
 }
 
 Score.prototype = Component.prototype.extend({
-
+	update: function() {
+		this.write('+ ' + STATE.get('score'))
+	}
 })
 
 // GLOBAL FUNCTIONS
@@ -631,15 +680,12 @@ function flipPlayerRow() {
 	})
 	return animate(function(res) {
 		var pivot = function() {
-			deg += CONSTANTS.rotateIncr
+			deg = Math.min(deg + CONSTANTS.rotateIncr, 180)
 			rowComp.setStyle({
 				transform: origTransform + ' rotateY(' + deg + 'deg)'
 			})
 			// console.log()
-			if (deg >= 180) {
-				rowComp.setStyle({
-					transform: origTransform + ' rotateY(180deg)'
-				})
+			if (deg === 180) {
 				res()
 			}
 			else {
@@ -741,9 +787,52 @@ function main() {
 	loadTemplate('home')
 }
 
-function shiftRowLeft() {
+function shiftRow(way) {
+	if (STATE.get('animating')) return 
+	var rowComp = STATE.get('playerRow'),
+		spd = STATE.get('sqSide') / 26,
+		firstBlock = rowComp.blocks()[0],
+		lastBlock = rowComp.blocks()[rowComp.blocks().length - 1],
+		oldBLockWidth = STATE.get('sqSide'),
+		newBlockWidth = 0
 
+	if (way === 'left') {
+		oldBlockComp = new Block().assignNode(firstBlock)
+		newBlockComp = new Block().setStyle({background: oldBlockComp.getStyle('background')})
+		rowComp.node.appendChild(newBlockComp.node)
+	}
+
+	else {
+		oldBlockComp = new Block().assignNode(lastBlock)
+		newBlockComp = new Block().setStyle({background: oldBlockComp.getStyle('background')})
+		rowComp.node.insertBefore(newBlockComp.node, rowComp.blocks()[0])
+	}	
+
+	return animate(function(res) {
+		var inchLeft = function() {
+			newBlockWidth = Math.min(STATE.get('sqSide'), newBlockWidth + spd)
+			oldBLockWidth = Math.max(oldBLockWidth - spd,0)
+			oldBlockComp.setStyle({
+				width: toPx(oldBLockWidth)
+			})
+			newBlockComp.setStyle({
+				width: toPx(newBlockWidth)
+			})
+			if (oldBlockComp.getStyle('width') === '0px') {
+				res()
+			}
+			else {
+				requestAnimationFrame(inchLeft)
+			}
+		}
+		inchLeft()
+	}).then(function() {
+		console.log('resolving')
+		rowComp.node.removeChild(oldBlockComp.node)
+		EVENTS.trigger('playerRowChange')
+	})
 }
+
 
 function toPx(val) {
 	return val + 'px'
