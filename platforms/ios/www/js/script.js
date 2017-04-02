@@ -231,6 +231,9 @@ var TEMPLATES = {
 				initLevel()
 				counterRow.fill()
 			})
+			EVENTS.on('scoreUpdate', function() {
+				scoreEl.write(STATE.get('score'))
+			})
 
 			// set it off
 			EVENTS.trigger('levelChange')
@@ -391,7 +394,7 @@ Grid.prototype = Component.prototype.extend({
 	},
 
 	checkForMatch: function() {
-		console.log('checking')
+		
 		var gridRows = this.node.children,
 			playerColors = this.playerRow.node.children.map(function(el) {
 				return el.style.background
@@ -560,9 +563,9 @@ CounterRow.prototype = Row.prototype.extend({
 	},
 
 	update: function() {
-		console.log('updating')
+		
 		this.node.children.forEach(function(miniEl,i){
-			console.log(STATE.get('matchesThusFar'))
+			
 			if (STATE.get('matchesThusFar') > i) miniEl.classList.add('filled')
 		})
 	}
@@ -599,13 +602,10 @@ function Score(opts) {
 		class: 'scoreAnimation'
 	})
 	this.node.textContent = '+ ' + opts.val
-	EVENTS.on('scoreUpdate', this.update.bind(this))
 }
 
 Score.prototype = Component.prototype.extend({
-	update: function() {
-		this.write('+ ' + STATE.get('score'))
-	}
+
 })
 
 // GLOBAL FUNCTIONS
@@ -684,7 +684,7 @@ function flipPlayerRow() {
 			rowComp.setStyle({
 				transform: origTransform + ' rotateY(' + deg + 'deg)'
 			})
-			// console.log()
+			// 
 			if (deg === 180) {
 				res()
 			}
@@ -772,7 +772,7 @@ function invertPlayerRow() {
 	var playerRow = STATE.get('playerRow')
 	var ps = playerRow.blocks().map(invertBlock)
 	return Promise.all(ps).then(function(){
-		console.log('triggering')
+		
 		EVENTS.trigger('playerRowChange')
 	})
 }
@@ -827,7 +827,7 @@ function shiftRow(way) {
 		}
 		inchLeft()
 	}).then(function() {
-		console.log('resolving')
+		
 		rowComp.node.removeChild(oldBlockComp.node)
 		EVENTS.trigger('playerRowChange')
 	})
