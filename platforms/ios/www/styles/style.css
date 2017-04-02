@@ -172,13 +172,14 @@ i {
 
 #loseMessage {
 	font-size: 48px;
-	color: #888;
-	margin: auto;
-	opacity: 0;
-	line-height: 75px;
+	color: #ddd;
+	font-weight: 100;
 	position: absolute;
-	left: 33.3%;
-	transform: translateX(-50%);
+	width: 100%;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	margin: 0;
 }
 
 #matchedDisplay {
@@ -212,9 +213,8 @@ i {
 }
 
 #playerRow {
-	opacity: 1;
 	position: absolute;
-	perspective: 800px;
+	text-align: center;
 }
 
 #playerRowContainer {
@@ -222,7 +222,7 @@ i {
 	margin: auto;
 	margin-top: 3.3vh;
 	position: relative;
-	text-align: left;
+	text-align: center;
 	outline: 1px solid #ddd;
 }
 
@@ -395,6 +395,34 @@ i {
     left: -59%;
     bottom: 290px;
     max-width: 150px;
+}
+
+.pulsing {
+	animation: pulse 2s infinite;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
+  50% {
+	box-shadow: 0 0 25px 10px #ddd;
+  }
+  100% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
+}
+
+@keyframes pulse {
+  0% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
+  50% {
+	box-shadow: 0 0 25px 10px #ddd;
+  }
+  100% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
 }
 
 /*ABOUT SCREEN*/

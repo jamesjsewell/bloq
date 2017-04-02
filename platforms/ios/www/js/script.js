@@ -77,7 +77,7 @@ var CONSTANTS = {
 		red: 'rgb(170, 77, 57)',
 		blue: 'rgb(39, 88, 107)'
 	},
-	dropIncr: 12,
+	dropIncr: 10,
 	fadeIncr: .08,
 	invertSpeed: 20,
 	rotateIncr: 2.88,
@@ -86,6 +86,11 @@ var CONSTANTS = {
 
 var EVENTS = {
 	eventMap: {},
+
+	clear: function() {
+		this.eventMap = {}
+	},
+
 	off: function(evt,cb) {
 		if (cb) {
 			this.eventMap[evt] = this.eventMap[evt].remove(cb)
@@ -94,17 +99,32 @@ var EVENTS = {
 			this.eventMap[evt] = []
 		}
 	},
-	on: function(evt,cb) {
-		if (this.eventMap[evt]) {
-			this.eventMap[evt].push(cb)
+	on: function(evts,cb) {
+		if (evts === undefined || evts.includes('undefined')) {
+			throw new ReferenceError('attempted to use undefined event name.')
 		}
-		else {
-			this.eventMap[evt] = [cb]
-		}
+		evts.split(' ').forEach(function(evt) {
+			if (this.eventMap[evt]) {
+				this.eventMap[evt].push(cb)
+			}
+			else {
+				this.eventMap[evt] = [cb]
+			}
+		}.bind(this))
 	},
+
 	trigger: function(evt,arg) {
 		if (!this.eventMap[evt]) return
 		this.eventMap[evt].forEach(function(cb) {cb(arg)})
+	},
+
+	names: {
+		drop: 'drop',
+		levelComplete: 'levelComplete',
+		levelStart: 'levelStart',
+		match: 'match',
+		playerRowChange: 'playerRowChange',
+		scoreUpdate: 'scoreUpdate'
 	}
 }
 
@@ -113,6 +133,18 @@ var EVENTS = {
 var STATE = EVENTS.extend({
 	attributes: {
 		animating: false,
+		tutorialStage: 0,
+		level: 3,
+		currentRows: 0,
+		maxRows: 8,
+		matchesThusFar: 0,
+		score: 0,
+		sqSide: null
+	},
+
+	defaultAttributes: {
+		animating: false,
+		tutorialStage: 0,
 		level: 3,
 		currentRows: 0,
 		maxRows: 8,
@@ -150,16 +182,39 @@ var STATE = EVENTS.extend({
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 
-		disappear($$('#container'))
-			.then(function() {
-				S.trigger('levelChange')
-				S.revealButtons()
-				appear($$('#container'))
-			})
+
+		STATE.set({
+			animating: true
+		})
+		// pause for dramatic effect
+		setTimeout(function() {
+			// for every empty row space remaining, run handleRowScore at that location
+			var ps = []
+			for (var i = STATE.get('currentRows'); i < STATE.get('maxRows'); i ++) {
+				var bottom = i * STATE.get('sqSide')
+				ps.push(handleRowScore(bottom,750))
+			}
+			// when all those animations are complete, then fade out the container etc
+			Promise.all(ps).then(function() {
+				return disappear($$('#container'))
+			}).then(function() {
+					EVENTS.trigger(EVENTS.names.levelComplete)
+					S.revealButtons()
+					appear($$('#container'))
+					STATE.set({
+						animating: false
+					})
+				})
+
+		}, 500)
 	},
 
 	resetLevelDefaults: function() {
 		this.attributes = this.attributes.extend(this.levelDefaults)
+	},
+
+	resetAll: function() {
+		this.attributes = this.defaultAttributes
 	},
 
 	revealButtons: function() {
@@ -192,51 +247,58 @@ var STATE = EVENTS.extend({
 		this.set({
 			score: this.get('score') + addition,
 		})
-		EVENTS.trigger('scoreUpdate')
+		EVENTS.trigger(EVENTS.names.scoreUpdate)
 	}
 })
 
 // TEMPLATES
 
-var TEMPLATES = {
+var VIEWS = {
 	play: {
 		content: TEMPLATES.play,
 		init: function() {
+			// hard reset, in case a previous game had affected the state or events
+			fullReset()
 			// set dimensions according to device 
 			var containerHeight = window.getComputedStyle(document.querySelector("#container")).height
 			var sideLength = parseInt(containerHeight) * .087
 
 			var gameContainer = new Component().assignNode('#gameContainer'),
 				playerRowContainer = new Component().assignNode('#playerRowContainer'),
-				scoreEl = new Component().assignNode('#score'),
+				scoreTotal = new Component().assignNode('#score'),
 				counterRow = new CounterRow(),
 				blockCounter = new Component().assignNode('#blockCounter')
 
+			playerRowContainer.setStyle({
+				height: toPx(sideLength)
+			})
 
 			STATE.set({
 				sqSide: sideLength,
-				gridHeight: STATE.get('maxRows') * sideLength,
 				playerRow: new PlayerRow(),
+				gridHeight: sideLength * STATE.get('maxRows')
 			})
 
 			STATE.set({
 				grid: new Grid()
 			})
-			playerRowContainer.setStyle({
-				height: toPx(sideLength)
-			})
+
+			// add event listeners to nav buttons
+			$$('#reset').onclick = function() {
+				loadView('play')
+			}
+			$$('#goBack').onclick = function() {
+				loadView('home')
+			}
 
 			// set up subscriptions
-			EVENTS.on('levelChange', function() {
-				initLevel()
-				counterRow.fill()
-			})
-			EVENTS.on('scoreUpdate', function() {
-				scoreEl.write(STATE.get('score'))
+			EVENTS.on(EVENTS.names.levelComplete, initLevel)
+			EVENTS.on(EVENTS.names.scoreUpdate, function() {
+				scoreTotal.write(STATE.get('score'))
 			})
 
 			// set it off
-			EVENTS.trigger('levelChange')
+			EVENTS.trigger(EVENTS.names.levelComplete)
 			STATE.revealButtons()
 
 		},
@@ -251,28 +313,11 @@ var TEMPLATES = {
 		}
 	},
 	home: {
-		content: '\
-			<div id="titleWrapper" class="home">\
-		    	<h1>block12</h1>\
-		    </div>\
-		    <div id="menu">\
-				<div class="menu-item top">\
-					<i id="play" class="material-icons">play_arrow</i>\
-				</div>\
-				<div class="menu-item top">\
-					<i id="tutorial" class="material-icons">help</i>\
-				</div>\
-				<div class="menu-item">\
-					<i id="settings" class="material-icons">settings</i>\
-				</div>\
-				<div class="menu-item">\
-					<i id="about" class="material-icons">pets</i>\
-				</div>\
-			</div>',
+		content: TEMPLATES.home,
 		init: function() {
 			var ids = ['play','tutorial','settings','about']
 			ids.forEach(function(id) {
-				$$('#' + id).onclick = function() {loadTemplate(id)}
+				$$('#' + id).onclick = function() {loadView(id)}
 			})
 		}
 	},
@@ -281,9 +326,26 @@ var TEMPLATES = {
 		init: function() {
 
 		}
+	},
+	tutorial: {
+		content: TEMPLATES.play,
+		init: function() {
+			VIEWS.play.init()
+			STATE.set({
+				tutorialStage: 1
+			})
+			STATE.get('playerRow').class('pulsing')
+			var dropRow = function() {
+				STATE.get('grid').addRow()
+				if (STATE.get('currentRows') < 4) {
+					setTimeout(dropRow, STATE.get('currentRows') * 50)
+				}
+			}
+				
+			EVENTS.on(EVENTS.names.match)
+		}
 	}
 }
-
 
 // COMPONENTS
 
@@ -326,6 +388,10 @@ Component.prototype = EVENTS.extend({
 		return parseInt(val) ? parseInt(val) : val
 	},
 
+	listen: function(evt,cb) {
+		this.node.addEventListener(evt,cb)
+	},
+
 	makeNode: function(tag) {
 		this.node = document.createElement(tag || 'div')
 		return this
@@ -366,10 +432,10 @@ function Grid() {
 		// add a row whenever it's time to do so
 	var addRow = this.addRow.bind(this),
 		checkForMatch = this.checkForMatch.bind(this)
-	EVENTS.on('drop', addRow)
+	EVENTS.on(EVENTS.names.drop, addRow)
 
 		// check for match whenever playerRowChanges
-	EVENTS.on('playerRowChange', checkForMatch)
+	EVENTS.on(EVENTS.names.playerRowChange, checkForMatch)
 }
 
 Grid.prototype = Component.prototype.extend({
@@ -408,9 +474,7 @@ Grid.prototype = Component.prototype.extend({
 				matchedRows.push(row)
 			}
 		})
-		if (matchedRows.length) {
-			this.handleMatches(matchedRows).then(STATE.levelUp.bind(STATE))
-		}
+		this.handleMatches(matchedRows).then(STATE.levelUp.bind(STATE))
 	},
 
 	clear: function() {
@@ -424,33 +488,36 @@ Grid.prototype = Component.prototype.extend({
 	handleMatches: function(matches) {
 		var grid = this
 		var ps = matches.map(function(row) {
-			// handle row mechanics
-			STATE.set({
-				currentRows: STATE.get('currentRows') - 1,
-				matchesThusFar: STATE.get('matchesThusFar') + 1
-			}) // update currentRows *before* the row has disappeared,
-				// so that the next row knows where to land
 
-			// handle scoring
-			var points = STATE.getRowBlocks() * 10
-			var score = new Score({
-				bottomPos: row.style.bottom,
-				val: points
-			})
-			grid.node.appendChild(score.node)
-			STATE.updateScore(points)
-			setTimeout(function() {
-				disappear(score.node)
-			}, 550)
+			var promise = handleTutorialMatch(new Row().assignNode(row))
+				
+			promise.then(function() {
 
-			return disappear(row).then(function() {
-				grid.node.removeChild(row)
+				// handle row mechanics
+				STATE.set({
+					currentRows: STATE.get('currentRows') - 1,
+					matchesThusFar: STATE.get('matchesThusFar') + 1
+				}) // update currentRows *before* the row has disappeared,
+					// so that the next row knows where to land
+
+				// handle scoring
+				var btm = row.style.bottom
+				handleRowScore(btm,550)
+
+				return disappear(row)
 			})
+			
+			promise.then(function() {
+					grid.node.removeChild(row)
+				})
+
+			return promise
 		}) // each disappearance returns a promise
-		window.all = Promise.all(ps)
+		// Promise.all will resolve immediately if the array is empty.
 		return Promise.all(ps).then(function() {
 			grid.resetIndices()
-			grid.sendAllDown()
+			handleLoss()
+			return grid.sendAllDown()
 		})
 	},
 
@@ -462,11 +529,13 @@ Grid.prototype = Component.prototype.extend({
 	},
 
 	sendAllDown: function() {
+		var ps = []
 		this.getRows().forEach(function(el) {
 			var rowComp = new Row()
 			rowComp.node = el
-			this.sendRowDown(rowComp)
+			ps.push(this.sendRowDown(rowComp))
 		}.bind(this))
+		return Promise.all(ps)
 	},
 
 	sendRowDown: function(rowComp) {
@@ -548,7 +617,8 @@ PlayerRow.prototype = Row.prototype.extend({
 
 function CounterRow() {
 	this.assignNode('#blockCounter')
-	EVENTS.on('scoreUpdate', this.update.bind(this))
+	EVENTS.on(EVENTS.names.scoreUpdate + ' ' + EVENTS.names.levelStart, this.update.bind(this))
+	EVENTS.on(EVENTS.names.levelStart, this.fill.bind(this))
 }
 
 CounterRow.prototype = Row.prototype.extend({
@@ -572,19 +642,22 @@ CounterRow.prototype = Row.prototype.extend({
 })
 
 function Block() {
-	var block = document.createElement('div')
-	block.className = 'block'
-	block.style.width = block.style.height = toPx(STATE.get('sqSide'))
-	block.style.background = CONSTANTS.colors.choice()
-	block.onclick = function(event) {
+	this.makeNode('div')
+	this.class('block')
+	this.setStyle({
+		width: toPx(STATE.get('sqSide')),
+		height: toPx(STATE.get('sqSide')),
+		background: CONSTANTS.colors.choice()
+	})
+	this.listen('click', function(event) {
 		var bgColor = event.target.style.background
 		event.target.style.background = 
 			bgColor === CONSTANTS.colors.red ? 
 			CONSTANTS.colors.blue : CONSTANTS.colors.red
-		EVENTS.trigger('drop')
 		EVENTS.trigger('playerRowChange')
-	}
-	this.node = block
+		if (STATE.get('tutorialStage') === 1) return
+		EVENTS.trigger('drop')
+	})
 }
 
 Block.prototype = Component.prototype.extend({
@@ -601,7 +674,7 @@ function Score(opts) {
 	this.set({
 		class: 'scoreAnimation'
 	})
-	this.node.textContent = '+ ' + opts.val
+	this.write('+ ' + opts.val)
 }
 
 Score.prototype = Component.prototype.extend({
@@ -656,12 +729,13 @@ function disappear(el) {
 	el.style.opacity = 1
 	return animate(function(res) {
 		var dimIt = function() {
-			el.style.opacity = parseFloat(el.style.opacity) - CONSTANTS.fadeIncr
-			if (el.style.opacity > 0) {
-				requestAnimationFrame(dimIt)
+			el.style.opacity = Math.max(parseFloat(el.style.opacity) - CONSTANTS.fadeIncr, 0)
+			if (el.style.opacity === '0') {
+				res()
+				console.log('resolving')
 			}
 			else {
-				res()
+				requestAnimationFrame(dimIt)
 			}
 		}
 		requestAnimationFrame(dimIt)
@@ -698,8 +772,15 @@ function flipPlayerRow() {
 			transform: origTransform + ' rotateY(0deg)'
 		})
 		rowComp.reverseBlocks()
+		EVENTS.trigger(EVENTS.names.playerRowChange)
 	})
 }
+
+function fullReset() {
+	STATE.resetAll()
+	EVENTS.clear()
+}
+
 function getRGBObj(str) {
 	var pat = /rgb\((\d+),\s*(\d+),\s*(\d+)/
 	var arr = str.match(pat)
@@ -714,7 +795,50 @@ function getRGBStr(obj) {
 	return 'rgb(' + parseInt(obj.red) + ',' + parseInt(obj.green) + ',' + parseInt(obj.blue) + ')'
 }
 
+function handleLoss() {
+	
+	if (STATE.get('currentRows') > STATE.get('maxRows')) {
+		fullReset()
+		appear($$('#playButton'))
+		$$('#playButton').onclick = function() {
+			loadView('play')
+		}
+		$$('#playerRowContainer').innerHTML = '<p id="loseMessage">YOU LOSE</p>'
+	}
+}
+
+function handleRowScore(loc,timeout) {
+	var points = STATE.getRowBlocks() * 10
+	var score = new Score({
+		bottomPos: toPx(loc),
+		val: points
+	})
+	STATE.get('grid').node.appendChild(score.node)
+	STATE.updateScore(points)
+	return new Promise(function(res) {
+		setTimeout(res, timeout)
+	}).then( function() {
+		return disappear(score.node)
+	})
+}
+
+function handleTutorialMatch(rowComp) {
+	return new Promise(function(res) {
+		if (STATE.get('tutorialStage') === 0) {
+			res()
+		}
+		else {
+			rowComp.class('pulsing')
+			rowComp.setStyle({
+				zIndex: 99
+			})
+			setTimeout(res, 2000)
+		}
+	})
+}
+
 function initLevel() {
+	
 	//update state
 	STATE.resetLevelDefaults()
 	STATE.set({
@@ -737,6 +861,7 @@ function initLevel() {
 	grid.playerRow = row
 	grid.clear()
 	grid.addRow()
+	EVENTS.trigger(EVENTS.names.levelStart)
 }
 
 function invertBlock(blockNode) {
@@ -772,19 +897,17 @@ function invertPlayerRow() {
 	var playerRow = STATE.get('playerRow')
 	var ps = playerRow.blocks().map(invertBlock)
 	return Promise.all(ps).then(function(){
-		
-		EVENTS.trigger('playerRowChange')
+		EVENTS.trigger(EVENTS.names.playerRowChange)
 	})
 }
 
-function loadTemplate(name) {
-	
-	$$('#container').innerHTML = TEMPLATES[name].content
-	TEMPLATES[name].init()
+function loadView(name) {
+	$$('#container').innerHTML = VIEWS[name].content
+	VIEWS[name].init()
 }
 
 function main() {
-	loadTemplate('home')
+	loadView('home')
 }
 
 function shiftRow(way) {
@@ -835,7 +958,7 @@ function shiftRow(way) {
 
 
 function toPx(val) {
-	return val + 'px'
+	return val.slice && val.slice(-2) === 'px' ? val : val + 'px'
 }
 
 main()

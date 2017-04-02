@@ -18,6 +18,7 @@ var TEMPLATES = {
 		        </div>\
 		    </div>\
 		    <div id="gameContainer">\
+			    <p class="advice" id="playButton">play</p>\
 		    	<div id="readout">\
 		    		<div id="readoutData">\
 		                <p id="score">0</p><p id="level">four</p>\
@@ -29,5 +30,23 @@ var TEMPLATES = {
 		    		<div id="playerRow">\
 		    		</div>\
 		    	</div>\
-		    </div>'
+		    </div>',
+	home: '\
+			<div id="titleWrapper" class="home">\
+		    	<h1>block12</h1>\
+		    </div>\
+		    <div id="menu">\
+				<div class="menu-item top">\
+					<i id="play" class="material-icons">play_arrow</i>\
+				</div>\
+				<div class="menu-item top">\
+					<i id="tutorial" class="material-icons">help</i>\
+				</div>\
+				<div class="menu-item">\
+					<i id="settings" class="material-icons">settings</i>\
+				</div>\
+				<div class="menu-item">\
+					<i id="about" class="material-icons">pets</i>\
+				</div>\
+			</div>'
 }
