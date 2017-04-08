@@ -60,6 +60,7 @@
 	}	
 })();
 
+// CONSTANTS
 var CONSTANTS = {
 	numeralToWord: {
 		4:"four",
@@ -83,7 +84,8 @@ var CONSTANTS = {
 	rotateIncr: 2.88,
 	// slideSpeed: STATE.get('sqSide') / 16 // this needs to be computed after page load. hrmm. 
 }
-
+ 
+// EVENTS
 var EVENTS = {
 	eventMap: {},
 
@@ -129,7 +131,6 @@ var EVENTS = {
 }
 
 // APP STATE
-
 var STATE = EVENTS.extend({
 	attributes: {
 		advancing: false,
@@ -271,13 +272,16 @@ var STATE = EVENTS.extend({
 })
 
 // TEMPLATES
-
 var VIEWS = {
 	play: {
 		content: TEMPLATES.play,
 		init: function(opts) {
+			opts = opts || {}
 			// load state from local storage if there's anything there.
 			STATE.reset() // clear zombie event submissions
+			if (opts.tutorial) {
+				STATE.set('tutorialStage', 1)
+			}
 			// set dimensions according to device 
 			var containerHeight = window.getComputedStyle(document.querySelector("#container")).height
 			var sideLength = parseInt(containerHeight) * .087
@@ -343,7 +347,7 @@ var VIEWS = {
 		}
 	},
 	about: {
-		content: '',
+		content: TEMPLATES.about,
 		init: function() {
 
 		}
@@ -372,7 +376,6 @@ var VIEWS = {
 }
 
 // COMPONENTS
-
 function Component(sel) {
 	this.sel = sel
 	// if the node is being read, we find it. otherwise, we
@@ -645,12 +648,10 @@ function CounterRow() {
 CounterRow.prototype = Row.prototype.extend({
 
 	glowForTutorial: function(miniEl) {
-		setTimeout(function() {
-			brieflyGlow(miniEl).then(function() {
-				STATE.get('playerRow').class('pulsing')
-				STATE.set('animating',false)
-			})
-		}, 1000)
+		brieflyGlow(miniEl).then(function() {
+			STATE.get('playerRow').class('pulsing')
+			STATE.set('animating',false)
+		})
 	},
 
 	fill: function() {
@@ -663,14 +664,15 @@ CounterRow.prototype = Row.prototype.extend({
 	},
 
 	update: function() {
-		this.node.children.forEach(function(miniEl,i){
-			if (STATE.get('matchesThusFar') > i) {
-				miniEl.classList.add('filled')
-				if (STATE.get('tutorialStage') === 1) {
-					this.glowForTutorial(miniEl)
+		var timeout = STATE.get('tutorialStage') ? 1250 : 0 
+		setTimeout( function() {
+			this.node.children.forEach(function(miniEl,i){
+				if (STATE.get('matchesThusFar') > i) {
+					miniEl.classList.add('filled')
+					if (timeout) this.glowForTutorial(miniEl)
 				}
-			}
-		}.bind(this))
+			}.bind(this))
+		}.bind(this), timeout)
 	}
 })
 
@@ -716,7 +718,6 @@ Score.prototype = Component.prototype.extend({
 })
 
 // GLOBAL FUNCTIONS
-
 function $$(sel) {
 	return document.querySelector(sel)
 }

@@ -50,10 +50,10 @@ var TEMPLATES = {
 				</div>\
 			</div>',
 	about: '\
-		<div id="titleWrapper" class="home">\
-	    	<h1>Moosecat Productions</h1>\
-	    </div>\
-	    <div class="content">\
+	    <div class="about-pic">\
+	    	<div id="titleWrapper" class="home">\
+	        	<h1>Moosecat Productions</h1>\
+	        </div>\
 	    	<img src="./img/business.jpg">\
 	    </div>\
 	'

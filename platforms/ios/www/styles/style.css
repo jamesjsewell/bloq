@@ -15,6 +15,10 @@
 	box-sizing: outline-box;
 }
 
+img {
+	max-width: 100%;
+}
+
 /*PLAY SCREEN STYLES*/
 
 a {
@@ -435,13 +439,23 @@ i {
 
 /*ABOUT SCREEN*/
 
-#container > img {
-    width: 50%;
+.about-pic {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
-    outline: 5px solid #ddd;
+    width: 100%;
+}
+
+.about-pic h1 {
+	margin: 0;
+	font-size: 3.6rem;
+	margin-bottom: 0.25rem;
+}
+
+.about-pic img {
+	border: 3px solid #111;
+	width: 36rem;
 }
 
 /*SETTINGS SCREEN*/
