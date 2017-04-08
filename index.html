@@ -1,26 +1,68 @@
 <!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
 <html>
-<head>
-	<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/necolas/normalize.css/master/normalize.css">
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="styles/style.css">
-	<title></title>
-</head>
-<body>
-	<h1>bloq</h1>
-	<div id="gameContainer">
-		<div id="powerUpContainer">
-			<i id="invert" class="material-icons powerUp powerUpLeft">invert_colors</i>
-			<i id="reverse" class="material-icons powerUp powerUpRight">compare_arrows</i>
-			<i id="shiftLeft" class="material-icons powerUp powerUpLeft">chevron_left</i>
-			<i id="shiftRight" class="material-icons powerUp powerUpRight">chevron_right</i>
-		</div>
-		<div id="grid"></div>
-		<div id="playerRowContainer"></div>
-	</div>
-	<h3 id="score">0 / 4</h3>
-	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="js/script.js"></script>
-</body>
+    <head>
+    	<link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    	<link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    	<link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    	<link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    	<link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    	<link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    	<link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    	<link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    	<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    	<link rel="icon" type="image/png" sizes="192x192"  href="favicon/android-icon-192x192.png">
+    	<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    	<link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    	<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    	<link rel="manifest" href="favicon/manifest.json">
+    	<meta name="msapplication-TileColor" content="#ffffff">
+    	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    	<meta name="theme-color" content="#ffffff">
+        <link href="styles/material-icons.css"
+          rel="stylesheet">
+        <link href="styles/normalize.css"
+          rel="stylesheet">
+    	<link rel="stylesheet" type="text/css" href="styles/style.css">
+    	<title>bloq</title>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=.5, maximum-scale=.5, minimum-scale=.5, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>Bloq</title>
+    </head>
+    <body>
+        <div id=container>
+        </div>
+        <i class="material-icons" id="goBack" >menu</i>\
+        <i class="material-icons" id="reset" >cached</i>\
+        <script type="text/javascript" src="js/promise-polyfill.js"></script>
+        <script type="text/javascript" src="js/templates.js"></script>
+        <script src="js/script.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+  <!--       <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script> -->
+    </body>
 </html>
