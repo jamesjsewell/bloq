@@ -23,7 +23,8 @@
     <author email="richardsjustind@gmail.com" href="github.com/magentanova">
       moosecat 
     </author>
-    <platform name="ios">
+    <icon src="images/bloqLogo.png" >
+<!--     <platform name="ios">
         <icon height="180" src="apple-icon/ios/AppIcon.appiconset/Icon-60@3x.png" width="180" />
         <icon height="60" src="apple-icon/ios/AppIcon.appiconset/Icon-60.png" width="60" />
         <icon height="120" src="apple-icon/ios/AppIcon.appiconset/Icon-60@2x.png" width="120" />
@@ -40,7 +41,7 @@
         <icon height="50" src="apple-icon/ios/AppIcon.appiconset/Icon-Small-50.png" width="50" />
         <icon height="100" src="apple-icon/ios/AppIcon.appiconset/Icon-Small-50@2x.png" width="100" />
     </platform>
-    <preference name="Fullscreen" value="true" />
+ -->    <preference name="Fullscreen" value="true" />
     <preference name="Orientation" value="landscape" />
     <preference name="DisallowOverscroll" value="true" />
     <engine name="ios" spec="~4.1.1" />

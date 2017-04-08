@@ -3,11 +3,11 @@
 // SET TOUCH VS CLICK
 var CONTACT_EVENT = 'click'
 if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-	CONTACT_EVENT = 'touchstart'
+	CONTACT_EVENT = 'touchend'
 }
 
-console.log(CONTACT_EVENT)
-console.log(navigator.userAgent)
+
+
 
 // PROTOTYPE MODS
 ;(function(){
@@ -199,7 +199,7 @@ var STATE = EVENTS.extend({
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 
 		if (closeTutorial()) {
-			console.log(STATE.get('tutorialStage'))
+			
 			return
 		}
 		STATE.set({
@@ -239,9 +239,9 @@ var STATE = EVENTS.extend({
 
 	reset: function() {
 		EVENTS.clear()
-		console.log(this.defaultAttributes)
+		
 		this.attributes = this.getDefaults()
-		console.log(this.defaultAttributes)
+		
 		this.save()
 	},
 
@@ -297,7 +297,7 @@ var VIEWS = {
 			// load state from local storage if there's anything there.
 			STATE.reset() // clear zombie event submissions
 			if (opts.tutorial) {
-				console.log('setting tut stage')
+				
 				STATE.set('tutorialStage', 1)
 			}
 			// set dimensions according to device 
@@ -344,7 +344,7 @@ var VIEWS = {
 
 			// set it off
 			EVENTS.trigger(EVENTS.names.levelStart)
-			console.log(STATE.get('tutorialStage'))
+			
 
 		},
 	},
@@ -384,7 +384,7 @@ var VIEWS = {
 			// 	}
 			// }
 			var dropRow = function() {
-				console.log('droppin knowlegde')
+				
 				return STATE.get('grid').addRow()
 			}
 			var promise = dropRow()
@@ -526,7 +526,7 @@ Grid.prototype = Component.prototype.extend({
 			}
 		})
 		var promise = this.handleMatches(matchedRows).then(STATE.levelUp.bind(STATE))
-		console.log(STATE.get('tutorialStage'))
+		
 		return promise
 	},
 
@@ -707,7 +707,9 @@ function Block() {
 		background: CONSTANTS.colors.choice()
 	})
 	this.listen(CONTACT_EVENT, function(event) {
-		if (STATE.get('advancing')) return 
+
+		
+		if (STATE.get('advancing') || STATE.get('animating')) return 
 		var bgColor = event.target.style.background
 		event.target.style.background = 
 			bgColor === CONSTANTS.colors.red ? 
@@ -788,6 +790,7 @@ function brieflyGlow() {
 		// need for each here because of closures and i
 		Array.prototype.forEach.call(nodes,function(node) {
 			node.classList.add('glowing')
+			STATE.set('animating',true)
 			setTimeout(function() {
 				node.classList.remove('glowing')
 				// pause for effect
