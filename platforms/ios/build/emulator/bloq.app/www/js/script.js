@@ -364,6 +364,7 @@ var VIEWS = {
 			ids.forEach(function(id) {
 				$$('#' + id).addEventListener(CONTACT_EVENT,function() {loadView(id)})
 			})
+			document.querySelector('#high-score .score').innerHTML = localStorage.getItem('blockTwelveHighScore') || 0
 		}
 	},
 	about: {
@@ -877,8 +878,10 @@ function getRGBStr(obj) {
 }
 
 function handleLoss() {
-	
 	if (STATE.get('currentRows') > STATE.get('maxRows')) {
+		if (STATE.get('score') > localStorage.getItem('blockTwelveHighScore')) {
+			localStorage.setItem('blockTwelveHighScore', STATE.get('score'))
+		}
 		STATE.reset()
 		showPlayButton()
 		$$('#playerRowContainer').innerHTML = '<p id="loseMessage">YOU LOSE</p>'
@@ -996,6 +999,9 @@ function runLevel() {
 
 function shiftRow(way) {
 	if (STATE.get('animating')) return 
+	STATE.set('animating',true) // seems redundant because animate (below) does this
+		// but we're experiencing a bug wherein it allows you to shift mid shift
+		// and ruins the row
 	var rowComp = STATE.get('playerRow'),
 		spd = STATE.get('sqSide') / 26,
 		firstBlock = rowComp.blocks()[0],

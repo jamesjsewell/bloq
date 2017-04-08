@@ -31,30 +31,55 @@ var TEMPLATES = {
 		    		</div>\
 		    	</div>\
 		    </div>',
-	home: '\
-			<div id="titleWrapper" class="home">\
-		    	<h1>block12</h1>\
-		    </div>\
-		    <div id="menu">\
-				<div class="menu-item top">\
-					<i id="play" class="material-icons">play_arrow</i>\
-				</div>\
-				<div class="menu-item top">\
-					<i id="tutorial" class="material-icons">help</i>\
-				</div>\
-				<div class="menu-item">\
-					<i id="settings" class="material-icons">settings</i>\
-				</div>\
-				<div class="menu-item">\
-					<i id="about" class="material-icons">pets</i>\
-				</div>\
-			</div>',
+	home: '' + 
+'				<div id="home-content">' + 
+'					<div id="title-wrapper" class="home">' + 
+'							<h1>block12</h1>' + 
+'						</div>' + 
+'					<div id="menu-boxes">' + 
+'						<div class="row">' +
+	'						<div class="menu-item top">' + 
+	'							<i id="play" class="material-icons">play_arrow</i>' + 
+	'						</div>' + 
+	'						<div class="menu-item top">' + 
+	'							<i id="tutorial" class="material-icons">help</i>' + 
+	'						</div>' + 
+						'</div>' + 
+'						<div class="row">' +
+	'						<div class="menu-item">' + 
+	'							<i id="settings" class="material-icons">settings</i>' + 
+	'						</div>' + 
+	'						<div class="menu-item">' + 
+	'							<i id="about" class="material-icons">pets</i>' + 
+	'						</div>' + 
+						'</div>' + 
+'					</div>' + 
+'					<h2 id="high-score">high score: <span class="score"></span></h2>' + 
+'				</div>',
 	about: '\
 	    <div class="about-pic">\
-	    	<div id="titleWrapper" class="home">\
+	    	<div id="title-wrapper" class="home">\
 	        	<h1>Moosecat Productions</h1>\
 	        </div>\
 	    	<img src="./img/business.jpg">\
-	    </div>\
-	'
+	    </div>'
 	}
+		    	
+		 //    </div>\		    
+		 //    <div id="home-content">\
+		 //   		<div id="menu-boxes">\
+			// 		<div class="menu-item top">\
+			// 			<i id="play" class="material-icons">play_arrow</i>\
+			// 		</div>\
+			// 		<div class="menu-item top">\
+			// 			<i id="tutorial" class="material-icons">help</i>\
+			// 		</div>\
+			// 		<div class="menu-item">\
+			// 			<i id="settings" class="material-icons">settings</i>\
+			// 		</div>\
+			// 		<div class="menu-item">\
+			// 			<i id="about" class="material-icons">pets</i>\
+			// 		</div>\
+			// 	</div>\
+			// </div>\	
+

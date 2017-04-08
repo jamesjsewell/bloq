@@ -32,21 +32,28 @@
     </author>
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
-    <icon height="180" src="apple-icon/ios/AppIcon.appiconset/Icon-60@3x.png" width="180" />
-    <icon height="60" src="apple-icon/ios/AppIcon.appiconset/Icon-60.png" width="60" />
-    <icon height="120" src="apple-icon/ios/AppIcon.appiconset/Icon-60@2x.png" width="120" />
-    <icon height="76" src="apple-icon/ios/AppIcon.appiconset/Icon-76.png" width="76" />
-    <icon height="152" src="apple-icon/ios/AppIcon.appiconset/Icon-76@2x.png" width="152" />
-    <icon height="40" src="apple-icon/ios/AppIcon.appiconset/Icon-40.png" width="40" />
-    <icon height="80" src="apple-icon/ios/AppIcon.appiconset/Icon-40@2x.png" width="80" />
-    <icon height="57" src="apple-icon/ios/AppIcon.appiconset/Icon.png" width="57" />
-    <icon height="114" src="apple-icon/ios/AppIcon.appiconset/Icon@2x.png" width="114" />
-    <icon height="72" src="apple-icon/ios/AppIcon.appiconset/Icon-72.png" width="72" />
-    <icon height="144" src="apple-icon/ios/AppIcon.appiconset/Icon-72@2x.png" width="144" />
-    <icon height="29" src="apple-icon/ios/AppIcon.appiconset/Icon-Small.png" width="29" />
-    <icon height="58" src="apple-icon/ios/AppIcon.appiconset/Icon-Small@2x.png" width="58" />
-    <icon height="50" src="apple-icon/ios/AppIcon.appiconset/Icon-Small-50.png" width="50" />
-    <icon height="100" src="apple-icon/ios/AppIcon.appiconset/Icon-Small-50@2x.png" width="100" />
+    <icon height="60" src="apple-icon/ios/AppIcon.appiconset/Icon-App-20x20@3x.png" width="60" />
+    <icon height="87" src="apple-icon/ios/AppIcon.appiconset/Icon-App-29x29@3x.png" width="87" />
+    <icon height="120" src="apple-icon/ios/AppIcon.appiconset/Icon-App-40x40@3x.png" width="120" />
+    <icon height="57" src="apple-icon/ios/AppIcon.appiconset/Icon-App-57x57@1x.png" width="57" />
+    <icon height="114" src="apple-icon/ios/AppIcon.appiconset/Icon-App-57x57@2x.png" width="114" />
+    <icon height="60" src="apple-icon/ios/AppIcon.appiconset/Icon-App-60x60@1x.png" width="60" />
+    <icon height="120" src="apple-icon/ios/AppIcon.appiconset/Icon-App-60x60@2x.png" width="120" />
+    <icon height="180" src="apple-icon/ios/AppIcon.appiconset/Icon-App-60x60@3x.png" width="180" />
+    <icon height="20" src="apple-icon/ios/AppIcon.appiconset/Icon-App-20x20@1x.png" width="20" />
+    <icon height="40" src="apple-icon/ios/AppIcon.appiconset/Icon-App-20x20@2x.png" width="40" />
+    <icon height="29" src="apple-icon/ios/AppIcon.appiconset/Icon-App-29x29@1x.png" width="29" />
+    <icon height="58" src="apple-icon/ios/AppIcon.appiconset/Icon-App-29x29@2x.png" width="58" />
+    <icon height="40" src="apple-icon/ios/AppIcon.appiconset/Icon-App-40x40@1x.png" width="40" />
+    <icon height="80" src="apple-icon/ios/AppIcon.appiconset/Icon-App-40x40@2x.png" width="80" />
+    <icon height="50" src="apple-icon/ios/AppIcon.appiconset/Icon-Small-50x50@1x.png" width="50" />
+    <icon height="100" src="apple-icon/ios/AppIcon.appiconset/Icon-Small-50x50@2x.png" width="100" />
+    <icon height="72" src="apple-icon/ios/AppIcon.appiconset/Icon-App-72x72@1x.png" width="72" />
+    <icon height="144" src="apple-icon/ios/AppIcon.appiconset/Icon-App-72x72@2x.png" width="144" />
+    <icon height="76" src="apple-icon/ios/AppIcon.appiconset/Icon-App-76x76@1x.png" width="76" />
+    <icon height="152" src="apple-icon/ios/AppIcon.appiconset/Icon-App-76x76@2x.png" width="152" />
+    <icon height="228" src="apple-icon/ios/AppIcon.appiconset/Icon-App-76x76@3x.png" width="228" />
+    <icon height="83" src="apple-icon/ios/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png" width="5" />
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="true" />
