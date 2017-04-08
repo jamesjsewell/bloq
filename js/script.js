@@ -198,6 +198,7 @@ var STATE = EVENTS.extend({
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 
+		STATE.resetLevelDefaults() // prevents level jumps while transitioning
 		if (closeTutorial()) {
 			
 			return
