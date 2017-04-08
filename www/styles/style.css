@@ -1,7 +1,7 @@
 *,
 *:before,
 *:after {
-    box-sizing: border-box;
+    box-sizing: outline-box;
     -webkit-tap-highlight-color: transparent;
 	touch-action: manipulation; /* meant to prevent 300ms delay on phone touch */
 	white-space-collapse: discard; 
@@ -9,12 +9,14 @@
 
 * {
 	opacity: 1;
-	transition: 1s opacity ease;
-	transform: translate3d(0, 0, 0);
 	font-weight: 100;
-	-webkit-transform: translate3d(0, 0, 0);
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
+	box-sizing: outline-box;
+}
+
+img {
+	max-width: 100%;
 }
 
 /*PLAY SCREEN STYLES*/
@@ -47,59 +49,58 @@ i {
 
 .block {
 	display: inline-block;
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
+	outline-right: none;
 	z-index: 0;
+}
+
+.block:last-child {
+	outline-right: 1px solid #ddd;
 }
 
 .gridRow {
 	opacity: 1;
 	position: absolute;
-	transform-style: preserve-3d;
-	-webkit-transform-style: preserve-3d;
 	width: 100%;
 	z-index: -1;
 }
 
 .miniBlock {
 	display: inline-block;
-	width: 2.5vh;
 	height: 1.8vh;
 	flex: 1;
-	border: 2px solid #ddd;
-	border-right: none;
+	outline: 1px solid #ddd;
+	outline-right: none;
 	background-color: #222;
 	transition: .4s all ease;
 }
 
 .miniBlock:last-child {
-	border-right: 2px solid #ddd;
+	outline-right: 1px solid #ddd;
 }
 
 .miniBlock.filled {
 	background-color: #ddd;
-	/* border: 2px solid #222; */
+	/* outline: 2px solid #222; */
 }
 
 .powerUp {
 	opacity: 0;
-	visibility: hidden;                                    
-    margin: 3vh 0;
-    border: 2px solid #ddd;
-    font-size: 5.6vh;
-    height: auto;
-    width: 100%;
-    padding: 1.5vh;
-    display: block;
-    cursor: pointer;
+	visibility: hidden;
+	margin: 3vh 0;
+	border: 1px solid #ddd;
+	font-size: 5.6vh;
+	height: auto;
+	padding: 1.5vh;
+	display: block;
+	cursor: pointer;
 }
 
 .scoreAnimation {
 	font-size: 4.6vh;
 	opacity: 1;
-	transition: 1s opacity ease;
 	margin: 0 auto;
 	width: 100%;
-	transform: translate3d(0, 0, 0);
 	color: #ddd;
 	text-stroke: 1px #fff;
 	/* -webkit-text-stroke: 1px #fff; */
@@ -114,7 +115,7 @@ i {
 	margin: auto;
 	margin-top: 2.7vh;
 	width: 96%;
-	/* max-width: 8vh; */
+	height: 1vh;
 }
 
 #container {
@@ -127,7 +128,7 @@ i {
 }
 
 #currentMatches {
-	border-bottom: 2px solid #ddd;
+	outline-bottom: 1px solid #ddd;
 	padding-bottom: 1vh;
 	margin-bottom: 0;
 }
@@ -153,16 +154,9 @@ i {
 	opacity: 1;
 }
 
-#goBack {
-	font-size: 9vh;
-	position: fixed;
-	top: 0;
-	right: 0.5vh;
-}
-
 #grid {
 	margin: auto;
-	outline: 2px solid #ddd;
+	outline: 1px solid #ddd;
 	height: 450px;
 	display: block;
 	vertical-align: bottom;
@@ -182,13 +176,14 @@ i {
 
 #loseMessage {
 	font-size: 48px;
-	color: #888;
-	margin: auto;
-	opacity: 0;
-	line-height: 75px;
+	color: #ddd;
+	font-weight: 100;
 	position: absolute;
-	left: 33.3%;
-	transform: translateX(-50%);
+	width: 100%;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	margin: 0;
 }
 
 #matchedDisplay {
@@ -222,24 +217,17 @@ i {
 }
 
 #playerRow {
-	opacity: 1;
-	transition: .5s right linear, .5s left linear, transform .75s ease;
-	width: 150%;
 	position: absolute;
-	/*for 2px outline on blocks*/
-	bottom: 4px;
-	left: 2px;
-	z-index: 3;
+	text-align: center;
 }
 
 #playerRowContainer {
-	perspective: 800px;
-	overflow: hidden;
+	perspective: 900px;
 	margin: auto;
 	margin-top: 3.3vh;
 	position: relative;
-	text-align: left;
-	margin-left: -2px;
+	text-align: center;
+	outline: 1px solid #ddd;
 }
 
 #readoutData {
@@ -254,13 +242,11 @@ i {
 }
 
 #shifters .powerUp:first-child {
-    border-bottom: 1px solid #ddd;
-    border-top: 2px solid #ddd;
+    border-bottom: none;
 }
 
 #shifters .powerUp {
     margin: 0px;
-    border-top: 1px solid #ddd;
 }
 
 #readout {
@@ -273,8 +259,6 @@ i {
 	margin-top: 1.8vh;
 	height: 10.6vh;
 	z-index: 3;
-	transform-style: preserve-3d;
-	-webkit-transform-style: preserve-3d;
 	font-weight: 200;
 }
 
@@ -295,8 +279,22 @@ i {
 	right: 0;
 }
 
+#reset,#goBack {
+	font-size: 9vh;
+	position: fixed;
+	top: 0;
+}
+
+#reset {
+	left: 0;
+}
+
+#goBack {
+	right: 0;
+}
+
 #playButton {
-	border: 2px solid #ddd;
+	outline: 1px solid #ddd;
 	background: #222;
 	padding: 20px;
 	cursor: pointer;
@@ -307,7 +305,7 @@ i {
 #gameContainer #playButton {
 	position: absolute;
 	left: 50%;
-	top: 45%;
+	top: 50%;
 	transform: translate(-50%, -50%);
 	z-index: 99;
 	padding-top: 8px;
@@ -352,15 +350,15 @@ i {
 	height: 20vh;
 	width: 20vh;
 	display: inline-block;
-	border: 2px solid #ddd;
+	outline: 1px solid #ddd;
 }
 
 .menu-item.top {
-	border-bottom: none;
+	outline-bottom: none;
 }
 
 .menu-item:nth-child(odd) {
-	border-right: none;
+	outline-right: none;
 }
 
 .menu-item .material-icons {
@@ -403,15 +401,61 @@ i {
     max-width: 150px;
 }
 
+.glowing {
+	box-shadow: 0 0 25px 10px #D4B66A;
+}
+
+#playerRow.glowing {
+	animation: none;
+}
+
+.pulsing {
+	animation: pulse 2s infinite;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
+  50% {
+	box-shadow: 0 0 25px 10px #ddd;
+  }
+  100% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
+}
+
+@keyframes pulse {
+  0% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
+  50% {
+	box-shadow: 0 0 25px 10px #ddd;
+  }
+  100% {
+	box-shadow: 0 0 25px 0px #ddd;
+  }
+}
+
 /*ABOUT SCREEN*/
 
-#container > img {
-    width: 50%;
+.about-pic {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%,-50%);
-    border: 5px solid #ddd;
+    width: 100%;
+}
+
+.about-pic h1 {
+	margin: 0;
+	font-size: 3.6rem;
+	margin-bottom: 0.25rem;
+}
+
+.about-pic img {
+	border: 3px solid #111;
+	width: 36rem;
 }
 
 /*SETTINGS SCREEN*/
