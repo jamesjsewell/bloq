@@ -146,7 +146,7 @@
 		</data>
 		<key>MainViewController.nib</key>
 		<data>
-		Ys9GJ0fN4DoISMEx4fRUyfXVgsM=
+		0fRn22nAnZTJT1b5i1oypvQJLWI=
 		</data>
 		<key>PkgInfo</key>
 		<data>
@@ -166,7 +166,7 @@
 		</data>
 		<key>config.xml</key>
 		<data>
-		228yAsfvThwjCblfqsYxQACRaOA=
+		r625UgocRQdlZolhr8kDzJzuQ5M=
 		</data>
 		<key>www/MaterialIcons-Regular.eot</key>
 		<data>
@@ -446,7 +446,7 @@
 		</data>
 		<key>www/js/script.js</key>
 		<data>
-		jiBJ+gG6HrrclYbehPcNcDlKEJY=
+		lhOwimhNCLvin5y0j2/6Ud7gMU4=
 		</data>
 		<key>www/js/settingsTemplate.js</key>
 		<data>
@@ -710,7 +710,7 @@
 		</data>
 		<key>www/styles/style.css</key>
 		<data>
-		RQZHWSAxvaibn4xZ1Kt3r7p29gc=
+		fAjirKtjwB73/jLFb8rJ5TpfF8c=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -1093,11 +1093,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Ys9GJ0fN4DoISMEx4fRUyfXVgsM=
+			0fRn22nAnZTJT1b5i1oypvQJLWI=
 			</data>
 			<key>hash2</key>
 			<data>
-			jeckKkK4EzSikNGtURNT+g/nwbPpeug0mgOTO69Q7OA=
+			/O7ig74pRec2WaB5gKwFAngOBW/KhyBdfi1OyXEgatg=
 			</data>
 		</dict>
 		<key>build-debug.xcconfig</key>
@@ -1137,11 +1137,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			228yAsfvThwjCblfqsYxQACRaOA=
+			r625UgocRQdlZolhr8kDzJzuQ5M=
 			</data>
 			<key>hash2</key>
 			<data>
-			XqQNhnFkaTfp/dYV/CO/if2qn9FbMeGJcINitE/+nA4=
+			rvKMYysuvrTTip1+jbE8BFIHW43uNP1ZPZTVKyhDGM8=
 			</data>
 		</dict>
 		<key>www/MaterialIcons-Regular.eot</key>
@@ -1907,11 +1907,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			jiBJ+gG6HrrclYbehPcNcDlKEJY=
+			lhOwimhNCLvin5y0j2/6Ud7gMU4=
 			</data>
 			<key>hash2</key>
 			<data>
-			NKXEzhJ+7X8jTGTiz/T7HKPHAla1KQUb48SLasHtEtg=
+			0GdWk4jVGufBYcESewB9h+J2LreEH9VGOysASaEBFcs=
 			</data>
 		</dict>
 		<key>www/js/settingsTemplate.js</key>
@@ -2633,11 +2633,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			RQZHWSAxvaibn4xZ1Kt3r7p29gc=
+			fAjirKtjwB73/jLFb8rJ5TpfF8c=
 			</data>
 			<key>hash2</key>
 			<data>
-			FHZAFBpXTrLULPVacCxEYJyWktmdcnc16ekFp7ylrwk=
+			Eb9uKrw0EHmChCJ0wFsliQGRK13C/XqeOLxneTfrUIc=
 			</data>
 		</dict>
 	</dict>

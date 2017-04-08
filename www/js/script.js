@@ -706,7 +706,7 @@ function Block() {
 		height: toPx(STATE.get('sqSide')),
 		background: CONSTANTS.colors.choice()
 	})
-	this.listen('click', function(event) {
+	this.listen(CONTACT_EVENT, function(event) {
 		if (STATE.get('advancing')) return 
 		var bgColor = event.target.style.background
 		event.target.style.background = 
