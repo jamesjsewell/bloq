@@ -1,5 +1,11 @@
 "use strict;"
 
+// SET TOUCH VS CLICK
+var CONTACT_EVENT = 'click'
+if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+	CONTACT_EVENT = 'touchstart'
+}
+
 // PROTOTYPE MODS
 ;(function(){
 	Object.prototype.extend = function(attrs) {
@@ -168,6 +174,10 @@ var STATE = EVENTS.extend({
 		return this.attributes[prop]
 	},
 
+	getDefaults: function() {
+		return JSON.parse(JSON.stringify(this.defaultAttributes))
+	},
+
 	getGridTop: function() {
 		return this.get('currentRows') * this.get('sqSide') || -1
 	},
@@ -185,8 +195,10 @@ var STATE = EVENTS.extend({
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 
-		if (closeTutorial()) return
-
+		if (closeTutorial()) {
+			console.log(STATE.get('tutorialStage'))
+			return
+		}
 		STATE.set({
 			advancing: true
 		})
@@ -202,13 +214,13 @@ var STATE = EVENTS.extend({
 			Promise.all(ps).then(function() {
 				return disappear($$('#container'))
 			}).then(function() {
-					EVENTS.trigger(EVENTS.names.levelComplete)
-					S.revealButtons()
-					appear($$('#container'))
-					STATE.set({
-						advancing: false
-					})
+				EVENTS.trigger(EVENTS.names.levelComplete)
+				S.revealButtons()
+				appear($$('#container'))
+				STATE.set({
+					advancing: false
 				})
+			})
 
 		}, 500)
 	},
@@ -224,28 +236,30 @@ var STATE = EVENTS.extend({
 
 	reset: function() {
 		EVENTS.clear()
-		this.attributes = this.defaultAttributes
+		console.log(this.defaultAttributes)
+		this.attributes = this.getDefaults()
+		console.log(this.defaultAttributes)
 		this.save()
 	},
 
 	revealButtons: function() {
 		if (this.get('level') >= 5) {
 			appear($$('#invert'))
-			$$('#invert').onclick = invertPlayerRow
+			$$('#invert').addEventListener(CONTACT_EVENT,invertPlayerRow)
 		}
 		if (this.get('level') >= 6) {
 			appear($$('#flip'))
-			$$('#flip').onclick = flipPlayerRow
+			$$('#flip').addEventListener(CONTACT_EVENT,flipPlayerRow)
 		}
 		if (this.get('level') >= 7) {
 			appear($$('#shiftLeft'))
 			appear($$('#shiftRight'))
-			$$('#shiftLeft').onclick = function() {
+			$$('#shiftLeft').addEventListener(CONTACT_EVENT,function() {
 				shiftRow('left')
-			}
-			$$('#shiftRight').onclick = function() {
+			})
+			$$('#shiftRight').addEventListener(CONTACT_EVENT,function() {
 				shiftRow('right')
-			}
+			})
 		}
 	},
 
@@ -280,6 +294,7 @@ var VIEWS = {
 			// load state from local storage if there's anything there.
 			STATE.reset() // clear zombie event submissions
 			if (opts.tutorial) {
+				console.log('setting tut stage')
 				STATE.set('tutorialStage', 1)
 			}
 			// set dimensions according to device 
@@ -307,13 +322,13 @@ var VIEWS = {
 			})
 
 			// add event listeners to nav buttons
-			$$('#reset').onclick = function() {
+			$$('#reset').addEventListener(CONTACT_EVENT,function() {
 				STATE.reset()
 				loadView('play')
-			}
-			$$('#goBack').onclick = function() {
+			})
+			$$('#goBack').addEventListener(CONTACT_EVENT,function() {
 				loadView('home')
-			}
+			})
 
 			// set up subscriptions
 			EVENTS.on(EVENTS.names.levelStart, runLevel)
@@ -326,6 +341,8 @@ var VIEWS = {
 
 			// set it off
 			EVENTS.trigger(EVENTS.names.levelStart)
+			console.log(STATE.get('tutorialStage'))
+
 		},
 	},
 	settings: {
@@ -342,7 +359,7 @@ var VIEWS = {
 		init: function() {
 			var ids = ['play','tutorial','settings','about']
 			ids.forEach(function(id) {
-				$$('#' + id).onclick = function() {loadView(id)}
+				$$('#' + id).addEventListener(CONTACT_EVENT,function() {loadView(id)})
 			})
 		}
 	},
@@ -505,7 +522,9 @@ Grid.prototype = Component.prototype.extend({
 				matchedRows.push(row)
 			}
 		})
-		this.handleMatches(matchedRows).then(STATE.levelUp.bind(STATE))
+		var promise = this.handleMatches(matchedRows).then(STATE.levelUp.bind(STATE))
+		console.log(STATE.get('tutorialStage'))
+		return promise
 	},
 
 	clear: function() {
@@ -649,7 +668,7 @@ CounterRow.prototype = Row.prototype.extend({
 
 	glowForTutorial: function(miniEl) {
 		brieflyGlow(miniEl).then(function() {
-			STATE.get('playerRow').class('pulsing')
+			if (STATE.get('tutorialStage')) STATE.get('playerRow').class('pulsing')
 			STATE.set('animating',false)
 		})
 	},
@@ -780,6 +799,8 @@ function closeTutorial() {
 		// if we've just finished the tutorial 
 		EVENTS.clear()
 		setTimeout(showPlayButton,1000)
+		STATE.set('tutorialStage',0)
+		STATE.get('playerRow').removeClass('pulsing')
 		return true
 	}
 	return false
@@ -963,7 +984,6 @@ function runLevel() {
 	grid.playerRow = row
 	grid.clear()
 	if (STATE.get('tutorialStage') === 0) {
-		console.log('default add row', STATE.get('tutorialStage'))
 		grid.addRow()
 	}
 }
@@ -1016,9 +1036,9 @@ function shiftRow(way) {
 
 function showPlayButton() {
 	appear($$('#playButton'))
-	$$('#playButton').onclick = function() {
+	$$('#playButton').addEventListener(CONTACT_EVENT,function() {
 		loadView('play')
-	}
+	})
 }
 
 function toPx(val) {

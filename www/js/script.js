@@ -6,6 +6,9 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 	CONTACT_EVENT = 'touchstart'
 }
 
+console.log(CONTACT_EVENT)
+console.log(navigator.userAgent)
+
 // PROTOTYPE MODS
 ;(function(){
 	Object.prototype.extend = function(attrs) {

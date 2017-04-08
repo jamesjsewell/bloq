@@ -1,0 +1,88 @@
+PROMISE
+
+#eric
+
+promise: a function that when invoked will run with a later callback to be invoked once the initial function is complete. this is how we manipulate javascript's asynchronous programming. 
+
+
+#m33ker
+
+promise: a return value of a jquery search, used to ensure that the data has been retrieved.
+
+
+#francois
+
+promise: a function that sends out a request and sets up a listener that waits for a response to that request. 
+
+
+#carson
+
+promise: a promise is used to create a callback that "waits" for a response and is used in asynchronous programming.
+
+
+#conner
+
+promise: a promise is a set of actions or functions that will be fulfilled once a certain set of conditions have been met, such as data retrieval.
+
+
+#sharnee
+
+promise: a promise is a function used to hold onto the invocation of a function until data is obtained. 
+
+
+#bucky
+
+promise: an asynchronous pattern where requested data is set to be acted upon by a callback which is received over a variable amount of time. 
+
+EDIT: an asynchronous pattern wherein requested data, received over a variable amount of time, is set to be acted upon by a callback. 
+
+
+
+#justin
+
+promise: an object that stores the *eventual* result of an asynchronous operation. It allows access to that result through a callback passed into a .then method. 
+
+
+
+
+CLOSURES
+
+#sharnee
+
+closure: the ending bracket of a function
+
+
+#carson
+
+closure: closure determines the scope of variables in functions
+
+
+#francois
+
+closure: a closure is a function that uses a callback function as its primary parameter
+
+
+# eric
+
+closure: an object that has been defined within a child function that was already defined in a parent function
+
+
+# meeker
+
+closure: when you resolve a longstanding conflict with a distant relative or a love rival
+
+
+# bucky 
+
+closure: scope-related concept wherein a variable is referenced but the referenced variable is not defined within the local scope of where it was referenced
+
+
+#conner
+
+closure: d(T-T)b
+
+
+#justin
+
+closure: a function that remembers a variable name from its parent scope
+
