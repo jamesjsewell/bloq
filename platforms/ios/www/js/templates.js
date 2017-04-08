@@ -27,7 +27,7 @@ var TEMPLATES = {
 		    	</div>\
 		    	<div id="grid"></div>\
 		    	<div id="playerRowContainer">\
-		    		<div id="playerRow">\
+		    		<div class="row" id="playerRow">\
 		    		</div>\
 		    	</div>\
 		    </div>',
@@ -48,5 +48,13 @@ var TEMPLATES = {
 				<div class="menu-item">\
 					<i id="about" class="material-icons">pets</i>\
 				</div>\
-			</div>'
-}
+			</div>',
+	about: '\
+		<div id="titleWrapper" class="home">\
+	    	<h1>Moosecat Productions</h1>\
+	    </div>\
+	    <div class="content">\
+	    	<img src="./img/business.jpg">\
+	    </div>\
+	'
+	}

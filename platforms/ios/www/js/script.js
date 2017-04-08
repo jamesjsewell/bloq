@@ -78,7 +78,7 @@ var CONSTANTS = {
 		blue: 'rgb(39, 88, 107)'
 	},
 	dropIncr: 10,
-	fadeIncr: .08,
+	fadeIncr: .04,
 	invertSpeed: 20,
 	rotateIncr: 2.88,
 	// slideSpeed: STATE.get('sqSide') / 16 // this needs to be computed after page load. hrmm. 
@@ -132,9 +132,10 @@ var EVENTS = {
 
 var STATE = EVENTS.extend({
 	attributes: {
+		advancing: false,
 		animating: false,
 		tutorialStage: 0,
-		level: 3,
+		level: 4,
 		currentRows: 0,
 		maxRows: 8,
 		matchesThusFar: 0,
@@ -143,9 +144,10 @@ var STATE = EVENTS.extend({
 	},
 
 	defaultAttributes: {
+		advancing: false,
 		animating: false,
 		tutorialStage: 0,
-		level: 3,
+		level: 4,
 		currentRows: 0,
 		maxRows: 8,
 		matchesThusFar: 0,
@@ -182,9 +184,10 @@ var STATE = EVENTS.extend({
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 
+		if (closeTutorial()) return
 
 		STATE.set({
-			animating: true
+			advancing: true
 		})
 		// pause for dramatic effect
 		setTimeout(function() {
@@ -202,19 +205,26 @@ var STATE = EVENTS.extend({
 					S.revealButtons()
 					appear($$('#container'))
 					STATE.set({
-						animating: false
+						advancing: false
 					})
 				})
 
 		}, 500)
 	},
 
+	load: function() {
+		var oldState = JSON.parse(window.localStorage.getItem('bloq_state'))			
+		this.attributes = oldState || this.defaultAttributes
+	},
+
 	resetLevelDefaults: function() {
 		this.attributes = this.attributes.extend(this.levelDefaults)
 	},
 
-	resetAll: function() {
+	reset: function() {
+		EVENTS.clear()
 		this.attributes = this.defaultAttributes
+		this.save()
 	},
 
 	revealButtons: function() {
@@ -238,7 +248,16 @@ var STATE = EVENTS.extend({
 		}
 	},
 
-	set: function(attrs) {
+	save: function() {
+		window.localStorage.setItem('bloq_state', JSON.stringify(this.attributes))
+	},
+
+	set: function(attrs, val) {
+		// allow terser syntax for one property
+		if (typeof attrs === 'string') {
+			this.attributes[attrs] = val
+			return this
+		}
 		this.attributes = this.attributes.extend(attrs)
 		EVENTS.trigger('change')
 	},
@@ -256,9 +275,9 @@ var STATE = EVENTS.extend({
 var VIEWS = {
 	play: {
 		content: TEMPLATES.play,
-		init: function() {
-			// hard reset, in case a previous game had affected the state or events
-			fullReset()
+		init: function(opts) {
+			// load state from local storage if there's anything there.
+			STATE.reset() // clear zombie event submissions
 			// set dimensions according to device 
 			var containerHeight = window.getComputedStyle(document.querySelector("#container")).height
 			var sideLength = parseInt(containerHeight) * .087
@@ -285,6 +304,7 @@ var VIEWS = {
 
 			// add event listeners to nav buttons
 			$$('#reset').onclick = function() {
+				STATE.reset()
 				loadView('play')
 			}
 			$$('#goBack').onclick = function() {
@@ -292,15 +312,16 @@ var VIEWS = {
 			}
 
 			// set up subscriptions
+			EVENTS.on(EVENTS.names.levelStart, runLevel)
 			EVENTS.on(EVENTS.names.levelComplete, initLevel)
 			EVENTS.on(EVENTS.names.scoreUpdate, function() {
 				scoreTotal.write(STATE.get('score'))
 			})
+			EVENTS.on(EVENTS.names.levelStart + ' ' + EVENTS.names.playerRowChange + ' ' + EVENTS.names.scoreUpdate, 
+				STATE.save.bind(STATE))
 
 			// set it off
-			EVENTS.trigger(EVENTS.names.levelComplete)
-			STATE.revealButtons()
-
+			EVENTS.trigger(EVENTS.names.levelStart)
 		},
 	},
 	settings: {
@@ -330,19 +351,22 @@ var VIEWS = {
 	tutorial: {
 		content: TEMPLATES.play,
 		init: function() {
-			VIEWS.play.init()
-			STATE.set({
-				tutorialStage: 1
-			})
+			VIEWS.play.init({tutorial: true})
 			STATE.get('playerRow').class('pulsing')
+			// var dropRow = function() {
+			// 	STATE.get('grid').addRow()
+			// 	if (STATE.get('currentRows') < 4) {
+			// 		setTimeout(dropRow, STATE.get('currentRows') * 125)
+			// 	}
+			// }
 			var dropRow = function() {
-				STATE.get('grid').addRow()
-				if (STATE.get('currentRows') < 4) {
-					setTimeout(dropRow, STATE.get('currentRows') * 50)
-				}
+				console.log('droppin knowlegde')
+				return STATE.get('grid').addRow()
 			}
-				
-			EVENTS.on(EVENTS.names.match)
+			var promise = dropRow()
+			for (var i = 0; i < 3; i ++) {
+				promise = promise.then(dropRow)
+			}
 		}
 	}
 }
@@ -397,6 +421,10 @@ Component.prototype = EVENTS.extend({
 		return this
 	},
 
+	removeClass: function(name) {
+		this.node.classList.remove(name)
+	},
+
 	set: function(attrs) {
 		Object.keys(attrs).forEach(function(key) {
 			this.node.setAttribute(key,attrs[key])						
@@ -442,7 +470,7 @@ Grid.prototype = Component.prototype.extend({
 	addRow: function() {		
 		var row = new GridRow()
 		row.fill()
-		if (arraysEqual(row.colors(),this.playerRow.colors())) {
+		if (arraysEqual(row.colors(),STATE.get('playerRow').colors())) {
 			return this.addRow()
 		}
 		row.set({
@@ -488,30 +516,23 @@ Grid.prototype = Component.prototype.extend({
 	handleMatches: function(matches) {
 		var grid = this
 		var ps = matches.map(function(row) {
+			return handleTutorialMatch(new Row().assignNode(row))
+				.then(function() {
+					// handle row mechanics
+					STATE.set({
+						currentRows: STATE.get('currentRows') - 1,
+						matchesThusFar: STATE.get('matchesThusFar') + 1
+					}) // update currentRows *before* the row has disappeared,
+						// so that the next row knows where to land
 
-			var promise = handleTutorialMatch(new Row().assignNode(row))
-				
-			promise.then(function() {
-
-				// handle row mechanics
-				STATE.set({
-					currentRows: STATE.get('currentRows') - 1,
-					matchesThusFar: STATE.get('matchesThusFar') + 1
-				}) // update currentRows *before* the row has disappeared,
-					// so that the next row knows where to land
-
-				// handle scoring
-				var btm = row.style.bottom
-				handleRowScore(btm,550)
-
-				return disappear(row)
-			})
-			
-			promise.then(function() {
+					// handle scoring
+					var btm = row.style.bottom
+					handleRowScore(btm,550)
+					return disappear(row)
+				})
+				.then(function() {
 					grid.node.removeChild(row)
 				})
-
-			return promise
 		}) // each disappearance returns a promise
 		// Promise.all will resolve immediately if the array is empty.
 		return Promise.all(ps).then(function() {
@@ -552,7 +573,6 @@ Grid.prototype = Component.prototype.extend({
 					requestAnimationFrame(inchDown)
 				}
 				else {
-					
 					res()
 				}	
 			}
@@ -562,6 +582,7 @@ Grid.prototype = Component.prototype.extend({
 })
 
 function Row() {
+
 }
 
 Row.prototype = Component.prototype.extend({
@@ -600,7 +621,7 @@ Row.prototype = Component.prototype.extend({
 
 function GridRow() {
 	this.node = document.createElement('div')
-	this.node.className = 'gridRow'
+	this.node.className = 'row gridRow'
 }
 
 GridRow.prototype = Row.prototype.extend({
@@ -623,6 +644,15 @@ function CounterRow() {
 
 CounterRow.prototype = Row.prototype.extend({
 
+	glowForTutorial: function(miniEl) {
+		setTimeout(function() {
+			brieflyGlow(miniEl).then(function() {
+				STATE.get('playerRow').class('pulsing')
+				STATE.set('animating',false)
+			})
+		}, 1000)
+	},
+
 	fill: function() {
 		this.empty()
 		var blocksCalledFor = Math.min(STATE.get('level'),11)
@@ -633,11 +663,14 @@ CounterRow.prototype = Row.prototype.extend({
 	},
 
 	update: function() {
-		
 		this.node.children.forEach(function(miniEl,i){
-			
-			if (STATE.get('matchesThusFar') > i) miniEl.classList.add('filled')
-		})
+			if (STATE.get('matchesThusFar') > i) {
+				miniEl.classList.add('filled')
+				if (STATE.get('tutorialStage') === 1) {
+					this.glowForTutorial(miniEl)
+				}
+			}
+		}.bind(this))
 	}
 })
 
@@ -650,6 +683,7 @@ function Block() {
 		background: CONSTANTS.colors.choice()
 	})
 	this.listen('click', function(event) {
+		if (STATE.get('advancing')) return 
 		var bgColor = event.target.style.background
 		event.target.style.background = 
 			bgColor === CONSTANTS.colors.red ? 
@@ -725,6 +759,31 @@ function appear(el) {
 	})
 }
 
+function brieflyGlow() {
+	var nodes = arguments
+	return new Promise(function(res) {
+		// need for each here because of closures and i
+		Array.prototype.forEach.call(nodes,function(node) {
+			node.classList.add('glowing')
+			setTimeout(function() {
+				node.classList.remove('glowing')
+				// pause for effect
+				setTimeout(res,500)
+			}, 1500)
+		})
+	})
+}
+
+function closeTutorial() {
+	if (STATE.get('tutorialStage') > 0) {
+		// if we've just finished the tutorial 
+		EVENTS.clear()
+		setTimeout(showPlayButton,1000)
+		return true
+	}
+	return false
+}
+
 function disappear(el) {
 	el.style.opacity = 1
 	return animate(function(res) {
@@ -732,7 +791,6 @@ function disappear(el) {
 			el.style.opacity = Math.max(parseFloat(el.style.opacity) - CONSTANTS.fadeIncr, 0)
 			if (el.style.opacity === '0') {
 				res()
-				console.log('resolving')
 			}
 			else {
 				requestAnimationFrame(dimIt)
@@ -776,11 +834,6 @@ function flipPlayerRow() {
 	})
 }
 
-function fullReset() {
-	STATE.resetAll()
-	EVENTS.clear()
-}
-
 function getRGBObj(str) {
 	var pat = /rgb\((\d+),\s*(\d+),\s*(\d+)/
 	var arr = str.match(pat)
@@ -798,11 +851,8 @@ function getRGBStr(obj) {
 function handleLoss() {
 	
 	if (STATE.get('currentRows') > STATE.get('maxRows')) {
-		fullReset()
-		appear($$('#playButton'))
-		$$('#playButton').onclick = function() {
-			loadView('play')
-		}
+		STATE.reset()
+		showPlayButton()
 		$$('#playerRowContainer').innerHTML = '<p id="loseMessage">YOU LOSE</p>'
 	}
 }
@@ -815,7 +865,7 @@ function handleRowScore(loc,timeout) {
 	})
 	STATE.get('grid').node.appendChild(score.node)
 	STATE.updateScore(points)
-	return new Promise(function(res) {
+	return new Promise(function(res,rej) {
 		setTimeout(res, timeout)
 	}).then( function() {
 		return disappear(score.node)
@@ -823,16 +873,17 @@ function handleRowScore(loc,timeout) {
 }
 
 function handleTutorialMatch(rowComp) {
+	STATE.get('playerRow').removeClass('pulsing')
+	STATE.set('animating', true)
 	return new Promise(function(res) {
 		if (STATE.get('tutorialStage') === 0) {
 			res()
 		}
 		else {
-			rowComp.class('pulsing')
 			rowComp.setStyle({
 				zIndex: 99
 			})
-			setTimeout(res, 2000)
+			brieflyGlow(rowComp.node,STATE.get('playerRow').node).then(res)
 		}
 	})
 }
@@ -845,22 +896,6 @@ function initLevel() {
 		level: STATE.get('level') + 1,
 	})
 	
-	//update readout
-	levelEl = new Component().assignNode('#level')
-	levelEl.write(CONSTANTS.numeralToWord[STATE.get('level')])
-
-	//update widths
-	var newWidth = STATE.getRowWidth()
-	$$('#gameContainer').style.width = newWidth
-	$$('#playerRowContainer').style.width = newWidth
-
-	// refill rows
-	var row = STATE.get('playerRow')
-	row.fill()
-	var grid = STATE.get('grid')
-	grid.playerRow = row
-	grid.clear()
-	grid.addRow()
 	EVENTS.trigger(EVENTS.names.levelStart)
 }
 
@@ -910,6 +945,28 @@ function main() {
 	loadView('home')
 }
 
+function runLevel() {
+	//update readout
+	levelEl = new Component().assignNode('#level')
+	levelEl.write(CONSTANTS.numeralToWord[STATE.get('level')])
+
+	//update widths
+	var newWidth = STATE.getRowWidth()
+	$$('#gameContainer').style.width = newWidth
+	$$('#playerRowContainer').style.width = newWidth
+
+	// refill rows
+	var row = STATE.get('playerRow')
+	row.fill()
+	var grid = STATE.get('grid')
+	grid.playerRow = row
+	grid.clear()
+	if (STATE.get('tutorialStage') === 0) {
+		console.log('default add row', STATE.get('tutorialStage'))
+		grid.addRow()
+	}
+}
+
 function shiftRow(way) {
 	if (STATE.get('animating')) return 
 	var rowComp = STATE.get('playerRow'),
@@ -956,6 +1013,12 @@ function shiftRow(way) {
 	})
 }
 
+function showPlayButton() {
+	appear($$('#playButton'))
+	$$('#playButton').onclick = function() {
+		loadView('play')
+	}
+}
 
 function toPx(val) {
 	return val.slice && val.slice(-2) === 'px' ? val : val + 'px'

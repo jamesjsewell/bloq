@@ -301,7 +301,7 @@ i {
 #gameContainer #playButton {
 	position: absolute;
 	left: 50%;
-	top: 45%;
+	top: 50%;
 	transform: translate(-50%, -50%);
 	z-index: 99;
 	padding-top: 8px;
@@ -395,6 +395,14 @@ i {
     left: -59%;
     bottom: 290px;
     max-width: 150px;
+}
+
+.glowing {
+	box-shadow: 0 0 25px 10px #D4B66A;
+}
+
+#playerRow.glowing {
+	animation: none;
 }
 
 .pulsing {
