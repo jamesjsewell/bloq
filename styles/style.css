@@ -45,6 +45,14 @@ h1 {
 	margin-top: 6vh;
 }
 
+h2 {
+	font-size: 4vh;
+}
+
+span, a, p {
+	font-size: 3vh;
+}
+
 i {
 	cursor: pointer;
 }
@@ -370,13 +378,25 @@ i {
 	font-weight: 100;
 }
 
-#menu {
-	margin: auto;
-	position: absolute;
+#home-content {
+	position: fixed;
 	top: 50%;
 	left: 50%;
-	width: 40vh;
 	transform: translate(-50%,-50%);
+}
+
+#home-content #title-wrapper h1 {
+	margin: 2vh;
+	font-size: 6.4vw;
+}
+
+h2#high-score {
+	font-size: 3.8vw;
+	margin: 3vh 0;
+}
+
+#high-score .score {
+	font-size: inherit;
 }
 
 /*TUTORIAL SCREEN*/
