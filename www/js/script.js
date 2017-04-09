@@ -197,7 +197,6 @@ var STATE = EVENTS.extend({
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 
-		STATE.resetLevelDefaults() // prevents level jumps while transitioning
 		if (closeTutorial()) {
 			
 			return
@@ -213,6 +212,8 @@ var STATE = EVENTS.extend({
 				var bottom = i * STATE.get('sqSide')
 				ps.push(handleRowScore(bottom,750))
 			}
+			STATE.resetLevelDefaults() // prevents level jumps while transitioning
+
 			// when all those animations are complete, then fade out the container etc
 			Promise.all(ps).then(function() {
 				return disappear($$('#container'))

@@ -6,9 +6,6 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 	CONTACT_EVENT = 'touchend'
 }
 
-
-
-
 // PROTOTYPE MODS
 ;(function(){
 	Object.prototype.extend = function(attrs) {
@@ -150,7 +147,8 @@ var STATE = EVENTS.extend({
 		maxRows: 8,
 		matchesThusFar: 0,
 		score: 0,
-		sqSide: null
+		sqSide: null,
+		view: 'home'
 	},
 
 	defaultAttributes: {
@@ -162,7 +160,8 @@ var STATE = EVENTS.extend({
 		maxRows: 8,
 		matchesThusFar: 0,
 		score: 0,
-		sqSide: null
+		sqSide: null,
+		view: 'home'
 	},
 
 	levelDefaults: {
@@ -198,6 +197,7 @@ var STATE = EVENTS.extend({
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 
+		STATE.resetLevelDefaults() // prevents level jumps while transitioning
 		if (closeTutorial()) {
 			
 			return
@@ -239,10 +239,7 @@ var STATE = EVENTS.extend({
 
 	reset: function() {
 		EVENTS.clear()
-		
 		this.attributes = this.getDefaults()
-		
-		this.save()
 	},
 
 	revealButtons: function() {
@@ -296,6 +293,7 @@ var VIEWS = {
 			opts = opts || {}
 			// load state from local storage if there's anything there.
 			STATE.reset() // clear zombie event submissions
+			STATE.set('view','play')
 			if (opts.tutorial) {
 				
 				STATE.set('tutorialStage', 1)
@@ -324,15 +322,6 @@ var VIEWS = {
 				grid: new Grid()
 			})
 
-			// add event listeners to nav buttons
-			$$('#reset').addEventListener(CONTACT_EVENT,function() {
-				STATE.reset()
-				loadView('play')
-			})
-			$$('#goBack').addEventListener(CONTACT_EVENT,function() {
-				loadView('home')
-			})
-
 			// set up subscriptions
 			EVENTS.on(EVENTS.names.levelStart, runLevel)
 			EVENTS.on(EVENTS.names.levelComplete, initLevel)
@@ -344,8 +333,6 @@ var VIEWS = {
 
 			// set it off
 			EVENTS.trigger(EVENTS.names.levelStart)
-			
-
 		},
 	},
 	settings: {
@@ -377,6 +364,7 @@ var VIEWS = {
 		content: TEMPLATES.play,
 		init: function() {
 			VIEWS.play.init({tutorial: true})
+			STATE.set('view','tutorial')
 			STATE.get('playerRow').class('pulsing')
 			// var dropRow = function() {
 			// 	STATE.get('grid').addRow()
@@ -968,8 +956,17 @@ function invertPlayerRow() {
 }
 
 function loadView(name) {
+	EVENTS.clear()
 	$$('#container').innerHTML = VIEWS[name].content
+	STATE.set('view',name)
 	VIEWS[name].init()
+	if (name === 'play') {
+		$$('#reset').style.visibility = 'visible'
+	}
+	else {
+		$$('#reset').style.visibility = 'hidden'		
+		console.log($$('#reset'))
+	}
 }
 
 function main() {
@@ -1056,5 +1053,15 @@ function showPlayButton() {
 function toPx(val) {
 	return val.slice && val.slice(-2) === 'px' ? val : val + 'px'
 }
+
+// SET GLOBAL EVENT LISTENERS
+$$('#goBack').addEventListener(CONTACT_EVENT, function() {
+	if (STATE.get('animating')) return
+	loadView('home')
+})
+$$('#reset').addEventListener(CONTACT_EVENT, function() {
+	if (STATE.get('animating')) return
+	loadView(STATE.get('view'))
+})
 
 main()
