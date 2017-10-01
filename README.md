@@ -17,6 +17,6 @@ All of the issues currently open are either bugs or missing features.
 
 ### Code Structure
 
-Here I'll describe where the code is that you would contribute to if you so desire. Because Bloq is ported to iOS through Cordova, the directory structure is peculiar to that tool's scaffolding. The relevant files that comprise the actual current version of the game are in `/platforms/ios/www/`. Most of the game logic is in `/platforms/ios/www/js/script.js`. CSS is in `/platforms/ios/www/styles/style.css`. As I develop it, I usually test it by opening `/platforms/ios/www/index.html` in a browser. 
+Here I'll describe where the code is that you would contribute to if you so desire. Because Bloq is ported to iOS through Cordova, the directory structure is peculiar to that tool's scaffolding. The relevant files that comprise the actual current version of the game are in `/www/`. Most of the game logic is in `/www/js/script.js`. CSS is in `/www/styles/style.css`. As I develop it, I usually test it by opening `/www/index.html` in a browser. 
 
-The web version runs the exact same Javascript and CSS. It lives on the gh-pages branch, which is published as a [subtree](https://www.atlassian.com/blog/git/alternatives-to-git-submodule-git-subtree) (located at `/platforms/ios/www/`) of the master branch.
+The web version runs the exact same Javascript and CSS. It lives on the gh-pages branch, which is published as a [subtree](https://www.atlassian.com/blog/git/alternatives-to-git-submodule-git-subtree) (located at `/www/`) of the master branch.
