@@ -1,0 +1,22 @@
+# Bloq
+
+Bloq is an iOS game in development. Play it [here](http://magentanova.github.io/bloq).
+
+## Mechanics
+You control the bottom row. Tap a block to flip its color. Match a row in the grid to make that row disappear. Eliminate all rows to advance to the next level. 
+
+In subsequent levels you gain access to powerups, available to the left of the grid. As you grow more powerful, the world becomes more dangerous. With each level an extra block is added, making matches more difficult to achieve. 
+
+## Contribute
+ 
+Contributers are very much welcomed! Feel free to post new issues or address outstanding ones. If you have questions, you can email Justin at richards.justind at gmail dot com. 
+
+### Todos
+
+All of the issues currently open are either bugs or missing features. 
+
+### Code Structure
+
+Here I'll describe where the code is that you would contribute to if you so desire. Because Bloq is ported to iOS through Cordova, the directory structure is peculiar to that tool's scaffolding. The relevant files that comprise the actual current version of the game are in `/platforms/ios/www/`. Most of the game logic is in `/platforms/ios/www/js/script.js`. CSS is in `/platforms/ios/www/styles/style.css`. As I develop it, I usually test it by opening `/platforms/ios/www/index.html` in a browser. 
+
+The web version runs the exact same Javascript and CSS. It lives on the gh-pages branch, which is published as a [subtree](https://www.atlassian.com/blog/git/alternatives-to-git-submodule-git-subtree) (located at `/platforms/ios/www/`) of the master branch.
