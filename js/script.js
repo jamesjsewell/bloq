@@ -648,7 +648,14 @@ function PlayerRow() {
 }
 
 PlayerRow.prototype = Row.prototype.extend({
-
+	fill: function() {
+		this.node.clearChildren()
+		var blocksCalledFor = Math.min(STATE.get('level'),11)
+		while (blocksCalledFor > this.node.children.length) {
+			this.node.appendChild(new PlayerBlock().node)
+		}
+		return this
+	}
 })
 
 function CounterRow() {
@@ -689,16 +696,24 @@ CounterRow.prototype = Row.prototype.extend({
 })
 
 function Block() {
-	this.makeNode('div')
-	this.class('block')
-	this.setStyle({
-		width: toPx(STATE.get('sqSide')),
-		height: toPx(STATE.get('sqSide')),
-		background: CONSTANTS.colors.choice()
-	})
-	this.listen(CONTACT_EVENT, function(event) {
+	this.init()
+}
 
-		
+Block.prototype = Component.prototype.extend({
+	init: function() {
+		this.makeNode('div')
+		this.class('block')
+		this.setStyle({
+			width: toPx(STATE.get('sqSide')),
+			height: toPx(STATE.get('sqSide')),
+			background: CONSTANTS.colors.choice()
+		})
+	}
+})
+
+function PlayerBlock() {
+	this.init()
+	this.listen(CONTACT_EVENT, function(event) {
 		if (STATE.get('advancing') || STATE.get('animating')) return 
 		var bgColor = event.target.style.background
 		event.target.style.background = 
@@ -710,8 +725,7 @@ function Block() {
 	})
 }
 
-Block.prototype = Component.prototype.extend({
-
+PlayerBlock.prototype = Block.prototype.extend({
 })
 
 function Score(opts) {

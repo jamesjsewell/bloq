@@ -52,11 +52,20 @@
         <title>Bloq</title>
     </head>
     <body>
-        <div id=container>
+        <audio preload="auto" id="bg_music" src="audio/music.wav" autoplay loop></audio>
+        <audio preload="auto" id="basic_tap_sound" src="audio/basic_tap.wav"></audio>
+        <audio preload="auto" id="flip_sound" src="audio/flip.wav"></audio>
+        <audio preload="auto" id="invert_sound" src="audio/invert.wav"></audio>
+        <audio preload="auto" id="land_sound" src="audio/land.wav"></audio>
+        <audio preload="auto" id="slide_sound" src="audio/slide.wav"></audio>
+        <audio preload="auto" id="level_up_sound" src="audio/level_up.wav"></audio>
+        <div id=container>  
         </div>
         <i class="material-icons" id="goBack" >menu</i>\
         <i class="material-icons" id="reset" >cached</i>\
         <script type="text/javascript" src="js/promise-polyfill.js"></script>
+        <script type="text/javascript" src="js/setup.js"></script>
+        <script type="text/javascript" src="js/settings.js"></script>
         <script type="text/javascript" src="js/templates.js"></script>
         <script src="js/script.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
