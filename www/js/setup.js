@@ -30,6 +30,13 @@ function $$(sel) {
 		return newObj
 	}
 
+	Object.prototype.get = function(prop) {
+		if (this.attributes[prop] === undefined) {
+			throw new Error(`property ${prop} does not exist on instance of ${this.constructor.name}.`)
+		}
+		return this.attributes[prop]
+	}
+
 	Object.prototype.choice = function() {
 		if (this instanceof Array) {
 			var index = Math.floor(Math.random() * this.length)
@@ -39,6 +46,17 @@ function $$(sel) {
 			return this.values().choice()
 		} 
 	}
+
+	Object.prototype.set = 	function(attrs, val) {
+		// allow terser syntax for one property
+		if (typeof attrs === 'string') {
+			this.attributes[attrs] = val
+			return this
+		}
+		this.attributes = this.attributes.extend(attrs)
+		return this
+	},
+
 
 	Object.prototype.values = function() {
 		var output = []
