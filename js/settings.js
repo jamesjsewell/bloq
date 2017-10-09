@@ -54,15 +54,11 @@ var SETTINGS = {
 		})
 		$('#music-slider').addEventListener(CONTACT_EVENT, function(e) {
 			if (debounce(e)) return
-			if (SETTINGS.music) {
-				STATE.get('song').pause()
-				SETTINGS.music = false
-				return
-			}
-			else {
-				STATE.get('song').play()
-				SETTINGS.music = true
-			}
+			$(STATE.get('song')).pause()
+			STATE.set({
+				song: STATE.get('song') == CONSTANTS.songs[0] ? CONSTANTS.songs[1] : CONSTANTS.songs[0]
+			})
+			$(STATE.get('song')).play()
 		})
 	}
 }
