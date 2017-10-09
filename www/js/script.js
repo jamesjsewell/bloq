@@ -40,6 +40,7 @@ var CONSTANTS = {
 	fadeIncr: .04,
 	invertSpeed: 20,
 	rotateIncr: 2.88,
+	songs: ['#polyphonic', '#hallelujah']
 	// slideSpeed: STATE.get('sqSide') / 16 // this needs to be computed after page load. hrmm. 
 }
  
@@ -106,6 +107,7 @@ var STATE = EVENTS.extend({
 		playerBlocks: Array(4).fill(['red','blue'].choice()),
 		score: 0,
 		settings: SETTINGS,
+		song: '#polyphonic',
 		sqSide: null,
 		view: 'home'
 	},
@@ -122,6 +124,7 @@ var STATE = EVENTS.extend({
 		playerBlocks: Array(4).fill(['red','blue'].choice()),
 		score: 0,
 		settings: SETTINGS,
+		song: '#polyphonic',
 		sqSide: null,
 		view: 'home'
 	},
@@ -1025,8 +1028,15 @@ function loadView(name) {
 function main() {
 	if (STATE.getSavedState()) {
 		STATE.load(STATE.getSavedState())
+		playMusic()
 	}
 	loadView('home')
+}
+
+function playMusic() {
+	if (STATE.get('song')) {
+		$(STATE.get('song')).play()
+	}
 }
 
 function playSound(soundName) {
