@@ -56,30 +56,41 @@ var TEMPLATES = {
 '					</div>' + 
 '					<h2 id="high-score">high score: <span class="score"></span></h2>' + 
 '				</div>',
-	about: '\
-	    <div class="about-pic">\
-	    	<div id="title-wrapper" class="home">\
-	        	<h1>Moosecat Productions</h1>\
-	        </div>\
-	    	<img src="./img/business.jpg">\
-	    </div>'
+	about: '' +
+	  '  <div class="about-pic">' +
+	  '  	<div id="title-wrapper" class="home">' +
+	  '      	<h1>Moosecat Productions</h1>' +
+	  '      </div>' +
+	  '  	<img src="./img/business.jpg">' +
+	  '  </div>',
+	settings: '<div id="settings-container">' +
+			'<div class="settings-option">' +
+			'	<h4>music</h4>' +
+			'	<div class="settings-visual">' +
+			'		<label id="music" class="switch">' +
+			'			<input checked type="checkbox">' +
+			'			<span class="slider"></span>' +
+			'		</label>' +
+			'	</div>' +
+			'</div>' +
+			'<div class="settings-option">' +
+			'	<h4>sound</h4>' +
+			'	<div class="settings-visual">' +
+			'		<label id="sounds" class="switch">' +
+			'			<input checked type="checkbox">' +
+			'			<span class="slider"></span>' +
+			'		</label>' +
+			'	</div>' +
+			'</div>' +		
+	'		<div class="settings-option">' +
+			'	<h4>colors</h4>' +
+			'	<div class="settings-visual">' +
+			'		<label id="colors" class="switch">' +
+			'			<input checked type="checkbox">' +
+			'			<span class="colors round slider"></span>' +
+			'		</label>' +
+			'	</div>' +
+			'</div>' +		
+	'	</div>'
 	}
 		    	
-		 //    </div>\		    
-		 //    <div id="home-content">\
-		 //   		<div id="menu-boxes">\
-			// 		<div class="menu-item top">\
-			// 			<i id="play" class="material-icons">play_arrow</i>\
-			// 		</div>\
-			// 		<div class="menu-item top">\
-			// 			<i id="tutorial" class="material-icons">help</i>\
-			// 		</div>\
-			// 		<div class="menu-item">\
-			// 			<i id="settings" class="material-icons">settings</i>\
-			// 		</div>\
-			// 		<div class="menu-item">\
-			// 			<i id="about" class="material-icons">pets</i>\
-			// 		</div>\
-			// 	</div>\
-			// </div>\	
-

@@ -146,7 +146,7 @@
 		</data>
 		<key>MainViewController.nib</key>
 		<data>
-		0fRn22nAnZTJT1b5i1oypvQJLWI=
+		o6+M7/O6MuY2Xuf4Lx+xdLCR9go=
 		</data>
 		<key>PkgInfo</key>
 		<data>
@@ -168,33 +168,57 @@
 		<data>
 		Grq0pu7y6Z5bbD8wjhsEhsCfE/k=
 		</data>
-		<key>www/MaterialIcons-Regular.eot</key>
-		<data>
-		JvuM7LVRIiMne00pCiRJKg8J7eE=
-		</data>
-		<key>www/MaterialIcons-Regular.ijmap</key>
-		<data>
-		30aOh2hcJLKl1DEDbU1aQ079wo4=
-		</data>
-		<key>www/MaterialIcons-Regular.svg</key>
-		<data>
-		Uq2VxOBpHoybjvl8VRqZcOtJjKA=
-		</data>
-		<key>www/MaterialIcons-Regular.ttf</key>
-		<data>
-		/AXeMSNOAJD33cKM4bI69AJssdo=
-		</data>
-		<key>www/MaterialIcons-Regular.woff</key>
-		<data>
-		Ri1702Q4oP+c8Piq9LKP2Fhu1sk=
-		</data>
-		<key>www/MaterialIcons-Regular.woff2</key>
-		<data>
-		hr2c03+Jmq3gGt/VFZxduHQQyis=
-		</data>
 		<key>www/README.md</key>
 		<data>
 		hnwJmhga8E3jkVLUiu4BOgH80c0=
+		</data>
+		<key>www/audio/basic_tap.wav</key>
+		<data>
+		3o1m5GmNMaPCtEH8JajcaYW2FVM=
+		</data>
+		<key>www/audio/cheek_finger.wav</key>
+		<data>
+		Fcpt88/QEqHzae14nhI+3Im0c4s=
+		</data>
+		<key>www/audio/flip.wav</key>
+		<data>
+		uPAkYHjMDXW/tk4kHRzYi9sHvgw=
+		</data>
+		<key>www/audio/invert.wav</key>
+		<data>
+		+ndBzdsLBuYIBzxBrrpuh5hYmFA=
+		</data>
+		<key>www/audio/land.wav</key>
+		<data>
+		VYoUFU6Ft9UC54YRQO3YmHiqD48=
+		</data>
+		<key>www/audio/level_up.wav</key>
+		<data>
+		O0MINzWRqfZgwp1ccNoYTRd+b+o=
+		</data>
+		<key>www/audio/mike_smash.wav</key>
+		<data>
+		EqBAZyrYkWMPBXL7UQI2aSdmE8k=
+		</data>
+		<key>www/audio/mike_smash_2.wav</key>
+		<data>
+		0Fg5XNWqC240SkV/G4xdyCX1b+s=
+		</data>
+		<key>www/audio/music.wav</key>
+		<data>
+		4c20+6yrjjXt09//JHJ7fjYj2h4=
+		</data>
+		<key>www/audio/slide.wav</key>
+		<data>
+		4SiYX0ixFT3osaM+Q3G6WlouSME=
+		</data>
+		<key>www/audio/tongue_click.wav</key>
+		<data>
+		xfR4mmhm+O3t/Vb8EtEYnTdjrgI=
+		</data>
+		<key>www/audio/tongue_click_2.wav</key>
+		<data>
+		Abe+y3qHcA1PbbQn5iCZVy0DrVE=
 		</data>
 		<key>www/codepoints</key>
 		<data>
@@ -215,10 +239,6 @@
 		<key>www/cordova_plugins.js</key>
 		<data>
 		tSvusTN4z6IxLfWyiQDhJBtRW+g=
-		</data>
-		<key>www/css/index.css</key>
-		<data>
-		q6oc3wwt5nR8HY8sNq+KLUS0Nao=
 		</data>
 		<key>www/favicon/android-icon-144x144.png</key>
 		<data>
@@ -328,89 +348,13 @@
 		<data>
 		toPh6c35wpATyad6RIa4nmMS2xc=
 		</data>
-		<key>www/img/business.jpg</key>
-		<data>
-		sOCKqhvrtzjdQlP6C/uYbfMQxig=
-		</data>
-		<key>www/img/cayambe.JPG</key>
-		<data>
-		1j+DRFjV0fLbhqwVjtTBWonhiOM=
-		</data>
-		<key>www/img/logo.jpg</key>
-		<data>
-		E1ZPrcb24M6N7HEpDLZuj8ei2oI=
-		</data>
-		<key>www/img/logo.png</key>
-		<data>
-		toPh6c35wpATyad6RIa4nmMS2xc=
-		</data>
-		<key>www/img/moosing.JPG</key>
-		<data>
-		7BhGgVtpTNBmPv1Dk9lWeXQhWgM=
-		</data>
-		<key>www/img/wat.JPG</key>
-		<data>
-		vZx6Ys0EBQ58Z0LAq1ghKmxQ8zI=
-		</data>
-		<key>www/img/woods.JPG</key>
-		<data>
-		JtQXwfe8cIMWRCQfzq6ta8Izb3o=
-		</data>
 		<key>www/index.html</key>
 		<data>
-		tCBUCTyxyw5E3PcnA/k4AGvPZ8E=
+		1uzrvgeYtFtpqAbFni2jjijVFd0=
 		</data>
 		<key>www/index.spare.html</key>
 		<data>
 		bJxRiRy4gBwCSmXXTBWPOBp86L4=
-		</data>
-		<key>www/js-old/aboutTemplate.js</key>
-		<data>
-		QZMjX3qdtUh8sytdXKl7VmHeqIg=
-		</data>
-		<key>www/js-old/canvas.script.js</key>
-		<data>
-		4tc7AF+lqrF/EINVdRxcKDuVhUY=
-		</data>
-		<key>www/js-old/homeTemplate.js</key>
-		<data>
-		/fu8XWtfIjerQrVfr6K3JPWsaGE=
-		</data>
-		<key>www/js-old/index.js</key>
-		<data>
-		2jmj7l5rSw0yVb/vlWAYkK/YBwk=
-		</data>
-		<key>www/js-old/playTemplate.js</key>
-		<data>
-		RrILanBQAkDo8GoeX8W7hCTAhEE=
-		</data>
-		<key>www/js-old/playTemplate.old.js</key>
-		<data>
-		dincoag5cxtQse6lre66pRRajqs=
-		</data>
-		<key>www/js-old/promise-polyfill.js</key>
-		<data>
-		dsXl8ACFdEhoHiq3UNP2oqxG9h4=
-		</data>
-		<key>www/js-old/promisetest.js</key>
-		<data>
-		6Rdtq8MpjJdlSnB4BpmcWcQ4f0Q=
-		</data>
-		<key>www/js-old/script.js</key>
-		<data>
-		bSBfmMzYld5gIJ26XoFe3G3yhTo=
-		</data>
-		<key>www/js-old/settingsTemplate.js</key>
-		<data>
-		+5Da2aRuvsnJ7vHhiYasxsHAfAI=
-		</data>
-		<key>www/js-old/tutorialTemplate.js</key>
-		<data>
-		oBuiVnp1m6aWUY20ptxn7kEwE0U=
-		</data>
-		<key>www/js/PROMISE</key>
-		<data>
-		/uKZrbrwstnxnY8ZbX7gey83vjQ=
 		</data>
 		<key>www/js/aboutTemplate.js</key>
 		<data>
@@ -432,10 +376,6 @@
 		<data>
 		RrILanBQAkDo8GoeX8W7hCTAhEE=
 		</data>
-		<key>www/js/playTemplate.old.js</key>
-		<data>
-		dincoag5cxtQse6lre66pRRajqs=
-		</data>
 		<key>www/js/promise-polyfill.js</key>
 		<data>
 		dsXl8ACFdEhoHiq3UNP2oqxG9h4=
@@ -446,27 +386,27 @@
 		</data>
 		<key>www/js/script.js</key>
 		<data>
-		7TAGil69cM3QlRbp4lE+IVLLguc=
+		PdESORfvztj3m/2k+UBWzRv7Afc=
+		</data>
+		<key>www/js/settings.js</key>
+		<data>
+		8+i9jQjRFid5j4+IwjxPBgkysTE=
 		</data>
 		<key>www/js/settingsTemplate.js</key>
 		<data>
-		+5Da2aRuvsnJ7vHhiYasxsHAfAI=
+		mx7viBQOGWSRliIA0BTw1egxSe8=
+		</data>
+		<key>www/js/setup.js</key>
+		<data>
+		BwDjrJ/57EBvV2WmR3mVYTen/Ek=
 		</data>
 		<key>www/js/templates.js</key>
 		<data>
-		oIZwMwrUd9nDJMtK7i4QKEFBjfA=
+		uWFKRwZ+TnLlISJFpqntKO0pjvg=
 		</data>
 		<key>www/js/tutorialTemplate.js</key>
 		<data>
 		oBuiVnp1m6aWUY20ptxn7kEwE0U=
-		</data>
-		<key>www/material-icons.css</key>
-		<data>
-		w5plKFbQN+rYR2oU+iIjtLKRKpc=
-		</data>
-		<key>www/normalize.css</key>
-		<data>
-		6eAXVBCBZrwX7o+tIAOboveJE7c=
 		</data>
 		<key>www/res/icon/android/icon-36-ldpi.png</key>
 		<data>
@@ -710,7 +650,7 @@
 		</data>
 		<key>www/styles/style.css</key>
 		<data>
-		c4GcCsJzLXYIrB6EB5yb6q6of4k=
+		qMZ12lOtnW7SYYvyZs/pt0g0K9w=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -1093,11 +1033,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			0fRn22nAnZTJT1b5i1oypvQJLWI=
+			o6+M7/O6MuY2Xuf4Lx+xdLCR9go=
 			</data>
 			<key>hash2</key>
 			<data>
-			/O7ig74pRec2WaB5gKwFAngOBW/KhyBdfi1OyXEgatg=
+			rZZlTOhUylitEpgJrjvdqGH9s2dyeQOrOJnOJPDAgkg=
 			</data>
 		</dict>
 		<key>build-debug.xcconfig</key>
@@ -1144,72 +1084,6 @@
 			NYiZPdhlc3VUAvBvoaBc+OKAfZLGxQr6DpMWJxiBzxQ=
 			</data>
 		</dict>
-		<key>www/MaterialIcons-Regular.eot</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			JvuM7LVRIiMne00pCiRJKg8J7eE=
-			</data>
-			<key>hash2</key>
-			<data>
-			jJmLSpwKy7n+XdVywgaloz/dXKK1jbh/w7iTvqyFBo0=
-			</data>
-		</dict>
-		<key>www/MaterialIcons-Regular.ijmap</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			30aOh2hcJLKl1DEDbU1aQ079wo4=
-			</data>
-			<key>hash2</key>
-			<data>
-			iBggKXFWJDVdvEnJezr2HjEVON3TPTHG9NE7KTdBHR0=
-			</data>
-		</dict>
-		<key>www/MaterialIcons-Regular.svg</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			Uq2VxOBpHoybjvl8VRqZcOtJjKA=
-			</data>
-			<key>hash2</key>
-			<data>
-			i5IhKTYO4SBRJpJ46VzP8Fq0pgzNObkRf4IW7eY6kcA=
-			</data>
-		</dict>
-		<key>www/MaterialIcons-Regular.ttf</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			/AXeMSNOAJD33cKM4bI69AJssdo=
-			</data>
-			<key>hash2</key>
-			<data>
-			t/Sjq1YgSPKN0fppFgG8QzY6YdD4dtFtgxbFLk8y1pY=
-			</data>
-		</dict>
-		<key>www/MaterialIcons-Regular.woff</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			Ri1702Q4oP+c8Piq9LKP2Fhu1sk=
-			</data>
-			<key>hash2</key>
-			<data>
-			Oo7hxDAc2XDf6D+yjwTAnusXNgGLJ7ne3ZUbk/LRXU4=
-			</data>
-		</dict>
-		<key>www/MaterialIcons-Regular.woff2</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			hr2c03+Jmq3gGt/VFZxduHQQyis=
-			</data>
-			<key>hash2</key>
-			<data>
-			P7FS6DKNMm7CBUYbPYe1t3rKzb+vKJ+1hQUPpctgQuw=
-			</data>
-		</dict>
 		<key>www/README.md</key>
 		<dict>
 			<key>hash</key>
@@ -1219,6 +1093,138 @@
 			<key>hash2</key>
 			<data>
 			QC0ncM40Jh//Ynt8oSd1rShr4tHkmpNNS7k4MTl2GtI=
+			</data>
+		</dict>
+		<key>www/audio/basic_tap.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			3o1m5GmNMaPCtEH8JajcaYW2FVM=
+			</data>
+			<key>hash2</key>
+			<data>
+			77Ad7DUItTE916sSGsjYx7RqWQKaXffY6o20J+ZAx4c=
+			</data>
+		</dict>
+		<key>www/audio/cheek_finger.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Fcpt88/QEqHzae14nhI+3Im0c4s=
+			</data>
+			<key>hash2</key>
+			<data>
+			4ajRjNS6GMlSdilcWvfYF98P7Q+/MrH3rg+3J80kdYc=
+			</data>
+		</dict>
+		<key>www/audio/flip.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			uPAkYHjMDXW/tk4kHRzYi9sHvgw=
+			</data>
+			<key>hash2</key>
+			<data>
+			BQTnRDemm5TFMILwPRtrMumza3tFqr0F70zPTxgkWPI=
+			</data>
+		</dict>
+		<key>www/audio/invert.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			+ndBzdsLBuYIBzxBrrpuh5hYmFA=
+			</data>
+			<key>hash2</key>
+			<data>
+			BF6ElmILgfrDhFjaBONnsEz7wHTSnR0x6L1OQV1C/Lg=
+			</data>
+		</dict>
+		<key>www/audio/land.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			VYoUFU6Ft9UC54YRQO3YmHiqD48=
+			</data>
+			<key>hash2</key>
+			<data>
+			HeM1YiGD8h+WxlBaTen0eBy34hqkUwb1xmFSgQyqdbo=
+			</data>
+		</dict>
+		<key>www/audio/level_up.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			O0MINzWRqfZgwp1ccNoYTRd+b+o=
+			</data>
+			<key>hash2</key>
+			<data>
+			yG0GAtpCXQUbZw5ciuX13gx8a4cAJpuybDmzFc7T14s=
+			</data>
+		</dict>
+		<key>www/audio/mike_smash.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			EqBAZyrYkWMPBXL7UQI2aSdmE8k=
+			</data>
+			<key>hash2</key>
+			<data>
+			cYP/WaHAbT1/BNeufwNizcwSEQ5YCQsqiRIwLmClm0E=
+			</data>
+		</dict>
+		<key>www/audio/mike_smash_2.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			0Fg5XNWqC240SkV/G4xdyCX1b+s=
+			</data>
+			<key>hash2</key>
+			<data>
+			eq0SdBC69fCG7fXzL3ttgMPE6/BCecrPbaJiehU7JoU=
+			</data>
+		</dict>
+		<key>www/audio/music.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			4c20+6yrjjXt09//JHJ7fjYj2h4=
+			</data>
+			<key>hash2</key>
+			<data>
+			XMG3DnEHZLfMBjGMkbLr05yoeqDuVdpIYcyFaRejIsM=
+			</data>
+		</dict>
+		<key>www/audio/slide.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			4SiYX0ixFT3osaM+Q3G6WlouSME=
+			</data>
+			<key>hash2</key>
+			<data>
+			keIFeg/8qMcUb+QbC71o57NAycrLbV1CGtr+w6lU1rA=
+			</data>
+		</dict>
+		<key>www/audio/tongue_click.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			xfR4mmhm+O3t/Vb8EtEYnTdjrgI=
+			</data>
+			<key>hash2</key>
+			<data>
+			3Ps3oJkUAaPuEVthCd/b908M7FrK0HHqyGpHJSZo9WA=
+			</data>
+		</dict>
+		<key>www/audio/tongue_click_2.wav</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Abe+y3qHcA1PbbQn5iCZVy0DrVE=
+			</data>
+			<key>hash2</key>
+			<data>
+			w82lJGFfjurOegQmWzZJY7ZOdqEHVi5QCw4+VHSwsms=
 			</data>
 		</dict>
 		<key>www/codepoints</key>
@@ -1274,17 +1280,6 @@
 			<key>hash2</key>
 			<data>
 			uK8MNoO6Zz/CF9m95PnswXy3hiJIilR5cYkl9Zm/Ss0=
-			</data>
-		</dict>
-		<key>www/css/index.css</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			q6oc3wwt5nR8HY8sNq+KLUS0Nao=
-			</data>
-			<key>hash2</key>
-			<data>
-			PXHd1gOHJiWPd0jGIu3tACYw6u5DJrh4FD9lwXHFUO4=
 			</data>
 		</dict>
 		<key>www/favicon/android-icon-144x144.png</key>
@@ -1584,92 +1579,15 @@
 			0vjdYY4mVklqs5hsZtrc3SAs9kDiEUNHWzH9cTLBlZs=
 			</data>
 		</dict>
-		<key>www/img/business.jpg</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			sOCKqhvrtzjdQlP6C/uYbfMQxig=
-			</data>
-			<key>hash2</key>
-			<data>
-			z6jl+0uS0prWyKD87iB9RiBVBSvwF5LB2EXQa7Ksdgg=
-			</data>
-		</dict>
-		<key>www/img/cayambe.JPG</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			1j+DRFjV0fLbhqwVjtTBWonhiOM=
-			</data>
-			<key>hash2</key>
-			<data>
-			Z2yqWca1d18dOhdcXCt9XQ3UJo4UWr4o9vwBVLQA98w=
-			</data>
-		</dict>
-		<key>www/img/logo.jpg</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			E1ZPrcb24M6N7HEpDLZuj8ei2oI=
-			</data>
-			<key>hash2</key>
-			<data>
-			jrQrzOVa4umpIZUiMyTIVpEqEVDrQz/yHIFY8+wqEzo=
-			</data>
-		</dict>
-		<key>www/img/logo.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			toPh6c35wpATyad6RIa4nmMS2xc=
-			</data>
-			<key>hash2</key>
-			<data>
-			0vjdYY4mVklqs5hsZtrc3SAs9kDiEUNHWzH9cTLBlZs=
-			</data>
-		</dict>
-		<key>www/img/moosing.JPG</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			7BhGgVtpTNBmPv1Dk9lWeXQhWgM=
-			</data>
-			<key>hash2</key>
-			<data>
-			rnR2/jx+k9F0pZ23OiZzkamQlkXhmx4juE4EVb2F8gk=
-			</data>
-		</dict>
-		<key>www/img/wat.JPG</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			vZx6Ys0EBQ58Z0LAq1ghKmxQ8zI=
-			</data>
-			<key>hash2</key>
-			<data>
-			WwfthJKsJy7h/LHFbW5n1ocf/3OFmiPnu+ilTf0yXAg=
-			</data>
-		</dict>
-		<key>www/img/woods.JPG</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			JtQXwfe8cIMWRCQfzq6ta8Izb3o=
-			</data>
-			<key>hash2</key>
-			<data>
-			dUjKxk1kgoB1JexjGl/igXtABBEtxudl/rgHZ9J8GnA=
-			</data>
-		</dict>
 		<key>www/index.html</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			tCBUCTyxyw5E3PcnA/k4AGvPZ8E=
+			1uzrvgeYtFtpqAbFni2jjijVFd0=
 			</data>
 			<key>hash2</key>
 			<data>
-			9b9L8Od3UFjlXJKLT5U904+gVYxS0ifWQ7KF5/PTUas=
+			p15W1J2FUBi3JUVWhjPX2NNEYraTCdtkhmK+fegnllo=
 			</data>
 		</dict>
 		<key>www/index.spare.html</key>
@@ -1681,138 +1599,6 @@
 			<key>hash2</key>
 			<data>
 			pNoGW2Tu2pzgNHxQu/IBv/ur3TSrPlviPsz1rmiuT9A=
-			</data>
-		</dict>
-		<key>www/js-old/aboutTemplate.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			QZMjX3qdtUh8sytdXKl7VmHeqIg=
-			</data>
-			<key>hash2</key>
-			<data>
-			6yoJkREY2PXlAkc5Hic3du7zLcGkWwq81YHVweaqdAs=
-			</data>
-		</dict>
-		<key>www/js-old/canvas.script.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			4tc7AF+lqrF/EINVdRxcKDuVhUY=
-			</data>
-			<key>hash2</key>
-			<data>
-			8qh39puFGNXKRSMQUqKy/O5X8AKjRoeh3tpb/+LjJuM=
-			</data>
-		</dict>
-		<key>www/js-old/homeTemplate.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			/fu8XWtfIjerQrVfr6K3JPWsaGE=
-			</data>
-			<key>hash2</key>
-			<data>
-			pPSseH+QLgkVet4g4jTMELveIdtzCAdSHV6Tpn8HWlQ=
-			</data>
-		</dict>
-		<key>www/js-old/index.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			2jmj7l5rSw0yVb/vlWAYkK/YBwk=
-			</data>
-			<key>hash2</key>
-			<data>
-			47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
-			</data>
-		</dict>
-		<key>www/js-old/playTemplate.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			RrILanBQAkDo8GoeX8W7hCTAhEE=
-			</data>
-			<key>hash2</key>
-			<data>
-			MkLOiAoCaFoJPXL+ChL4hxiT9dbd2Cvx9EWaixT9O0Q=
-			</data>
-		</dict>
-		<key>www/js-old/playTemplate.old.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			dincoag5cxtQse6lre66pRRajqs=
-			</data>
-			<key>hash2</key>
-			<data>
-			uKZAp6toD2NiNG+uIslbFK/TROGjcbQXMoGDPZT6kWM=
-			</data>
-		</dict>
-		<key>www/js-old/promise-polyfill.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			dsXl8ACFdEhoHiq3UNP2oqxG9h4=
-			</data>
-			<key>hash2</key>
-			<data>
-			ISoFmwQtUj8LXr8rJvXbSEX2Z76LgRxRa+F6Rh6OMRA=
-			</data>
-		</dict>
-		<key>www/js-old/promisetest.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			6Rdtq8MpjJdlSnB4BpmcWcQ4f0Q=
-			</data>
-			<key>hash2</key>
-			<data>
-			04XHAUeLuKlTzucuWrWz4YbdWoiaspUudLYPms8D+DQ=
-			</data>
-		</dict>
-		<key>www/js-old/script.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			bSBfmMzYld5gIJ26XoFe3G3yhTo=
-			</data>
-			<key>hash2</key>
-			<data>
-			cnvG2rtygoxLDN8d2vnj1BzT/3tkl1Ch+t/DXBv8U58=
-			</data>
-		</dict>
-		<key>www/js-old/settingsTemplate.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			+5Da2aRuvsnJ7vHhiYasxsHAfAI=
-			</data>
-			<key>hash2</key>
-			<data>
-			0jPXIgVfJ44hcXEzuzWWUzYT8GnjNljgnMZVvtijrvw=
-			</data>
-		</dict>
-		<key>www/js-old/tutorialTemplate.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			oBuiVnp1m6aWUY20ptxn7kEwE0U=
-			</data>
-			<key>hash2</key>
-			<data>
-			Q0ryUuGYaqARHzzxLB6KJR0RwjFcb0qX6Nq0/HJTOck=
-			</data>
-		</dict>
-		<key>www/js/PROMISE</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			/uKZrbrwstnxnY8ZbX7gey83vjQ=
-			</data>
-			<key>hash2</key>
-			<data>
-			WL7ohwq1PS1QfdDbgfVg4rk31AF/2rNbEbmVblhS2Xk=
 			</data>
 		</dict>
 		<key>www/js/aboutTemplate.js</key>
@@ -1870,17 +1656,6 @@
 			MkLOiAoCaFoJPXL+ChL4hxiT9dbd2Cvx9EWaixT9O0Q=
 			</data>
 		</dict>
-		<key>www/js/playTemplate.old.js</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			dincoag5cxtQse6lre66pRRajqs=
-			</data>
-			<key>hash2</key>
-			<data>
-			uKZAp6toD2NiNG+uIslbFK/TROGjcbQXMoGDPZT6kWM=
-			</data>
-		</dict>
 		<key>www/js/promise-polyfill.js</key>
 		<dict>
 			<key>hash</key>
@@ -1907,33 +1682,55 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			7TAGil69cM3QlRbp4lE+IVLLguc=
+			PdESORfvztj3m/2k+UBWzRv7Afc=
 			</data>
 			<key>hash2</key>
 			<data>
-			TrLUHyiXBvTWNMOgjr0ZtCScQwuEgaVZgRgBrLbgDkQ=
+			ilAItdHd28bKh4cC2GJhyWHZiHaZrJgrjQXOFnDbPOQ=
+			</data>
+		</dict>
+		<key>www/js/settings.js</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			8+i9jQjRFid5j4+IwjxPBgkysTE=
+			</data>
+			<key>hash2</key>
+			<data>
+			c8dQiZf1cwOrJIjtERwmZl6gdBe8gDqas9xO2wX5B80=
 			</data>
 		</dict>
 		<key>www/js/settingsTemplate.js</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			+5Da2aRuvsnJ7vHhiYasxsHAfAI=
+			mx7viBQOGWSRliIA0BTw1egxSe8=
 			</data>
 			<key>hash2</key>
 			<data>
-			0jPXIgVfJ44hcXEzuzWWUzYT8GnjNljgnMZVvtijrvw=
+			3/3RDeQINF39nmmWPNj+CchxX8UqzlB9qzp37Ra1ukE=
+			</data>
+		</dict>
+		<key>www/js/setup.js</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			BwDjrJ/57EBvV2WmR3mVYTen/Ek=
+			</data>
+			<key>hash2</key>
+			<data>
+			96QRtR5uMawEX8RKbmFQFfSDDhy8wo8MBQKeXnF0t2I=
 			</data>
 		</dict>
 		<key>www/js/templates.js</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			oIZwMwrUd9nDJMtK7i4QKEFBjfA=
+			uWFKRwZ+TnLlISJFpqntKO0pjvg=
 			</data>
 			<key>hash2</key>
 			<data>
-			tZdZELE7SlFOvn/qdOwrpe/dTWynPz31uMrLnyU5GYM=
+			hFLQBqorwBnckrJHRotOJ/IoLIPN3tQ9CBz7grTx9TM=
 			</data>
 		</dict>
 		<key>www/js/tutorialTemplate.js</key>
@@ -1945,28 +1742,6 @@
 			<key>hash2</key>
 			<data>
 			Q0ryUuGYaqARHzzxLB6KJR0RwjFcb0qX6Nq0/HJTOck=
-			</data>
-		</dict>
-		<key>www/material-icons.css</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			w5plKFbQN+rYR2oU+iIjtLKRKpc=
-			</data>
-			<key>hash2</key>
-			<data>
-			5HZW3F0GFr7M9NF48owWCxm/BlXcY7g9fIvYQb2dhz8=
-			</data>
-		</dict>
-		<key>www/normalize.css</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			6eAXVBCBZrwX7o+tIAOboveJE7c=
-			</data>
-			<key>hash2</key>
-			<data>
-			d9zcEHwhnynbVMSeihBZVtav01DsrvS4oGO+ng1nxWo=
 			</data>
 		</dict>
 		<key>www/res/icon/android/icon-36-ldpi.png</key>
@@ -2633,11 +2408,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			c4GcCsJzLXYIrB6EB5yb6q6of4k=
+			qMZ12lOtnW7SYYvyZs/pt0g0K9w=
 			</data>
 			<key>hash2</key>
 			<data>
-			d6xXihRcuZJCfEbFNFuoD0qLfW1G0bhEALmTj4i40xo=
+			91kU6d2uldieFfcNWpXAzO/uXTspXGmYyqCj0CdfTB8=
 			</data>
 		</dict>
 	</dict>

@@ -1,7 +1,7 @@
 *,
 *:before,
 *:after {
-    box-sizing: outline-box;
+    box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 	touch-action: manipulation; /* meant to prevent 300ms delay on phone touch */
 	white-space-collapse: discard; 
@@ -12,7 +12,7 @@
 	font-weight: 100;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
-	box-sizing: outline-box;
+	box-sizing: border-box;
 }
 
 img {
@@ -101,11 +101,21 @@ i {
 	border: 1px solid #ddd;
 	font-size: 5.6vh;
 	height: auto;
+	width: auto;
 	padding: 1.5vh;
 	display: block;
 	cursor: pointer;
 }
 
+@media (max-width: 900px) {
+	/* enhanced GPU rendering on mobile */
+	.row {
+		transform: rotateY(0deg);
+		transform: translate3d(0, 0, 0);
+		-webkit-perspective: 800px;	
+		perspective: 800px;
+	}
+}
 .scoreAnimation {
 	font-size: 4.6vh;
 	opacity: 1;
@@ -482,13 +492,138 @@ h2#high-score {
 
 /*SETTINGS SCREEN*/
 
-#settingsContainer {
+#settings-container {
 	overflow: auto;	
+	width: 100%;
+	text-align: center;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
-#settingsContainer > p {
+#settings-container > h4 {
 	font-size: 10vh;
 	font-weight: 100;
 	margin-top: 30vh;
 	text-align: center;
 }
+
+/* The switch - the box around the slider */
+
+.settings-option {
+	margin: 5vh 0;
+	/* display: flex; */
+	/* justify-content: center; */
+	width: 100%;
+}
+
+.settings-option h4 {
+	font-size: 64px;
+	vertical-align: middle;
+	display: inline-block;
+	margin: 0;
+	padding-right: 1vh;
+	width: 50%;
+	text-align: right;
+}
+
+.settings-visual {
+	display: inline-block;
+	width: 50%;
+	text-align: left;
+	padding-left: 1vh;
+}
+
+
+.switch {
+  position: relative;
+  vertical-align: middle;
+  display: inline-block;
+  width: 152px;
+  height: 88px;
+  margin-left: 2vh;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ddd;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 64px;
+  width: 64px;
+  left: 12px;
+  bottom: 12px;
+  background-color: #222;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.colors.slider {
+	background-color: rgb(192, 74, 188);
+}
+
+.colors.slider:before {
+	background-color: rgb(76,134,168);
+}
+
+input:checked + .slider:before {
+  background-color: rgb(170, 77, 57);
+}
+
+input:checked + .slider {
+  background-color: rgb(39, 88, 107);
+}
+
+input:checked + .slider.alt:before {
+  background-color: rgb(76,134,168);
+}
+
+input:checked + .slider.alt {
+  background-color: rgb(192, 74, 188);
+}
+
+input:checked + .slider.colors.alt:before {
+  background-color: rgb(170, 77, 57);
+}
+
+input:checked + .slider.colors.alt {
+  background-color: rgb(76,134,168);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #222;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #222;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(64px);
+  -ms-transform: translateX(64px);
+  transform: translateX(64px);
+}
+
+.slider.round {
+  border-radius: 64px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+

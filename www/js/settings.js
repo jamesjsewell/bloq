@@ -21,19 +21,19 @@ var SETTINGS = {
 			$$('.slider').forEach(function(el) {
 				el.classList.add('alt')
 			})
-			$('#colors input').checked = false
 		}
+		$('#colors input').checked = SETTINGS.origColors
+		$('#music-slider input').checked = SETTINGS.music
+		$('#sounds-slider input').checked = SETTINGS.sounds
 		this.listen()
 	},
 	listen: function() {
-		console.log('adding listeners')
 		$('#colors').addEventListener(CONTACT_EVENT, function(e) {
 			if (debounce(e)) return
 			if (SETTINGS.origColors) {
 				console.log('SETTING ALT COLORS')
 				SETTINGS.origColors = false
 				SETTINGS.colors.red = SETTINGS.secondaryRed
-				// SETTINGS.colors.blue = 'rgb(224, 119, 125)'
 				SETTINGS.colors.blue = SETTINGS.secondaryBlue
 				$$('.slider').forEach(function(el) {
 					el.classList.add('alt')
@@ -49,20 +49,18 @@ var SETTINGS = {
 				})
 			}
 		})
-		$('#sounds').addEventListener(CONTACT_EVENT, function(e) {
+		$('#sounds-slider').addEventListener(CONTACT_EVENT, function(e) {
 			debounce(e)
 		})
-		$('#music').addEventListener(CONTACT_EVENT, function(e) {
+		$('#music-slider').addEventListener(CONTACT_EVENT, function(e) {
 			if (debounce(e)) return
 			if (SETTINGS.music) {
-				$('#bg_music').pause()
-				console.log('pausing music')
+				STATE.get('song').pause()
 				SETTINGS.music = false
 				return
 			}
 			else {
-				$('#bg_music').play()
-				console.log('playing music')
+				STATE.get('song').play()
 				SETTINGS.music = true
 			}
 		})

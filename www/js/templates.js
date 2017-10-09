@@ -67,7 +67,7 @@ var TEMPLATES = {
 			'<div class="settings-option">' +
 			'	<h4>music</h4>' +
 			'	<div class="settings-visual">' +
-			'		<label id="music" class="switch">' +
+			'		<label id="music-slider" class="switch">' +
 			'			<input checked type="checkbox">' +
 			'			<span class="slider"></span>' +
 			'		</label>' +
@@ -76,7 +76,7 @@ var TEMPLATES = {
 			'<div class="settings-option">' +
 			'	<h4>sound</h4>' +
 			'	<div class="settings-visual">' +
-			'		<label id="sounds" class="switch">' +
+			'		<label id="sounds-slider" class="switch">' +
 			'			<input checked type="checkbox">' +
 			'			<span class="slider"></span>' +
 			'		</label>' +
