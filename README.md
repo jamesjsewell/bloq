@@ -1,9 +1,22 @@
-The recommended way to use the Material Icons font is by linking to the web font hosted on Google Fonts:
+# Todos
 
-```html
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-```
+  - new sounds
+  - better soundtrack
+  - better "about us" image
+  - promotional images and video
+  - marketing strategy - develop and deploy
+  - choose different color scheme
 
-Read more in our full usage guide:
-http://google.github.io/material-design-icons/#icon-font-for-the-web
+
+## Dev
+
+  - add bonus for clearing bottom row with powerups
+  - add text to tutorial
+  - make the music on/off button work
+  - make changing colors work
+  - when click on hamburger, confirm that you want to exit and/or save game 
+    for next time
+  - 
+
+
+##

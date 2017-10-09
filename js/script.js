@@ -5,6 +5,7 @@ var COMPONENTS = {
 	init: function() {
 		this.set({
 			grid: new Grid(),
+			levelNo: new Component().assignNode('#level'),
 			playerRow: new PlayerRow(),
 			counterRow: new CounterRow(),
 			scoreTotal: new Component().assignNode('#score'),
@@ -13,6 +14,9 @@ var COMPONENTS = {
 		EVENTS.on(EVENTS.names.scoreUpdate + ' ' + EVENTS.names.sync, function() {
 			this.get('scoreTotal').write(STATE.get('score'))
 			saveScore()
+		}.bind(this))
+		EVENTS.on(EVENTS.names.sync, function() {
+			this.get('levelNo').write(CONSTANTS.numeralToWord[STATE.get('level')])
 		}.bind(this))
 	}
 }
@@ -76,11 +80,13 @@ var EVENTS = {
 
 	names: {
 		drop: 'drop',
-		gridChanged: 'gridChanged',
+		gridRowAdded: 'gridRowAdded',
+		gridRowLost: 'gridRowLost',
 		levelComplete: 'levelComplete',
 		levelStart: 'levelStart',
 		match: 'match',
 		playerRowChange: 'playerRowChange',
+		powerUpUsed: 'powerUpUsed',
 		scoreUpdate: 'scoreUpdate',
 		sync: 'sync'
 	}
@@ -97,8 +103,9 @@ var STATE = EVENTS.extend({
 		currentRows: 0,
 		maxRows: 8,
 		matchesThusFar: 0,
-		playerBlocks: Array(4).fill(SETTINGS.colors.choice()),
+		playerBlocks: Array(4).fill(['red','blue'].choice()),
 		score: 0,
+		settings: SETTINGS,
 		sqSide: null,
 		view: 'home'
 	},
@@ -112,8 +119,9 @@ var STATE = EVENTS.extend({
 		currentRows: 0,
 		maxRows: 8,
 		matchesThusFar: 0,
-		playerBlocks: Array(4).fill(SETTINGS.colors.choice()),
+		playerBlocks: Array(4).fill(['red','blue'].choice()),
 		score: 0,
+		settings: SETTINGS,
 		sqSide: null,
 		view: 'home'
 	},
@@ -145,9 +153,6 @@ var STATE = EVENTS.extend({
 	},
 
 	initPlay: function() {
-		this.set(this.defaultAttributes)
-		this.set('view','play')
-
 		// set dimensions according to device
 		var containerHeight = window.getComputedStyle(document.querySelector("#container")).height
 		var sideLength = parseInt(containerHeight) * .087
@@ -197,7 +202,6 @@ var STATE = EVENTS.extend({
 	},
 
 	load: function(oldState) {
-		console.log(oldState)
 		this.set(oldState)
 	},
 
@@ -236,7 +240,10 @@ var STATE = EVENTS.extend({
 	},
 
 	save: function() {
-		window.localStorage.setItem('bloq_state', JSON.stringify(this.attributes))
+		var copy = {}.extend(this.attributes)
+		copy.animating = false
+		copy.advancing = false
+		window.localStorage.setItem('bloq_state', JSON.stringify(copy))
 	},
 
 	sync: function() {
@@ -263,6 +270,24 @@ var VIEWS = {
 		content: TEMPLATES.play,
 		init: function(opts) {
 			opts = opts || {}
+			// don't used saved state if we're in tutorial mode
+			if (opts.tutorial) {
+				STATE.set(STATE.defaultAttributes)
+				STATE.set({
+					view: tutorial,
+					tutorialStage: 1
+				})
+			}
+			else {
+				STATE.set({
+					view:'play',
+					tutorialStage: 0
+				})
+				if (STATE.getSavedState()) {
+					STATE.load(STATE.getSavedState())
+				}
+			}
+
 			EVENTS.clear() // clear zombie event submissions
 			COMPONENTS.init() // create global components
 			STATE.initPlay() // set state defaults
@@ -277,42 +302,34 @@ var VIEWS = {
 
 			// set up listeners
 
+			EVENTS.on(EVENTS.names.powerUpUsed, function() {
+				EVENTS.trigger(EVENTS.names.playerRowChange)
+				if (STATE.get('currentRows') < 1) {
+					EVENTS.trigger(EVENTS.names.drop)
+				}
+			})
 				// update local storage in response to various events
-			EVENTS.on(`${EVENTS.names.playerRowChange} ${EVENTS.names.levelStart} ${EVENTS.names.levelComplete} ${EVENTS.names.scoreUpdate}`, function() {
+			EVENTS.on(`${EVENTS.names.playerRowChange} ${EVENTS.names.gridRowAdded} ${EVENTS.names.gridRowLost} ${EVENTS.names.levelStart} ${EVENTS.names.levelComplete} ${EVENTS.names.scoreUpdate}`, function() {
 				if (STATE.get('view') == 'tutorial') return 
+					console.log('saving state')
 				STATE.set('playerBlocks', $('#playerRow').children.map(function(node) {
-					return node.style.background
+					return node.getAttribute('data-color')
 					})
 				)
 				STATE.set('gridRows', 
-					$('#grid').children.map(function(rowEl) {
-						return rowEl.children.map(function(blockEl) {
-							return blockEl.style.background
+					COMPONENTS.get('grid').getRows().map(function(rowEl) {
+						return rowEl.querySelectorAll('.block').map(function(blockEl) {
+							return blockEl.getAttribute('data-color')
 						})
 					})
 				)
 				STATE.save()
 			})
 
-			if (opts.tutorial) {
-				STATE.set('tutorialStage', 1)
-				STATE.set('view', 'tutorial')
+			STATE.sync()
+			if (!STATE.getSavedState()) {
 				EVENTS.trigger(EVENTS.names.levelStart)
 			}
-			else {
-				// load extra state data in, if it's there
-				if (STATE.getSavedState()) {
-					STATE.load(STATE.getSavedState())
-					STATE.sync()
-
-				}
-				else {
-					// otherwise, start the first level
-					STATE.sync()
-					EVENTS.trigger(EVENTS.names.levelStart)
-				}
-			}
-
 		},
 	},
 	settings: {
@@ -492,8 +509,8 @@ Grid.prototype = Component.prototype.extend({
 				matchedRows.push(row)
 			}
 		})
-		var promise = this.handleMatches(matchedRows).then(STATE.levelUp.bind(STATE))
-		
+		var promise = this.handleMatches(matchedRows)
+			.then(STATE.levelUp.bind(STATE))		
 		return promise
 	},
 
@@ -524,6 +541,7 @@ Grid.prototype = Component.prototype.extend({
 				})
 				.then(function() {
 					grid.node.removeChild(row)
+					EVENTS.trigger(EVENTS.names.gridRowLost)
 				})
 		}) // each disappearance returns a promise
 		// Promise.all will resolve immediately if the array is empty.
@@ -566,7 +584,6 @@ Grid.prototype = Component.prototype.extend({
 	},
 
 	sendRowDown: function(rowComp) {
-		
 		return animate(function(res) {
 			var incr = CONSTANTS.dropIncr,
 				rockBottom = rowComp.get('data-position') * STATE.get('sqSide')
@@ -582,7 +599,7 @@ Grid.prototype = Component.prototype.extend({
 				}
 				else {
 					if (willTravel) playSound('land')
-					EVENTS.trigger('gridChanged')
+					EVENTS.trigger(EVENTS.names.gridRowAdded)
 					res()
 				}	
 			}
@@ -663,18 +680,7 @@ function PlayerRow() {
 
 PlayerRow.prototype = Row.prototype.extend({
 	makeBlock: function() {
-		var b = new Block()
-		b.listen(CONTACT_EVENT, function(event) {
-			playSound('basic_tap')		
-			if (STATE.get('advancing') || STATE.get('animating')) return 
-			var bgColor = event.target.style.background
-			event.target.style.background = 
-				bgColor === SETTINGS.colors.red ? 
-				SETTINGS.colors.blue : SETTINGS.colors.red
-			EVENTS.trigger('playerRowChange')
-			if (STATE.get('tutorialStage') === 1) return
-			EVENTS.trigger('drop')
-		})
+		var b = new Block().addSwitchListener()
 		return b
 	}
 })
@@ -723,18 +729,37 @@ function Block(inputColor) {
 		width: toPx(STATE.get('sqSide')),
 		height: toPx(STATE.get('sqSide'))
 	})
+
 }
 
 Block.prototype = Component.prototype.extend({
-	fill: function(color) {
-		return this.setStyle({
-			background: color
+	addSwitchListener: function() {
+		this.listen(CONTACT_EVENT, function(event) {
+			playSound('basic_tap')		
+			if (STATE.get('advancing') || STATE.get('animating')) return 
+			var bgColor = event.target.style.background
+			event.target.style.background = 
+				bgColor === SETTINGS.colors.red ? 
+				SETTINGS.colors.blue : SETTINGS.colors.red
+			EVENTS.trigger('playerRowChange')
+			if (STATE.get('tutorialStage') === 1) return
+			EVENTS.trigger('drop')
 		})
+		return this
+	},
+
+	fill: function(color) {
+		this.setStyle({
+			background: SETTINGS.colors[color]
+		})
+		this.node.setAttribute('data-color',color)
+		return this
 	},
 
 	randomFill: function() {
+		this.node.setAttribute('data-color', ['red','blue'].choice())
 		return this.setStyle({
-			background: SETTINGS.colors.choice()
+			background: SETTINGS.colors[['red','blue'].choice()]
 		})
 	}
 })
@@ -875,7 +900,7 @@ function flipPlayerRow() {
 			transform: origTransform + ' rotateY(0deg)'
 		})
 		rowComp.reverseBlocks()
-		EVENTS.trigger(EVENTS.names.playerRowChange)
+		EVENTS.trigger(EVENTS.names.powerUpUsed)
 	})
 }
 
@@ -980,14 +1005,13 @@ function invertPlayerRow() {
 	var playerRow = COMPONENTS.get('playerRow')
 	var ps = playerRow.blocks().map(invertBlock)
 	return Promise.all(ps).then(function(){
-		EVENTS.trigger(EVENTS.names.playerRowChange)
+		EVENTS.trigger(EVENTS.names.powerUpUsed)
 	})
 }
 
 function loadView(name) {
 	EVENTS.clear()
 	$('#container').innerHTML = VIEWS[name].content
-	console.log(STATE)
 	STATE.set('view',name)
 	VIEWS[name].init()
 	if (name === 'play') {
@@ -995,11 +1019,13 @@ function loadView(name) {
 	}
 	else {
 		$('#reset').style.visibility = 'hidden'		
-		console.log($('#reset'))
 	}
 }
 
 function main() {
+	if (STATE.getSavedState()) {
+		STATE.load(STATE.getSavedState())
+	}
 	loadView('home')
 }
 
@@ -1009,8 +1035,8 @@ function playSound(soundName) {
 
 function runLevel() {
 	//update readout
-	levelEl = new Component().assignNode('#level')
-	levelEl.write(CONSTANTS.numeralToWord[STATE.get('level')])
+	levelNo = COMPONENTS.get('levelNo')
+	levelNo.write(CONSTANTS.numeralToWord[STATE.get('level')])
 
 	//update widths
 	var newWidth = STATE.getRowWidth()
@@ -1049,14 +1075,14 @@ function shiftRow(way) {
 		newBlockWidth = 0
 
 	if (way === 'left') {
-		oldBlockComp = new Block().assignNode(firstBlock)
-		newBlockComp = new Block().fill(oldBlockComp.getStyle('background'))
+		oldBlockComp = new Block().assignNode(firstBlock).addSwitchListener()
+		newBlockComp = new Block().fill(oldBlockComp.get('data-color')).addSwitchListener()
 		rowComp.node.appendChild(newBlockComp.node)
 	}
 
 	else {
-		oldBlockComp = new Block().assignNode(lastBlock)
-		newBlockComp = new Block().fill(oldBlockComp.getStyle('background'))
+		oldBlockComp = new Block().assignNode(lastBlock).addSwitchListener()
+		newBlockComp = new Block().fill(oldBlockComp.get('data-color')).addSwitchListener()
 		rowComp.node.insertBefore(newBlockComp.node, rowComp.blocks()[0])
 	}	
 
@@ -1080,7 +1106,7 @@ function shiftRow(way) {
 		inchLeft()
 	}).then(function() {
 		rowComp.node.removeChild(oldBlockComp.node)
-		EVENTS.trigger('playerRowChange')
+		EVENTS.trigger(EVENTS.names.powerUpUsed)
 	})
 }
 
