@@ -230,7 +230,7 @@ var STATE = EVENTS.extend({
 			appear($('#flip'))
 			$('#flip').addEventListener(CONTACT_EVENT,flipPlayerRow)
 		}
-		if (this.get('level') >= 0) {
+		if (this.get('level') >= 7) {
 			appear($('#shiftLeft'))
 			appear($('#shiftRight'))
 			$('#shiftLeft').addEventListener(CONTACT_EVENT,function() {
@@ -429,17 +429,25 @@ Component.prototype = EVENTS.extend({
 		this.node.classList.remove(name)
 	},
 
-	set: function(attrs) {
-		Object.keys(attrs).forEach(function(key) {
-			this.node.setAttribute(key,attrs[key])						
+	set: function(attr, value) {
+		if (typeof attr === 'string') {
+			this.node.setAttribute(attr, value)
+			return this
+		}
+		Object.keys(attr).forEach(function(key) {
+			this.node.setAttribute(key,attr[key])						
 		}.bind(this))
 		return this
 	},
 
-	setStyle: function(attrs) {
-		for (var prop in attrs) {
+	setStyle: function(attr, value) {
+		if (typeof attr === 'string') {
+			this.node.style[attr] = value
+			return this
+		}
+		for (var prop in attr) {
 			if (typeof prop === 'number') prop = toPx(prop)
-			this.node.style[prop] = attrs[prop]
+			this.node.style[prop] = attr[prop]
 		}
 		return this
 	},
@@ -740,20 +748,17 @@ Block.prototype = Component.prototype.extend({
 		this.listen(CONTACT_EVENT, function(event) {
 			playSound('basic_tap')		
 			if (STATE.get('advancing') || STATE.get('animating')) return 
-			var bgColor = event.target.style.background
-			event.target.style.background = 
-				bgColor === SETTINGS.colors.red ? 
-				SETTINGS.colors.blue : SETTINGS.colors.red
+			this.switchColor()
 			EVENTS.trigger('playerRowChange')
 			if (STATE.get('tutorialStage') === 1) return
 			EVENTS.trigger('drop')
-		})
+		}.bind(this))
 		return this
 	},
 
 	fill: function(color) {
 		this.setStyle({
-			background: SETTINGS.colors[color]
+			background: STATE.get('settings').colors[color]
 		})
 		this.node.setAttribute('data-color',color)
 		return this
@@ -763,8 +768,13 @@ Block.prototype = Component.prototype.extend({
 		color = ['red','blue'].choice()
 		this.node.setAttribute('data-color', color)
 		return this.setStyle({
-			background: SETTINGS.colors[color]
+			background: STATE.get('settings').colors[color]
 		})
+	},
+
+	switchColor: function() {
+		this.set("data-color", this.get('data-color') === 'red' ? 'blue' : 'red',)
+		this.setStyle("background", STATE.get('settings').colors[this.get('data-color')])
 	}
 })
 
@@ -977,7 +987,9 @@ function initLevel() {
 
 function invertBlock(blockNode) {
 	return animate(function(res) {
-		var currentColors = getRGBObj(blockNode.style.background),
+		var currentColorName = blockNode.getAttribute('data-color'),
+			targetColorName = blockNode.getAttribute('data-color') === 'red' ? 'blue' : 'red',
+			currentColors = getRGBObj(blockNode.style.background),
 			targetColors = getRGBObj(blockNode.style.background === SETTINGS.colors.red ? 
 			SETTINGS.colors.blue : SETTINGS.colors.red),
 			redIncr = (targetColors.red - currentColors.red) / CONSTANTS.invertSpeed,
@@ -993,6 +1005,7 @@ function invertBlock(blockNode) {
 				// the above formula allows us to accommodate both those values that were 
 					// ascending and those that were descending.
 				blockNode.style.background = getRGBStr(targetColors)
+				blockNode.setAttribute('data-color', targetColorName)
 				res()
 			}
 			else {
