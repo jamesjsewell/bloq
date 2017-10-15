@@ -230,7 +230,7 @@ var STATE = EVENTS.extend({
 			appear($('#flip'))
 			$('#flip').addEventListener(CONTACT_EVENT,flipPlayerRow)
 		}
-		if (this.get('level') >= 7) {
+		if (this.get('level') >= 0) {
 			appear($('#shiftLeft'))
 			appear($('#shiftRight'))
 			$('#shiftLeft').addEventListener(CONTACT_EVENT,function() {
@@ -760,9 +760,10 @@ Block.prototype = Component.prototype.extend({
 	},
 
 	randomFill: function() {
-		this.node.setAttribute('data-color', ['red','blue'].choice())
+		color = ['red','blue'].choice()
+		this.node.setAttribute('data-color', color)
 		return this.setStyle({
-			background: SETTINGS.colors[['red','blue'].choice()]
+			background: SETTINGS.colors[color]
 		})
 	}
 })
@@ -1081,27 +1082,27 @@ function shiftRow(way) {
 		spd = STATE.get('sqSide') / 26,
 		firstBlock = rowComp.blocks()[0],
 		lastBlock = rowComp.blocks()[rowComp.blocks().length - 1],
-		oldBLockWidth = STATE.get('sqSide'),
+		oldBlockWidth = STATE.get('sqSide'),
 		newBlockWidth = 0
 
 	if (way === 'left') {
-		oldBlockComp = new Block().assignNode(firstBlock).addSwitchListener()
+		oldBlockComp = new Block().assignNode(firstBlock)
 		newBlockComp = new Block().fill(oldBlockComp.get('data-color')).addSwitchListener()
 		rowComp.node.appendChild(newBlockComp.node)
 	}
 
 	else {
-		oldBlockComp = new Block().assignNode(lastBlock).addSwitchListener()
+		oldBlockComp = new Block().assignNode(lastBlock)
 		newBlockComp = new Block().fill(oldBlockComp.get('data-color')).addSwitchListener()
-		rowComp.node.insertBefore(newBlockComp.node, rowComp.blocks()[0])
+		rowComp.node.insertBefore(newBlockComp.node, firstBlock)
 	}	
 
 	return animate(function(res) {
 		var inchLeft = function() {
 			newBlockWidth = Math.min(STATE.get('sqSide'), newBlockWidth + spd)
-			oldBLockWidth = Math.max(oldBLockWidth - spd,0)
+			oldBlockWidth = Math.max(oldBlockWidth - spd,0)
 			oldBlockComp.setStyle({
-				width: toPx(oldBLockWidth)
+				width: toPx(oldBlockWidth)
 			})
 			newBlockComp.setStyle({
 				width: toPx(newBlockWidth)
