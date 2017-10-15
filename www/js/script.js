@@ -307,7 +307,7 @@ var VIEWS = {
 
 			EVENTS.on(EVENTS.names.powerUpUsed, function() {
 				EVENTS.trigger(EVENTS.names.playerRowChange)
-				if (STATE.get('currentRows') < 1) {
+				if (STATE.get('currentRows') < 2) {
 					EVENTS.trigger(EVENTS.names.drop)
 				}
 			})
